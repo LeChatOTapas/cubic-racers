@@ -1,3 +1,6 @@
 {
-  "item.mckart.example_item" : "Example Item"
+  "item.mckart.example_item" : "Example Item",
+  "block.mckart.example_block" : "Example Block",
+
+  "creativemodetab.mckart_tab": "MC Kart"
 }
