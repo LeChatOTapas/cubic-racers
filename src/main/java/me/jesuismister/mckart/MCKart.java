@@ -5,6 +5,7 @@ import me.jesuismister.mckart.init.BlockInit;
 import me.jesuismister.mckart.init.EntityInit;
 import me.jesuismister.mckart.init.ItemInit;
 import me.jesuismister.mckart.init.ModCreativeModeTabs;
+import me.jesuismister.mckart.util.KeyBinds;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -46,7 +47,7 @@ public class MCKart {
         {
             EntityRenderers.register(EntityInit.KART.get(), KartRenderer::new);
         }
-    /*
+
         @SubscribeEvent
         public static void onKeyRegister(RegisterKeyMappingsEvent event){
             event.register(KeyBinds.KART_UP_KEY);
@@ -55,6 +56,5 @@ public class MCKart {
             event.register(KeyBinds.KART_RIGHT_KEY);
             event.register(KeyBinds.KART_JUMP_KEY);
         }
-     */
     }
 }

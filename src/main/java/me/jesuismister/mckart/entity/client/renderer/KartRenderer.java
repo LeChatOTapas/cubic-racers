@@ -20,7 +20,8 @@ public class KartRenderer extends GeoEntityRenderer<Kart> {
     }
 
     @Override
-    public void render(Kart entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+    public void render(Kart entity, float entityYaw, float partialTick, PoseStack poseStack,
+                       MultiBufferSource bufferSource, int packedLight) {
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }
 
