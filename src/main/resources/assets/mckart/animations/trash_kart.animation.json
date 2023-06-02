@@ -1,0 +1,101 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"roues_qui_tournent": {
+			"loop": true,
+			"animation_length": 1,
+			"bones": {
+				"roue_avant_gauche": {
+					"relative_to": {
+						"rotation": "entity"
+					},
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [360, 0, 0]
+						}
+					}
+				},
+				"roue_arriere_droite": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [-360, 0, 0]
+						}
+					}
+				},
+				"roue_avant_droite": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [-360, 0, 0]
+						}
+					}
+				},
+				"roue_arriere_gauche": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [360, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"roues_qui_tournent_pas": {
+			"loop": true,
+			"animation_length": 1,
+			"bones": {
+				"roue_avant_gauche": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"roue_arriere_droite": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"roue_avant_droite": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"roue_arriere_gauche": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [0, 0, 0]
+						}
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

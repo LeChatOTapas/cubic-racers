@@ -1,6 +1,8 @@
 {
   "item.mckart.example_item" : "Example Item",
   "block.mckart.example_block" : "Example Block",
+  "item.mckart.bb_example_sword": "Example Sword",
 
-  "creativemodetab.mckart_tab": "MC Kart"
+  "creativemodetab.mckart_tab": "MC Kart",
+  "item.mckart.kart": "Trash Kart"
 }
