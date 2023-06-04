@@ -34,17 +34,26 @@ public class KartModel extends GeoModel<Kart> {
     @Override
     public void setCustomAnimations(Kart kart, long instanceId, AnimationState<Kart> animationState) {
         super.setCustomAnimations(kart, instanceId, animationState);
-        
+
         Optional<GeoBone> bonesGauches = this.getBone("roue_avant_gauche");
         Optional<GeoBone> bonesDroit = this.getBone("roue_avant_droite");
 
         if (bonesGauches.isPresent()) {
-            if(kart.keyLeftDown()) bonesGauches.get().setRotY(ROTATE_WHEELS_DEGREE * Mth.DEG_TO_RAD);
-            if(kart.keyRightDown()) bonesGauches.get().setRotY(-ROTATE_WHEELS_DEGREE * Mth.DEG_TO_RAD);
+            if(kart.keyLeftDown() && !kart.keyRightDown()) bonesGauches.get().setRotY(ROTATE_WHEELS_DEGREE * Mth.DEG_TO_RAD);
+            if(kart.keyRightDown() && !kart.keyLeftDown()) bonesGauches.get().setRotY(-ROTATE_WHEELS_DEGREE * Mth.DEG_TO_RAD);
         }
         if (bonesDroit.isPresent()) {
-            if(kart.keyLeftDown()) bonesDroit.get().setRotY((ROTATE_WHEELS_DEGREE+180) * Mth.DEG_TO_RAD);
-            if(kart.keyRightDown()) bonesDroit.get().setRotY((-ROTATE_WHEELS_DEGREE-180) * Mth.DEG_TO_RAD);
+            if(kart.keyLeftDown() && !kart.keyRightDown()) bonesDroit.get().setRotY((ROTATE_WHEELS_DEGREE+180) * Mth.DEG_TO_RAD);
+            if(kart.keyRightDown() && !kart.keyLeftDown()) bonesDroit.get().setRotY((-ROTATE_WHEELS_DEGREE-180) * Mth.DEG_TO_RAD);
         }
+/*
+        //PROVISOIRE : L'ANIMATION MARCHE PAS :/
+        Optional<GeoBone> bonesRoue = this.getBone("roues");
+        bonesGauches.get().setHidden(true);
+        if (kart.getDeltaOn() && bonesRoue.isPresent()) {
+            bonesRoue.get().setHidden(true);
+        }else{
+            bonesRoue.get().setHidden(false);
+        }*/
     }
 }

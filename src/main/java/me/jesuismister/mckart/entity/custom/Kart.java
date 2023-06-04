@@ -39,6 +39,8 @@ public class Kart extends Entity implements GeoEntity {
     private KeyMapping keyJump = KeyBinds.KART_JUMP_KEY;
     //ATTRIBUTS DE CONDUITE
     private boolean isDrifting = false;
+    private boolean deltaOn = false;
+    private boolean previousKeyJump = false;
     //ATTRIBUTS GENERAUX DES KARTS
     private static final float MIN_SPEED = 0.075f;
     private static final float FREINAGE_SPEED = 1.04f;
@@ -81,22 +83,18 @@ public class Kart extends Entity implements GeoEntity {
         if (this.getFirstPassenger()!= null && (this.getFirstPassenger() instanceof Player))
             player = (Player) this.getFirstPassenger();
 
+        //ANIMATION: DELTA PLANE ON
+        if(this.deltaOn) {
+            tAnimationState.getController().setAnimation(RawAnimation.begin().then("delta_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
         //ANIMATION : MARCHE AVANT
-        if(this.getSpeed()>MIN_SPEED) {
-            tAnimationState.getController().setAnimation(RawAnimation.begin().then("roues_qui_tournent", Animation.LoopType.LOOP));
+        }else if(this.getSpeed()>MIN_SPEED) {
+            tAnimationState.getController().setAnimation(RawAnimation.begin().then("marche_avant", Animation.LoopType.LOOP));
         //ANIMATION : MARCHE ARRIERE
         }else if(this.getSpeed()<(-MIN_SPEED)){
-
+            tAnimationState.getController().setAnimation(RawAnimation.begin().then("marche_arriere", Animation.LoopType.LOOP));
         //ANIMATION : ARRET
         }else{
-            tAnimationState.getController().setAnimation(RawAnimation.begin().then("roues_qui_tournent_pas", Animation.LoopType.LOOP));
-        }
-
-        //ROTATION DES ROUES
-        if(keyLeft.isDown() & !keyRight.isDown()){
-            if(player!=null) player.sendSystemMessage(Component.literal("- GAUCHE !!!!"));
-        }else if(!keyLeft.isDown() & keyRight.isDown()){
-            if(player!=null) player.sendSystemMessage(Component.literal("- DROITE !!!!"));
+            tAnimationState.getController().setAnimation(RawAnimation.begin().then("arret", Animation.LoopType.LOOP));
         }
 
         return PlayState.CONTINUE;
@@ -214,23 +212,23 @@ public class Kart extends Entity implements GeoEntity {
         if (this.getFirstPassenger() == null || !(this.getFirstPassenger() instanceof Player)){
             //RALENTIT SI LE KART AVANCE TOUJOURS
             if (this.getSpeed() != 0)
-                this.slowDownKart(null);
+                this.slowDownKart();
             return;
         }
 
         //TEMPORAIRE : MESSAGE STATS
         Player player = (Player) this.getFirstPassenger();
-        if(this.getSpeed()!=0)
-            player.sendSystemMessage(Component.literal(
-                "VROOM (speed = " + this.getSpeed() + "/" + MAX_SPEED + " - yRot = " + this.getYRot() + ")"));
+        //if(this.getSpeed()!=0)
+        //    player.sendSystemMessage(Component.literal(
+        //        "VROOM (speed = " + this.getSpeed() + "/" + MAX_SPEED + " - yRot = " + this.getYRot() + ")"));
 
         //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
         if(this.getSpeed()!=0){
             //ROTATION GAUCHE
-            if (keyLeft.isDown())
+            if (keyLeft.isDown() && !keyRight.isDown())
                 this.setYRot(this.getYRot()-MANIABILITE_COEEF);
             //ROTATION DROITE
-            else if (keyRight.isDown())
+            else if (keyRight.isDown() && !keyLeft.isDown())
                 this.setYRot(this.getYRot()+MANIABILITE_COEEF);
         }
 
@@ -244,9 +242,13 @@ public class Kart extends Entity implements GeoEntity {
             this.setKartMovement(player);
         //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
         }else {
-            if(this.getSpeed()>0) this.slowDownKart(player);
-            else if(this.getSpeed()<0) this.slowDownKart(player);
+            if(this.getSpeed()>0) this.slowDownKart();
+            else if(this.getSpeed()<0) this.slowDownKart();
         }
+
+        if(this.deltaOn==false && keyJumpOk()) deltaOn = true;
+        else if(this.deltaOn==true && keyJumpOk()) deltaOn = false;
+        this.previousKeyJump = keyJump.isDown();
 
         //INITIE LE MOUVEMENT
         this.move(MoverType.SELF, this.getDeltaMovement());
@@ -330,17 +332,13 @@ public class Kart extends Entity implements GeoEntity {
     /**
      *Méthode pour ralentir le kart en updatant le vecteur de vitesse
      */
-    public void slowDownKart(Player player){
+    public void slowDownKart(){
         double x,z;
-
         if(this.getSpeed()>-MIN_SPEED && this.getSpeed()<MIN_SPEED){
             //On arrête définitivement le véhicule
             this.setSpeed(0);
             x = 0;
             z = 0;
-
-            if(player!=null)
-                player.sendSystemMessage(Component.literal("=> STOP"));
         }else {
             //On ralentit progressivement
             double angle = Math.toRadians(this.getYRot());
@@ -406,5 +404,13 @@ public class Kart extends Entity implements GeoEntity {
 
     public boolean keyRightDown(){
         return this.keyRight.isDown();
+    }
+
+    public boolean keyJumpOk(){
+        return !keyJump.isDown() && previousKeyJump==true;
+    }
+
+    public boolean getDeltaOn(){
+        return this.deltaOn;
     }
 }
