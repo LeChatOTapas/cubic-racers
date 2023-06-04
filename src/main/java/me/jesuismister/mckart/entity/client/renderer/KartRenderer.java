@@ -7,6 +7,8 @@ import me.jesuismister.mckart.entity.custom.Kart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class KartRenderer extends GeoEntityRenderer<Kart> {
@@ -22,7 +24,18 @@ public class KartRenderer extends GeoEntityRenderer<Kart> {
     @Override
     public void render(Kart entity, float entityYaw, float partialTick, PoseStack poseStack,
                        MultiBufferSource bufferSource, int packedLight) {
+        poseStack.pushPose();
+
+        // Appliquer la rotation
+        Quaternionf rotation = new Quaternionf();
+        rotation.rotateY((float) - Math.toRadians(entityYaw));
+        poseStack.mulPose(rotation);
+
+        // Appeler la méthode render de la classe parente pour effectuer le rendu
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+
+        poseStack.popPose();
     }
+
 
 }

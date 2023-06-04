@@ -1,5 +1,6 @@
 package me.jesuismister.mckart.entity.custom;
 
+import me.jesuismister.mckart.entity.client.renderer.KartRenderer;
 import me.jesuismister.mckart.util.KeyBinds;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.nbt.CompoundTag;
@@ -11,10 +12,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -43,7 +45,8 @@ public class Kart extends Entity implements GeoEntity {
     //ATTRIBUTS DU KART
     private final float MAX_SPEED = 1.0f;
     private final float ACCELERATION_BOOST = 0.05f;
-
+    private final float MANIABILITE_COEEF = 8.0f;
+    private final float PLAYER_POS = -0.5f;
 
 
     /////////////////
@@ -140,7 +143,7 @@ public class Kart extends Entity implements GeoEntity {
         double x = player.getX();
         double y = player.getY();
         double z = player.getZ();
-        player.setPos(x, y + 0.8, z);
+        player.setPos(x, y + PLAYER_POS, z);
     }
 
     @Override
@@ -207,50 +210,55 @@ public class Kart extends Entity implements GeoEntity {
         super.tick();
         //this.getStepHeight();
 
-        //On return si le conducteur n'est pas un joueur
+        //ON FAIT RIEN SI PAS DE CONDUCTEUR DE TYPE JOUEUR
         if(this.getFirstPassenger() ==null || !(this.getFirstPassenger() instanceof Player))
             return;
 
+        //TEMPORAIRE : MESSAGE STATS
         Player player = (Player) this.getFirstPassenger();
         if(this.getSpeed()!=0)
             player.sendSystemMessage(Component.literal(
-                "VROOM (speed = " + this.getSpeed() + "/" + MAX_SPEED));
+                "VROOM (speed = " + this.getSpeed() + "/" + MAX_SPEED + " - yRot = " + this.getYRot() + ")"));
 
-        //Fait tourner le kart en fonction des touches maintenus par le conducteur
-        this.rotateKart();
-        //Fait sauter le kart si le conducteur lache la touche de saut
-        this.hop();
+        if(this.getSpeed()!=0){
+            //ROTATION GAUCHE
+            if (keyLeft.isDown())
+                this.setYRot(this.getYRot()-MANIABILITE_COEEF);
+            //ROTATION DROITE
+            else if (keyRight.isDown())
+                this.setYRot(this.getYRot()+MANIABILITE_COEEF);
+        }
 
+        //RALENTIT SI PLUS PERSONNE DANS LE KART
         if(this.getSpeed()!=0 && this.getPassengers() == null){
-            if(this.getSpeed()>0) this.slowDownKart(null);
-            else this.slowDownKart(null);
+            this.slowDownKart(null);
             return;
         }
 
-        //ACCELERE !!!!!
+        //VECTEUR DE MOUVEMENT : ACCELERE !!!!!
         if (keyUp.isDown() && this.getSpeed() <= MAX_SPEED) {
             player.sendSystemMessage(Component.literal("=> ACCELERE"));
             this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
-            this.setKartMovement();
-        //MARCHE ARRIERE !!!
+            this.setKartMovement(player);
+        //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
         }else if (keyDown.isDown() && this.getSpeed() >= -(MAX_SPEED/2)) {
             player.sendSystemMessage(Component.literal("=> MARCHE ARRIERE"));
             this.setSpeed((float) (this.getSpeed() - ACCELERATION_BOOST));
-            this.setKartMovement();
-        //RALENTISSEMENT AUTOMATIQUE
+            this.setKartMovement(player);
+        //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
         }else {
             if(this.getSpeed()>0) this.slowDownKart(player);
             else if(this.getSpeed()<0) this.slowDownKart(player);
         }
 
-        ////////////////////
+        //INITIE LE MOUVEMENT
+        this.move(MoverType.SELF, this.getDeltaMovement());
 
+        ////////////////////
+/*
         if(this.isDrifting() == true){
             this.drift();
         }
-
-
-        this.move(MoverType.SELF, this.getDeltaMovement());
 
         List<Entity> list = this.level.getEntities(this, this.getBoundingBox().inflate((double) 0.2F,
                 (double) -0.01F, (double) 0.2F), EntitySelector.pushableBy(this));
@@ -269,7 +277,7 @@ public class Kart extends Entity implements GeoEntity {
                 }
             }
         }
-
+*/
 
         /*
         if (!this.isOnGround()) {
@@ -281,37 +289,14 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     /**
-     * Gère la rotation du Kart
-     */
-    public void rotateKart() {
-        if(!this.isDrifting && !keyJump.isDown()) {
-            if (keyLeft.isDown()) {
-                this.setRotation(-1.0f);
-            } else if (keyRight.isDown()) {
-                this.setRotation(1.0f);
-            }
-        }
-    }
-
-    /**
-     * Applique la rotation
-     * @param angle = angle a appliqué
-     */
-    public void setRotation(float angle) {
-        float current_angle = this.getYRot();
-        float new_angle = current_angle + angle;
-        this.setYRot(new_angle);
-    }
-
-    /**
      * ?????? Un vecteur de saut, genre le kart saute comme dans le jeu avec la gachette de drift ?
      */
-    public void hop(){
+    /*public void hop(){
         if(keyJump.consumeClick() && (this.isOnGround() || this.isUnderWater())){
             Vec3 jump = new Vec3(0, 1.0D, 0);
             this.setDeltaMovement(this.getDeltaMovement().add(jump));
         }
-    }
+    }*/
 
     /**
      * Récupère la vitesse du kart
@@ -330,10 +315,12 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     /**
-     *Méthode pour accélèrer le véhicule
+     *Méthode pour update le vecteur de vitesse du kart
      */
-    public void setKartMovement(){
+    public void setKartMovement(Player player){
         double angle = Math.toRadians(this.getYRot());
+        player.sendSystemMessage(Component.literal(
+                "- angle = " + angle));
 
         //La méthode Math.clamp permet de restreindre une valeur à un intervalle spécifié.
         float clamped_speed = Mth.clamp(this.getSpeed(), -MAX_SPEED/2, MAX_SPEED);
@@ -346,7 +333,7 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     /**
-     *Méthode pour ralentir le véhicule
+     *Méthode pour ralentir le kart en updatant le vecteur de vitesse
      */
     public void slowDownKart(Player player){
         double x,z;
@@ -362,6 +349,9 @@ public class Kart extends Entity implements GeoEntity {
         }else {
             //On ralentit progressivement
             double angle = Math.toRadians(this.getYRot());
+            player.sendSystemMessage(Component.literal(
+                    "- angle = " + angle));
+
             this.setSpeed(this.getSpeed() / (FREINAGE_SPEED));
 
             float clamped_speed = Mth.clamp(this.getSpeed(), -MAX_SPEED/2, MAX_SPEED);
@@ -378,22 +368,22 @@ public class Kart extends Entity implements GeoEntity {
      * Retourne vrai si le kart est en train de déraper
      * @return
      */
-    public boolean isDrifting() {
+    /*public boolean isDrifting() {
         return this.isDrifting;
-    }
+    }*/
 
     /**
      * Modifie l'état du dérapage
      * @param drifting
      */
-    public void setDrifting(boolean drifting) {
+    /*public void setDrifting(boolean drifting) {
         this.isDrifting = drifting;
-    }
+    }*/
 
     /**
      * Mets en place le dérapage du kart
      */
-    public void drift(){
+    /*public void drift(){
         boolean passengerCheck = this.getFirstPassenger() instanceof Player;
         this.setDrifting(true);
 
@@ -415,5 +405,5 @@ public class Kart extends Entity implements GeoEntity {
             Vec3 circle = new Vec3(x, 0, z);
             this.setDeltaMovement(circle);
         }
-    }
+    }*/
 }
