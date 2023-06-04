@@ -4,6 +4,7 @@ import me.jesuismister.mckart.MCKart;
 import me.jesuismister.mckart.util.KeyBinds;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -39,9 +40,12 @@ public class Kart extends Entity implements GeoEntity {
     private boolean isDrifting = false;
     private boolean deltaOn = false;
     private boolean previousKeyJump = false;
+    private float fallSpeed = -0.5f;
     //ATTRIBUTS GENERAUX DES KARTS
     private static final float MIN_SPEED = 0.075f;
     private static final float FREINAGE_SPEED = 1.04f;
+    private static final float FALL_SPEED_LIMIT = -4.0f;
+    private static final float COEFF_FROTTEMENT  = 0.85f;
     //ATTRIBUTS DU KART
     private final float MAX_SPEED = 1.0f;
     private final float ACCELERATION_BOOST = 0.05f;
@@ -54,6 +58,7 @@ public class Kart extends Entity implements GeoEntity {
     /////////////////
     public Kart(EntityType<?> entityType, Level level) {
         super(entityType, level);
+        this.noPhysics = false;
     }
 
     @Override
@@ -77,10 +82,6 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
-        Player player = null;
-        if (this.getFirstPassenger()!= null && (this.getFirstPassenger() instanceof Player))
-            player = (Player) this.getFirstPassenger();
-
         //ANIMATION: DELTA PLANE ON
         if(this.deltaOn) {
             tAnimationState.getController().setAnimation(RawAnimation.begin().then("delta_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
@@ -115,6 +116,14 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     @Override
+    /**
+     * Gravite on
+     */
+    public boolean isNoGravity() {
+        return false;
+    }
+
+        @Override
     /**
      * Jusqu'à quel hauteur il peut monter sans sauter (ici 1 bloc de haut)
      */
@@ -204,13 +213,16 @@ public class Kart extends Entity implements GeoEntity {
      */
     public void tick() {
         super.tick();
+        this.noPhysics = false;
         //this.getStepHeight();
 
         //ON FAIT RIEN SI PAS DE CONDUCTEUR DE TYPE JOUEUR
         if (this.getFirstPassenger() == null || !(this.getFirstPassenger() instanceof Player)){
             //RALENTIT SI LE KART AVANCE TOUJOURS
-            if (this.getSpeed() != 0)
+            if (this.getSpeed() != 0){
                 this.slowDownKart();
+                this.move(MoverType.SELF, this.getDeltaMovement());
+            }
             return;
         }
 
@@ -218,7 +230,8 @@ public class Kart extends Entity implements GeoEntity {
         Player player = (Player) this.getFirstPassenger();
         //if(this.getSpeed()!=0)
         //    player.sendSystemMessage(Component.literal(
-        //        "VROOM (speed = " + this.getSpeed() + "/" + MAX_SPEED + " - yRot = " + this.getYRot() + ")"));
+        //        "VROOM (onGround = " + this.isOnGround() + " / noGravity = " + this.isNoGravity() + " / VertColl = " +
+        //                this.verticalCollision + " - HorizColl = " + this.horizontalCollision + ")"));
 
         //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
         if(this.getSpeed()!=0){
@@ -233,23 +246,28 @@ public class Kart extends Entity implements GeoEntity {
         //VECTEUR DE MOUVEMENT : ACCELERE !!!!!
         if (keyUp.isDown() && this.getSpeed() <= MAX_SPEED) {
             this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
-            this.setKartMovement(player);
+            this.setKartMovement();
         //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
         }else if (keyDown.isDown() && this.getSpeed() >= -(MAX_SPEED/2)) {
             this.setSpeed((float) (this.getSpeed() - ACCELERATION_BOOST));
-            this.setKartMovement(player);
+            this.setKartMovement();
         //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
         }else {
             if(this.getSpeed()>0) this.slowDownKart();
             else if(this.getSpeed()<0) this.slowDownKart();
         }
 
-        if(this.deltaOn==false && keyJumpOk()) deltaOn = true;
-        else if(this.deltaOn==true && keyJumpOk()) deltaOn = false;
+        if(this.deltaOn==false && keyJumpOk()){
+            deltaOn = true;
+            this.fallSpeed = -0.2f;
+        } else if(this.deltaOn==true && keyJumpOk()) deltaOn = false;
         this.previousKeyJump = keyJump.isDown();
 
+        if(this.isOnGround() && this.deltaOn==false) fallSpeed = -0.5f;
+        else if(this.deltaOn==false && fallSpeed<=FALL_SPEED_LIMIT) fallSpeed = fallSpeed * 1.1f;
+
         //INITIE LE MOUVEMENT
-        this.move(MoverType.SELF, this.getDeltaMovement());
+        this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z));
 
         ////////////////////
 /*
@@ -314,7 +332,7 @@ public class Kart extends Entity implements GeoEntity {
     /**
      *Méthode pour update le vecteur de vitesse du kart
      */
-    public void setKartMovement(Player player){
+    public void setKartMovement(){
         double angle = Math.toRadians(this.getYRot());
 
         //La méthode Math.clamp permet de restreindre une valeur à un intervalle spécifié.
@@ -347,7 +365,9 @@ public class Kart extends Entity implements GeoEntity {
             this.setSpeed(clamped_speed);
 
             x = Math.sin(-angle) * clamped_speed;
+            if(this.horizontalCollision) x *= COEFF_FROTTEMENT;
             z = Math.cos(-angle) * clamped_speed;
+            if(this.horizontalCollision) z *= COEFF_FROTTEMENT;
         }
         Vec3 vec3 = new Vec3(x, 0, z);
         this.setDeltaMovement(vec3);
