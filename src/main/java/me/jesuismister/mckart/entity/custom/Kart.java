@@ -1,6 +1,6 @@
 package me.jesuismister.mckart.entity.custom;
 
-import me.jesuismister.mckart.entity.client.renderer.KartRenderer;
+import me.jesuismister.mckart.MCKart;
 import me.jesuismister.mckart.util.KeyBinds;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.nbt.CompoundTag;
@@ -8,19 +8,19 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animatable.instance.SingletonAnimatableInstanceCache;
+import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
@@ -32,11 +32,11 @@ public class Kart extends Entity implements GeoEntity {
             SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
     private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     //KEYS POUR LE KART
-    private static KeyMapping keyUp = KeyBinds.KART_UP_KEY;
-    private static KeyMapping keyDown = KeyBinds.KART_DOWN_KEY;
-    private static KeyMapping keyLeft = KeyBinds.KART_LEFT_KEY;
-    private static KeyMapping keyRight = KeyBinds.KART_RIGHT_KEY;
-    private static KeyMapping keyJump = KeyBinds.KART_JUMP_KEY;
+    private KeyMapping keyUp = KeyBinds.KART_UP_KEY;
+    private KeyMapping keyDown = KeyBinds.KART_DOWN_KEY;
+    private KeyMapping keyLeft = KeyBinds.KART_LEFT_KEY;
+    private KeyMapping keyRight = KeyBinds.KART_RIGHT_KEY;
+    private KeyMapping keyJump = KeyBinds.KART_JUMP_KEY;
     //ATTRIBUTS DE CONDUITE
     private boolean isDrifting = false;
     //ATTRIBUTS GENERAUX DES KARTS
@@ -72,33 +72,33 @@ public class Kart extends Entity implements GeoEntity {
         controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
     }
 
+    public ResourceLocation getAnimationResource(Kart animatable) {
+        return new ResourceLocation(MCKart.MODID, "animations/trash_kart.animation.json");
+    }
+
     private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
+        Player player = null;
+        if (this.getFirstPassenger()!= null && (this.getFirstPassenger() instanceof Player))
+            player = (Player) this.getFirstPassenger();
+
+        //ANIMATION : MARCHE AVANT
         if(this.getSpeed()>MIN_SPEED) {
-            //MARCHE AVANT GAUCHE
-            if (keyLeft.isDown() && !keyRight.isDown()) {
+            tAnimationState.getController().setAnimation(RawAnimation.begin().then("roues_qui_tournent", Animation.LoopType.LOOP));
+        //ANIMATION : MARCHE ARRIERE
+        }else if(this.getSpeed()<(-MIN_SPEED)){
 
-            //MARCHE AVANT DROITE
-            } else if (!keyLeft.isDown() && keyRight.isDown()) {
-
-            //MARCHE AVANT SIMPLE
-            } else {
-                tAnimationState.getController().setAnimation(RawAnimation.begin().then("roues_qui_tournent", Animation.LoopType.LOOP));
-            }
-        }else if(this.getSpeed()<-MIN_SPEED){
-            //MARCHE ARRIERE GAUCHE
-            if (keyLeft.isDown() && !keyRight.isDown()) {
-
-            //MARCHE ARRIERE DROITE
-            } else if (!keyLeft.isDown() && keyRight.isDown()) {
-
-            //MARCHE ARRIERE SIMPLE
-            } else {
-
-            }
-        //ARRET
+        //ANIMATION : ARRET
         }else{
             tAnimationState.getController().setAnimation(RawAnimation.begin().then("roues_qui_tournent_pas", Animation.LoopType.LOOP));
         }
+
+        //ROTATION DES ROUES
+        if(keyLeft.isDown() & !keyRight.isDown()){
+            if(player!=null) player.sendSystemMessage(Component.literal("- GAUCHE !!!!"));
+        }else if(!keyLeft.isDown() & keyRight.isDown()){
+            if(player!=null) player.sendSystemMessage(Component.literal("- DROITE !!!!"));
+        }
+
         return PlayState.CONTINUE;
     }
 
@@ -211,8 +211,12 @@ public class Kart extends Entity implements GeoEntity {
         //this.getStepHeight();
 
         //ON FAIT RIEN SI PAS DE CONDUCTEUR DE TYPE JOUEUR
-        if(this.getFirstPassenger() ==null || !(this.getFirstPassenger() instanceof Player))
+        if (this.getFirstPassenger() == null || !(this.getFirstPassenger() instanceof Player)){
+            //RALENTIT SI LE KART AVANCE TOUJOURS
+            if (this.getSpeed() != 0)
+                this.slowDownKart(null);
             return;
+        }
 
         //TEMPORAIRE : MESSAGE STATS
         Player player = (Player) this.getFirstPassenger();
@@ -220,6 +224,7 @@ public class Kart extends Entity implements GeoEntity {
             player.sendSystemMessage(Component.literal(
                 "VROOM (speed = " + this.getSpeed() + "/" + MAX_SPEED + " - yRot = " + this.getYRot() + ")"));
 
+        //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
         if(this.getSpeed()!=0){
             //ROTATION GAUCHE
             if (keyLeft.isDown())
@@ -229,20 +234,12 @@ public class Kart extends Entity implements GeoEntity {
                 this.setYRot(this.getYRot()+MANIABILITE_COEEF);
         }
 
-        //RALENTIT SI PLUS PERSONNE DANS LE KART
-        if(this.getSpeed()!=0 && this.getPassengers() == null){
-            this.slowDownKart(null);
-            return;
-        }
-
         //VECTEUR DE MOUVEMENT : ACCELERE !!!!!
         if (keyUp.isDown() && this.getSpeed() <= MAX_SPEED) {
-            player.sendSystemMessage(Component.literal("=> ACCELERE"));
             this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
             this.setKartMovement(player);
         //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
         }else if (keyDown.isDown() && this.getSpeed() >= -(MAX_SPEED/2)) {
-            player.sendSystemMessage(Component.literal("=> MARCHE ARRIERE"));
             this.setSpeed((float) (this.getSpeed() - ACCELERATION_BOOST));
             this.setKartMovement(player);
         //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
@@ -319,8 +316,6 @@ public class Kart extends Entity implements GeoEntity {
      */
     public void setKartMovement(Player player){
         double angle = Math.toRadians(this.getYRot());
-        player.sendSystemMessage(Component.literal(
-                "- angle = " + angle));
 
         //La méthode Math.clamp permet de restreindre une valeur à un intervalle spécifié.
         float clamped_speed = Mth.clamp(this.getSpeed(), -MAX_SPEED/2, MAX_SPEED);
@@ -349,8 +344,6 @@ public class Kart extends Entity implements GeoEntity {
         }else {
             //On ralentit progressivement
             double angle = Math.toRadians(this.getYRot());
-            player.sendSystemMessage(Component.literal(
-                    "- angle = " + angle));
 
             this.setSpeed(this.getSpeed() / (FREINAGE_SPEED));
 
@@ -406,4 +399,12 @@ public class Kart extends Entity implements GeoEntity {
             this.setDeltaMovement(circle);
         }
     }*/
+
+    public boolean keyLeftDown(){
+        return this.keyLeft.isDown();
+    }
+
+    public boolean keyRightDown(){
+        return this.keyRight.isDown();
+    }
 }
