@@ -7,31 +7,26 @@
 				"texture_width": 128,
 				"texture_height": 128,
 				"visible_bounds_width": 3,
-				"visible_bounds_height": 2.5,
-				"visible_bounds_offset": [0, 0.75, 0]
+				"visible_bounds_height": 3.5,
+				"visible_bounds_offset": [0, 1.25, 0]
 			},
 			"bones": [
 				{
-					"name": "trash_top",
-					"pivot": [0, 0, 0],
-					"cubes": [
-						{"origin": [-2, -2, 3], "size": [4, 2, 4], "pivot": [0, 1, 16], "rotation": [-67.5, 0, 0], "uv": [20, 45]},
-						{"origin": [-8, 0, -3], "size": [16, 2, 16], "pivot": [0, 1, 16], "rotation": [-67.5, 0, 0], "uv": [0, 27]}
-					]
+					"name": "kart",
+					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "trash_body",
+					"name": "delta",
+					"parent": "kart",
 					"pivot": [0, 0, 0],
 					"cubes": [
-						{"origin": [-6, 2, -6], "size": [12, 2, 12], "uv": [48, 27]},
-						{"origin": [6, 2, -8], "size": [2, 16, 16], "uv": [36, 45]},
-						{"origin": [-8, 2, -8], "size": [2, 16, 16], "uv": [0, 45]},
-						{"origin": [-1, 2, 1], "size": [2, 16, 12], "pivot": [-7, 10, 0], "rotation": [0, 90, 0], "uv": [76, 41]},
-						{"origin": [-15, 2, 1], "size": [2, 16, 12], "pivot": [-7, 10, 0], "rotation": [0, 90, 0], "uv": [60, 65]}
+						{"origin": [-1, 18, 6], "size": [2, 21, 2], "uv": [0, 0]},
+						{"origin": [-7, 36, -12], "size": [14, 1, 26], "pivot": [0, 40, 1], "rotation": [10, 0, 0], "uv": [0, 0]}
 					]
 				},
 				{
 					"name": "roues",
+					"parent": "kart",
 					"pivot": [0, 0, 0]
 				},
 				{
@@ -73,11 +68,24 @@
 					]
 				},
 				{
-					"name": "delta",
+					"name": "trash_body",
+					"parent": "kart",
 					"pivot": [0, 0, 0],
 					"cubes": [
-						{"origin": [-1, 18, 6], "size": [2, 21, 2], "uv": [0, 0]},
-						{"origin": [-7, 36, -12], "size": [14, 1, 26], "pivot": [0, 40, 1], "rotation": [10, 0, 0], "uv": [0, 0]}
+						{"origin": [-6, 2, -6], "size": [12, 2, 12], "uv": [48, 27]},
+						{"origin": [6, 2, -8], "size": [2, 16, 16], "uv": [36, 45]},
+						{"origin": [-8, 2, -8], "size": [2, 16, 16], "uv": [0, 45]},
+						{"origin": [-1, 2, 1], "size": [2, 16, 12], "pivot": [-7, 10, 0], "rotation": [0, 90, 0], "uv": [76, 41]},
+						{"origin": [-15, 2, 1], "size": [2, 16, 12], "pivot": [-7, 10, 0], "rotation": [0, 90, 0], "uv": [60, 65]}
+					]
+				},
+				{
+					"name": "trash_top",
+					"parent": "kart",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-2, -2, 3], "size": [4, 2, 4], "pivot": [0, 1, 16], "rotation": [-67.5, 0, 0], "uv": [20, 45]},
+						{"origin": [-8, 0, -3], "size": [16, 2, 16], "pivot": [0, 1, 16], "rotation": [-67.5, 0, 0], "uv": [0, 27]}
 					]
 				}
 			]

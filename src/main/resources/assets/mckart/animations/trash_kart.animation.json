@@ -193,10 +193,10 @@
 			"bones": {
 				"roues": {
 					"scale": {
-						"0.0": {
+						"0.5": {
 							"vector": [1, 1, 1]
 						},
-						"0.5": {
+						"1.0": {
 							"vector": [0, 0, 0]
 						}
 					}
@@ -206,9 +206,116 @@
 						"0.0": {
 							"vector": [0, 0, 0]
 						},
-						"1.0": {
+						"0.5": {
 							"vector": [1, 1, 1],
 							"easing": "linear"
+						}
+					}
+				},
+				"roue_avant_gauche": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [720, 0, 0]
+						}
+					}
+				},
+				"roue_arriere_droite": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [-720, 0, 0]
+						}
+					}
+				},
+				"roue_avant_droite": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [-720, 0, 0]
+						}
+					}
+				},
+				"roue_arriere_gauche": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [720, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"delta_off": {
+			"loop": "hold_on_last_frame",
+			"animation_length": 1,
+			"bones": {
+				"roues": {
+					"scale": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.5": {
+							"vector": [1, 1, 1]
+						}
+					}
+				},
+				"delta": {
+					"scale": {
+						"0.5": {
+							"vector": [1, 1, 1]
+						},
+						"1.0": {
+							"vector": [0, 0, 0],
+							"easing": "linear"
+						}
+					}
+				},
+				"roue_avant_gauche": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [720, 0, 0]
+						}
+					}
+				},
+				"roue_arriere_droite": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [-720, 0, 0]
+						}
+					}
+				},
+				"roue_avant_droite": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [-720, 0, 0]
+						}
+					}
+				},
+				"roue_arriere_gauche": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [720, 0, 0]
 						}
 					}
 				}

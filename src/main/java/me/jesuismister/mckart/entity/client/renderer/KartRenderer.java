@@ -26,12 +26,12 @@ public class KartRenderer extends GeoEntityRenderer<Kart> {
                        MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
 
-        // Appliquer la rotation
+        //Tourne le kart dans la direction où il regarde
         Quaternionf rotation = new Quaternionf();
         rotation.rotateY((float) - Math.toRadians(entityYaw));
         poseStack.mulPose(rotation);
 
-        // Appeler la méthode render de la classe parente pour effectuer le rendu
+        //Render le kart
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
 
         poseStack.popPose();
