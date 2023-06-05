@@ -1,14 +1,11 @@
-package me.jesuismister.mckart.entity.custom;
+package me.jesuismister.cubicracers.entity.custom;
 
-import me.jesuismister.mckart.MCKart;
-import me.jesuismister.mckart.util.KeyBinds;
+import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -23,8 +20,6 @@ import software.bernie.geckolib.core.animatable.instance.SingletonAnimatableInst
 import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
-
-import java.util.List;
 
 public class Kart extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Float> SPEED =
@@ -56,7 +51,7 @@ public class Kart extends Entity implements GeoEntity {
     //ATTRIBUTS DE CONDUITE
     public boolean isDrifting = false;
     public boolean deltaOn = false;
-    public boolean deltaAnimation = false;
+    public int deltaAnimationState = 0;
     private float fallSpeed = BASE_FALL_SPEED;
 
 
@@ -84,33 +79,35 @@ public class Kart extends Entity implements GeoEntity {
         controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
     }
 
-    public ResourceLocation getAnimationResource(Kart animatable) {
-        return new ResourceLocation(MCKart.MODID, "animations/trash_kart.animation.json");
-    }
-
     private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
+        //VITESSE GENERALE DES ANIMATIONS (test)
+        tAnimationState.getController().setAnimationSpeed(1.5f);
+
         //ANIMATION: DELTA PLANE ON
         if(this.deltaOn) {
-            deltaAnimation = true;
+            deltaAnimationState = 1;
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("delta_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
         //ANIMATION : MARCHE AVANT
         }else if(this.getSpeed()>MIN_SPEED) {
-            if(deltaAnimation==true){
-                deltaAnimation = false;
+            if(deltaAnimationState==1){
+                deltaAnimationState = 2;
                 tAnimationState.getController().setAnimation(RawAnimation.begin()
                         .then("delta_off", Animation.LoopType.PLAY_ONCE)
-                        .then("marche_avant", Animation.LoopType.LOOP));
-            }else{
+                        .then("marche_avant", Animation.LoopType.LOOP)
+                );
+            }else if(deltaAnimationState==0){
                 tAnimationState.getController().setAnimation(RawAnimation.begin()
                         .then("marche_avant", Animation.LoopType.LOOP));
             }
         //ANIMATION : MARCHE ARRIERE
         }else if(this.getSpeed()<(-MIN_SPEED)){
+            deltaAnimationState = 0;
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("marche_arriere", Animation.LoopType.LOOP));
         //ANIMATION : ARRET
         }else{
+            deltaAnimationState = 0;
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("arret", Animation.LoopType.HOLD_ON_LAST_FRAME));
         }
@@ -127,9 +124,6 @@ public class Kart extends Entity implements GeoEntity {
     // AJOUTS //
     ////////////
     @Override
-    /**
-     * Est-ce qu'on peut le ramasser (en cliquant dessus ?)
-     */
     public boolean isPickable() {
         return true;
     }
@@ -260,10 +254,12 @@ public class Kart extends Entity implements GeoEntity {
             if(this.getSpeed()!=0){
                 //ROTATION GAUCHE
                 if (keyLeft.isDown() && !keyRight.isDown())
-                    this.setYRot(this.getYRot()-MANIABILITE_COEEF);
+                    if(this.getSpeed()>0) this.setYRot(this.getYRot()-MANIABILITE_COEEF);
+                    else this.setYRot(this.getYRot()+MANIABILITE_COEEF);
                 //ROTATION DROITE
                 else if (keyRight.isDown() && !keyLeft.isDown())
-                    this.setYRot(this.getYRot()+MANIABILITE_COEEF);
+                    if(this.getSpeed()>0) this.setYRot(this.getYRot()+MANIABILITE_COEEF);
+                    else this.setYRot(this.getYRot()-MANIABILITE_COEEF);
             }
 
             //VECTEUR DE MOUVEMENT : DELTA PLANE

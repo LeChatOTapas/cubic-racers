@@ -1,10 +1,7 @@
-package me.jesuismister.mckart.entity.client.model;
+package me.jesuismister.cubicracers.entity.client.model;
 
-import me.jesuismister.mckart.MCKart;
-import me.jesuismister.mckart.entity.custom.Kart;
-import me.jesuismister.mckart.util.KeyBinds;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.network.chat.Component;
+import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -21,18 +18,18 @@ public class KartModel extends GeoModel<Kart> {
 
     @Override
     public ResourceLocation getModelResource(Kart kart) {
-        return new ResourceLocation(MCKart.MODID, "geo/trash_kart.geo.json");
+        return new ResourceLocation(CubicRacers.MODID, "geo/trash_kart.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(Kart kart) {
-        return new ResourceLocation(MCKart.MODID, "textures/entity/trash_kart.png");
+        return new ResourceLocation(CubicRacers.MODID, "textures/entity/trash_kart.png");
     }
 
     @Override
     public ResourceLocation getAnimationResource(Kart kart) {
 
-        return new ResourceLocation(MCKart.MODID, "animations/trash_kart.animation.json");
+        return new ResourceLocation(CubicRacers.MODID, "animations/trash_kart.animation.json");
     }
 
     @Override

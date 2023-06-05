@@ -1,13 +1,12 @@
-package me.jesuismister.mckart.entity.client.renderer;
+package me.jesuismister.cubicracers.entity.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.jesuismister.mckart.MCKart;
-import me.jesuismister.mckart.entity.client.model.KartModel;
-import me.jesuismister.mckart.entity.custom.Kart;
+import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.entity.client.model.KartModel;
+import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
@@ -18,7 +17,7 @@ public class KartRenderer extends GeoEntityRenderer<Kart> {
 
     @Override
     public ResourceLocation getTextureLocation(Kart animatable) {
-        return new ResourceLocation(MCKart.MODID, "textures/entity/trash_kart.png");
+        return new ResourceLocation(CubicRacers.MODID, "textures/entity/trash_kart.png");
     }
 
     @Override

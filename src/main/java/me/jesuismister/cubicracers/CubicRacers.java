@@ -1,11 +1,11 @@
-package me.jesuismister.mckart;
+package me.jesuismister.cubicracers;
 
-import me.jesuismister.mckart.entity.client.renderer.KartRenderer;
-import me.jesuismister.mckart.init.BlockInit;
-import me.jesuismister.mckart.init.EntityInit;
-import me.jesuismister.mckart.init.ItemInit;
-import me.jesuismister.mckart.init.ModCreativeModeTabs;
-import me.jesuismister.mckart.util.KeyBinds;
+import me.jesuismister.cubicracers.entity.client.renderer.KartRenderer;
+import me.jesuismister.cubicracers.init.BlockInit;
+import me.jesuismister.cubicracers.init.EntityInit;
+import me.jesuismister.cubicracers.init.ItemInit;
+import me.jesuismister.cubicracers.init.ModCreativeModeTabs;
+import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -16,11 +16,11 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-@Mod(MCKart.MODID)
-public class MCKart {
-    public static final String MODID = "mckart";
+@Mod(CubicRacers.MODID)
+public class CubicRacers {
+    public static final String MODID = "cubicracers";
 
-    public MCKart(){
+    public CubicRacers(){
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         EntityInit.ENTITY_TYPES.register(bus);
@@ -31,7 +31,7 @@ public class MCKart {
     }
 
     private void addCreativeTab(CreativeModeTabEvent.BuildContents event){
-        if(event.getTab() == ModCreativeModeTabs.MCKART_TAB){
+        if(event.getTab() == ModCreativeModeTabs.CUBIC_RACERS_TAB){
             event.accept(ItemInit.EXAMPLE_ITEM);
             event.accept(ItemInit.EXAMPLE_SWORD);
             event.accept(ItemInit.EXAMPLE_BLOCK_ITEM);
