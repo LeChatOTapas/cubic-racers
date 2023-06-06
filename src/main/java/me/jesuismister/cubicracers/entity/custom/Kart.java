@@ -1,5 +1,6 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -275,6 +276,12 @@ public class Kart extends Entity implements GeoEntity {
                         }
                     }
 
+                    if(this.isDrifting){
+                        if(this.driftingTime>=3) spawnDriftParticules(ParticlesInit.DRIFT_PURPLE_PARTICLES.get());
+                        else if(this.driftingTime>=2) spawnDriftParticules(ParticlesInit.DRIFT_ORANGE_PARTICLES.get());
+                        else if(this.driftingTime>=1) spawnDriftParticules(ParticlesInit.DRIFT_BLUE_PARTICLES.get());
+                    }
+
                     //DRIFT A GAUCHE
                     if (this.isDrifting && this.driftingSens.equals("Left")) {
                         //PLUS MAINTIENT GAUCHE
@@ -283,10 +290,10 @@ public class Kart extends Entity implements GeoEntity {
                             this.setYRot(this.getYRot() - MANIABILITE_COEEF * DRIFT_ANGLE);
                         //PLUS MAINTIENT DROITE
                         }else if (keyRight.isDown() && !keyLeft.isDown()){
-                            if(this.driftingTime<3.0f) driftingTime += 0.02f;
                             this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE*0.5f));
                         //NE MAINTIENT RIEN
                         }else{
+                            if(this.driftingTime<3.0f) driftingTime += 0.02f;
                             this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE*0.75f));
                         }
                     //DRIFT A DROITE
@@ -297,10 +304,10 @@ public class Kart extends Entity implements GeoEntity {
                             this.setYRot(this.getYRot() + MANIABILITE_COEEF * DRIFT_ANGLE);
                         //PLUS MAINTIENT GAUCHE
                         }else if (keyLeft.isDown() && !keyRight.isDown()){
-                            if(this.driftingTime<3.0f) driftingTime += 0.02f;
                             this.setYRot(this.getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE*0.5f));
                         //NE MAINTIENT RIEN
                         }else {
+                            if(this.driftingTime<3.0f) driftingTime += 0.02f;
                             this.setYRot(this.getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE * 0.75f));
                         }
                     }
@@ -386,10 +393,9 @@ public class Kart extends Entity implements GeoEntity {
         float clamped_speed;
         //BOOST LE JOUEUR S'IL A FINI DE DRIFT
         if(this.driftingTimeBoost>0 && !this.isDrifting){
-            this.spawnParticle();
-            //this.setSpeed(MAX_SPEED);
+            this.spawnBoostParticules(ParticleTypes.FLAME);
             clamped_speed = MAX_SPEED + BOOST;
-            driftingTimeBoost -= 0.2f;
+            driftingTimeBoost -= 0.1f;
         //SINON LE FAIT AVANCE NORMALEMENT
         }else{
             clamped_speed = Mth.clamp(this.getSpeed(), -MAX_SPEED/2, MAX_SPEED);
@@ -456,7 +462,7 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     /**
-     * TEMPORAIRE : ENVOIE UN MESSAGE AU CONDUCTEUR DU VEHICULE
+     * FONCTION POUR DEBUG : ENVOIE UN MESSAGE AU CONDUCTEUR DU VEHICULE
      * @param msg
      */
     public void sendConductorMessage(String msg){
@@ -472,7 +478,7 @@ public class Kart extends Entity implements GeoEntity {
      * Reset les attributs de drift du kart
      */
     public void resetDrift(){
-        if(driftingTime!=0) this.driftingTimeBoost = Math.round(driftingTime);
+        if(driftingTime!=0) this.driftingTimeBoost = (float) Math.floor(driftingTime);
         this.isDrifting = false;
         this.driftingTime = 0;
         this.driftingSens = "None";
@@ -488,17 +494,50 @@ public class Kart extends Entity implements GeoEntity {
         this.driftingSens = sens;
     }
 
-    public void spawnParticle(){
-        Minecraft minecraft = Minecraft.getInstance();
+    /**
+     * Fonction qui gère les particules lorsque le Kart reçoit un BOOST
+     * @param particle
+     */
+    public void spawnBoostParticules(SimpleParticleType particle) {
+        float yaw = this.getYRot();
+        double motionX = -Math.sin(Math.toRadians(yaw));
+        double motionZ = Math.cos(Math.toRadians(yaw));
+        spawnParticules(particle, 0.25 * Math.cos(Math.toRadians(yaw)), 0, 0.25 * Math.sin(Math.toRadians(yaw)),
+                motionX*0.5f, 0.25f, motionZ*0.5f);
+    }
 
+    /**
+     * Fonction qui gère les particules du drift
+     * @param particle
+     */
+    public void spawnDriftParticules(SimpleParticleType particle){
+        float yaw = this.getYRot();
+        spawnParticules(particle, 1 * Math.cos(Math.toRadians(yaw)), 0, 1 * Math.sin(Math.toRadians(yaw)),
+                0, 0, 0);
+    }
+
+    /**
+     * Fonction qui gère le spawn des particules en général
+     * @param particle
+     * @param x1 = ajustement en x
+     * @param y1 = ajustement en y
+     * @param z1 = ajustement en z
+     * @param x2 = vecteur de direction des particules en x
+     * @param y2 = vecteur de direction des particules en y
+     * @param z2 = vecteur de direction des particules en z
+     */
+    public void spawnParticules(SimpleParticleType particle, double x1, double y1, double z1, double x2, double y2, double z2){
+        Minecraft minecraft = Minecraft.getInstance();
         double x = this.getX();
         double y = this.getY();
         double z = this.getZ();
 
-        // Définissez les données de particule que vous souhaitez utiliser
-        SimpleParticleType particleData = ParticleTypes.FLAME; // Remplacez par le type de particule souhaité
-
-        // Appelez la méthode spawnParticle pour générer les particules
-        minecraft.particleEngine.createParticle(particleData, x+1, y+1, z+1, 0, 0.5f, 0);
+        //BOOSTER GAUCHE
+        minecraft.particleEngine.createParticle(particle, x - x1, y - y1, z - z1,
+                x2, y2, z2);
+        //BOOSTER DROIT
+        minecraft.particleEngine.createParticle(particle, x + x1, y + y1, z + z1,
+                x2, y2, z2);
     }
+
 }

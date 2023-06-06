@@ -5,6 +5,7 @@ import me.jesuismister.cubicracers.init.BlockInit;
 import me.jesuismister.cubicracers.init.EntityInit;
 import me.jesuismister.cubicracers.init.ItemInit;
 import me.jesuismister.cubicracers.init.ModCreativeModeTabs;
+import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,6 +27,7 @@ public class CubicRacers {
         EntityInit.ENTITY_TYPES.register(bus);
         BlockInit.BLOCKS.register(bus);
         ItemInit.ITEMS.register(bus);
+        ParticlesInit.PARTICLE_TYPES.register(bus);
 
         bus.addListener(this::addCreativeTab);
     }
