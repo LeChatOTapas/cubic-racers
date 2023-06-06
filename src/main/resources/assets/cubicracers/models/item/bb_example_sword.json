@@ -1,11 +1,11 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mckart:item/bottom_guard",
-		"1": "mckart:item/top_guard",
-		"2": "mckart:item/long_sword_texture",
-		"3": "mckart:item/top_sword_texture",
-		"particle": "mckart:item/bottom_guard"
+		"0": "cubicracers:item/bottom_guard",
+		"1": "cubicracers:item/top_guard",
+		"2": "cubicracers:item/long_sword_texture",
+		"3": "cubicracers:item/top_sword_texture",
+		"particle": "cubicracers:item/bottom_guard"
 	},
 	"elements": [
 		{

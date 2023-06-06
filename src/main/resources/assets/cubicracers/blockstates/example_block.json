@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "mckart:block/example_block"
+      "model": "cubicracers:block/example_block"
     }
   }
 }

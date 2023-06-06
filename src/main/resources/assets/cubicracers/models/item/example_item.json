@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "mckart:item/example_item"
+    "layer0": "cubicracers:item/example_item"
   }
 }

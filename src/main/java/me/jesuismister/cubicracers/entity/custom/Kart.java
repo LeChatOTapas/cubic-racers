@@ -2,7 +2,11 @@ package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -23,14 +27,14 @@ import software.bernie.geckolib.core.object.PlayState;
 
 public class Kart extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
-    private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+    private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     //KEYS POUR LE KART
-    private KeyMapping keyUp = KeyBinds.KART_UP_KEY;
-    private KeyMapping keyDown = KeyBinds.KART_DOWN_KEY;
-    private KeyMapping keyLeft = KeyBinds.KART_LEFT_KEY;
-    private KeyMapping keyRight = KeyBinds.KART_RIGHT_KEY;
-    private KeyMapping keyDelta = KeyBinds.KART_DELTA_KEY;
-    private KeyMapping keyDrift = KeyBinds.KART_DRIFT_KEY;
+    private final KeyMapping keyUp = KeyBinds.KART_UP_KEY;
+    private final KeyMapping keyDown = KeyBinds.KART_DOWN_KEY;
+    public final KeyMapping keyLeft = KeyBinds.KART_LEFT_KEY;
+    public final KeyMapping keyRight = KeyBinds.KART_RIGHT_KEY;
+    private final KeyMapping keyDelta = KeyBinds.KART_DELTA_KEY;
+    private final KeyMapping keyDrift = KeyBinds.KART_DRIFT_KEY;
     private boolean previousKeyJump = false;
     //ATTRIBUTS GENERAUX DES KARTS
     private static final float MIN_SPEED = 0.075f;
@@ -44,14 +48,20 @@ public class Kart extends Entity implements GeoEntity {
     private final float MAX_SPEED = 0.8f;
     private final float DELTA_SPEED = MAX_SPEED + 0.1f;
     private final float ACCELERATION_BOOST = 0.04f;
+    private final float BOOST = 0.5f;
     private final float MANIABILITE_COEEF = 3.0f;
     private final float PLAYER_POS_X = 0;
     private final float PLAYER_POS_Y = -0.5f;
     private final float PLAYER_POS_Z = 0;
-    public final float DRIFT_ANGLE = 1.5f;
+    //ATTRIBUTS DU DRIFT
+    private static final float DRIFT_ANGLE = 1.5f;
+    public boolean isDrifting = false;
+    public String driftingSens = "None";
+    public float driftingTime = 0.0f;
+    public float driftingTimeBoost = 0.0f;
+
     //ATTRIBUTS DE CONDUITE
     public boolean deltaOn = false;
-    public boolean isDrifting = false;
     public int deltaAnimationState = 0;
     private float fallSpeed = BASE_FALL_SPEED;
 
@@ -245,13 +255,6 @@ public class Kart extends Entity implements GeoEntity {
             }
         //SINON AU BOLOUT
         }else{
-            //TEMPORAIRE : MESSAGE STATS
-            Player player = (Player) this.getFirstPassenger();
-            //if(this.getSpeed()!=0)
-            //player.sendSystemMessage(Component.literal(
-            //        "speed = " + ((float)Math.round(this.getSpeed()*1000))/1000.0f + "/" + this.MAX_SPEED +
-            //                " - delta " + this.deltaOn + ")"));
-
             //ACTIVATION DU DELTA PLANE
             if(this.deltaOn==false && !this.isOnGround() && keyJumpOk())
                 deltaOn = true;
@@ -262,19 +265,49 @@ public class Kart extends Entity implements GeoEntity {
             //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
             if(this.getSpeed()!=0){
                 //LE KART DRIFT ET AVANCE
-                if(keyDrift.isDown() && this.getSpeed()>0){
-                    //DRIFT A GAUCHE
-                    if (keyLeft.isDown() && !keyRight.isDown()) {
-                        this.isDrifting = true;
-                        this.setYRot(this.getYRot() - MANIABILITE_COEEF * DRIFT_ANGLE);
-                    //DRIFT A DROITE
-                    }else if (keyRight.isDown() && !keyLeft.isDown()) {
-                        this.isDrifting = true;
-                        this.setYRot(this.getYRot() + MANIABILITE_COEEF * DRIFT_ANGLE);
+                if(keyDrift.isDown() && !this.horizontalCollision && this.deltaOn==false && this.getSpeed()>0){
+                    //INIT DU DRIFT
+                    if(this.driftingTime==0){
+                        if(keyLeft.isDown() && !keyRight.isDown()){
+                            this.setDrifting("Left");
+                        }else if (keyRight.isDown() && !keyLeft.isDown()){
+                            this.setDrifting("Right");
+                        }
                     }
-                //LE KART NE DRIFT PAS
+
+                    //DRIFT A GAUCHE
+                    if (this.isDrifting && this.driftingSens.equals("Left")) {
+                        //PLUS MAINTIENT GAUCHE
+                        if(keyLeft.isDown() && !keyRight.isDown()){
+                            if(this.driftingTime<3.0f) driftingTime += 0.06f;
+                            this.setYRot(this.getYRot() - MANIABILITE_COEEF * DRIFT_ANGLE);
+                        //PLUS MAINTIENT DROITE
+                        }else if (keyRight.isDown() && !keyLeft.isDown()){
+                            if(this.driftingTime<3.0f) driftingTime += 0.02f;
+                            this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE*0.5f));
+                        //NE MAINTIENT RIEN
+                        }else{
+                            this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE*0.75f));
+                        }
+                    //DRIFT A DROITE
+                    }else if (this.isDrifting && this.driftingSens.equals("Right")) {
+                        //PLUS MAINTIENT DROITE
+                        if(keyRight.isDown() && !keyLeft.isDown()){
+                            if(this.driftingTime<3.0f) driftingTime += 0.06f;
+                            this.setYRot(this.getYRot() + MANIABILITE_COEEF * DRIFT_ANGLE);
+                        //PLUS MAINTIENT GAUCHE
+                        }else if (keyLeft.isDown() && !keyRight.isDown()){
+                            if(this.driftingTime<3.0f) driftingTime += 0.02f;
+                            this.setYRot(this.getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE*0.5f));
+                        //NE MAINTIENT RIEN
+                        }else {
+                            this.setYRot(this.getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE * 0.75f));
+                        }
+                    }
+                //LE KART NE DRIFT PAS/PLUS
                 }else{
-                    this.isDrifting = false;
+                    this.resetDrift();
+
                     //ROTATION GAUCHE
                     if (keyLeft.isDown() && !keyRight.isDown()) {
                         if (this.getSpeed() > 0) this.setYRot(this.getYRot() - MANIABILITE_COEEF);
@@ -287,7 +320,7 @@ public class Kart extends Entity implements GeoEntity {
                     }
                 }
             }else{
-                this.isDrifting = false;
+                this.resetDrift();
             }
 
             //VECTEUR DE MOUVEMENT : DELTA PLANE
@@ -296,7 +329,7 @@ public class Kart extends Entity implements GeoEntity {
                 this.setSpeed(DELTA_SPEED);
                 this.setKartMovement();
             //VECTEUR DE MOUVEMENT : MARCHE AVANT !!!
-            }else if (keyUp.isDown() && this.getSpeed() <= MAX_SPEED) {
+            }else if (keyUp.isDown()) {
                 this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
                 this.setKartMovement();
             //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
@@ -305,12 +338,17 @@ public class Kart extends Entity implements GeoEntity {
                 this.setKartMovement();
             //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
             }else {
-                if(this.getSpeed()>0) this.slowDownKart();
-                else if(this.getSpeed()<0) this.slowDownKart();
+                if(this.driftingTimeBoost<=0){
+                    if(this.getSpeed()>0) this.slowDownKart();
+                    else if(this.getSpeed()<0) this.slowDownKart();
+                }else{
+                    this.setSpeed(this.getSpeed());
+                    this.setKartMovement();
+                }
             }
 
             //ON BOUGE LA CAMERA DU CONDUCTEUR
-            player.setYRot(this.getYRot());
+            this.getFirstPassenger().setYRot(this.getYRot());
         }
 
         //VITESSE DE CHUTE
@@ -345,8 +383,18 @@ public class Kart extends Entity implements GeoEntity {
     public void setKartMovement(){
         double angle = Math.toRadians(this.getYRot());
 
-        //La méthode Math.clamp permet de restreindre une valeur à un intervalle spécifié.
-        float clamped_speed = Mth.clamp(this.getSpeed(), -MAX_SPEED/2, MAX_SPEED);
+        float clamped_speed;
+        //BOOST LE JOUEUR S'IL A FINI DE DRIFT
+        if(this.driftingTimeBoost>0 && !this.isDrifting){
+            this.spawnParticle();
+            //this.setSpeed(MAX_SPEED);
+            clamped_speed = MAX_SPEED + BOOST;
+            driftingTimeBoost -= 0.2f;
+        //SINON LE FAIT AVANCE NORMALEMENT
+        }else{
+            clamped_speed = Mth.clamp(this.getSpeed(), -MAX_SPEED/2, MAX_SPEED);
+        }
+
         this.setSpeed(clamped_speed);
 
         double x = Math.sin(-angle) * clamped_speed;
@@ -384,36 +432,17 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     /**
-     * Mets en place le dérapage du kart
+     * est-ce que la touche "gauche" est enfoncé
+     * @return
      */
-    /*public void drift(){
-        boolean passengerCheck = this.getFirstPassenger() instanceof Player;
-        this.setDrifting(true);
-
-        if(keyJump.isDown() && keyLeft.isDown() && passengerCheck && this.isDrifting()){
-            double r = 1.0f;
-            double angle = Math.toRadians(this.getYRot());
-            double x = (this.xo + r * Mth.cos((float) -angle));
-            double z = (this.zo + r * Mth.cos((float) -angle));
-            this.setSpeed(this.getSpeed());
-            Vec3 circle = new Vec3(x, 0, z);
-            this.setDeltaMovement(circle);
-        }
-        if(keyJump.isDown() && keyRight.isDown() && passengerCheck && this.isDrifting()){
-            double r = 1.0f;
-            double angle = Math.toRadians(this.getYRot());
-            double x = (this.xo + r * Mth.cos((float) -angle));
-            double z = (this.zo + r * Mth.cos((float) -angle));
-            this.setSpeed(this.getSpeed());
-            Vec3 circle = new Vec3(x, 0, z);
-            this.setDeltaMovement(circle);
-        }
-    }*/
-
     public boolean keyLeftDown(){
         return this.keyLeft.isDown();
     }
 
+    /**
+     * est-ce que la touche "droite" est enfoncé
+     * @return
+     */
     public boolean keyRightDown(){
         return this.keyRight.isDown();
     }
@@ -424,5 +453,52 @@ public class Kart extends Entity implements GeoEntity {
      */
     public boolean keyJumpOk(){
         return !keyDelta.isDown() && previousKeyJump==true;
+    }
+
+    /**
+     * TEMPORAIRE : ENVOIE UN MESSAGE AU CONDUCTEUR DU VEHICULE
+     * @param msg
+     */
+    public void sendConductorMessage(String msg){
+        if (this.getFirstPassenger() == null || !(this.getFirstPassenger() instanceof Player))
+            return;
+
+        Player player = (Player) this.getFirstPassenger();
+        if(this.getSpeed()!=0)
+            player.sendSystemMessage(Component.literal(msg));
+    }
+
+    /**
+     * Reset les attributs de drift du kart
+     */
+    public void resetDrift(){
+        if(driftingTime!=0) this.driftingTimeBoost = Math.round(driftingTime);
+        this.isDrifting = false;
+        this.driftingTime = 0;
+        this.driftingSens = "None";
+    }
+
+    /**
+     * Set les attributs du drift en fonction du sens de rotation du kart
+     * @param sens
+     */
+    public void setDrifting(String sens){
+        this.isDrifting = true;
+        this.driftingTime = 0.1f;
+        this.driftingSens = sens;
+    }
+
+    public void spawnParticle(){
+        Minecraft minecraft = Minecraft.getInstance();
+
+        double x = this.getX();
+        double y = this.getY();
+        double z = this.getZ();
+
+        // Définissez les données de particule que vous souhaitez utiliser
+        SimpleParticleType particleData = ParticleTypes.FLAME; // Remplacez par le type de particule souhaité
+
+        // Appelez la méthode spawnParticle pour générer les particules
+        minecraft.particleEngine.createParticle(particleData, x+1, y+1, z+1, 0, 0.5f, 0);
     }
 }

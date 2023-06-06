@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "mckart:block/example_block"
+    "all": "cubicracers:block/example_block"
   }
 }
