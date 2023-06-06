@@ -54,7 +54,8 @@ public class CubicRacers {
             event.register(KeyBinds.KART_DOWN_KEY);
             event.register(KeyBinds.KART_LEFT_KEY);
             event.register(KeyBinds.KART_RIGHT_KEY);
-            event.register(KeyBinds.KART_JUMP_KEY);
+            event.register(KeyBinds.KART_DELTA_KEY);
+            event.register(KeyBinds.KART_DRIFT_KEY);
         }
     }
 }

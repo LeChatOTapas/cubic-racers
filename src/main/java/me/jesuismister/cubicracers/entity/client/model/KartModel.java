@@ -45,20 +45,41 @@ public class KartModel extends GeoModel<Kart> {
             Optional<GeoBone> bonesDroit = this.getBone("roue_avant_droite");
             percentage_rotation_done = 0;
 
-            //ROUES A GAUCHES
-            if (bonesGauches.isPresent()) {
-                if (kart.keyLeftDown() && !kart.keyRightDown()) {
-                    bonesGauches.get().updateRotation(0, ROTATE_WHEELS_DEGREE * Mth.DEG_TO_RAD, 0);
-                }else if (kart.keyRightDown() && !kart.keyLeftDown()) {
-                    bonesGauches.get().updateRotation(0, -ROTATE_WHEELS_DEGREE * Mth.DEG_TO_RAD, 0);
+            //LE KART DRIFT
+            if(kart.isDrifting){
+                //ROUES A GAUCHES
+                if (bonesGauches.isPresent()) {
+                    if (kart.keyLeftDown() && !kart.keyRightDown()) {
+                        bonesGauches.get().updateRotation(0, 3 * ROTATE_WHEELS_DEGREE * Mth.DEG_TO_RAD, 0);
+                    }else if (kart.keyRightDown() && !kart.keyLeftDown()) {
+                        bonesGauches.get().updateRotation(0, -3 * ROTATE_WHEELS_DEGREE * Mth.DEG_TO_RAD, 0);
+                    }
                 }
-            }
-            //ROUES A DROITES
-            if (bonesDroit.isPresent()) {
-                if (kart.keyLeftDown() && !kart.keyRightDown()) {
-                    bonesDroit.get().updateRotation(0, (ROTATE_WHEELS_DEGREE + 180) * Mth.DEG_TO_RAD, 0);
-                } else if (kart.keyRightDown() && !kart.keyLeftDown()) {
-                    bonesDroit.get().updateRotation(0, (-ROTATE_WHEELS_DEGREE - 180) * Mth.DEG_TO_RAD, 0);
+                //ROUES A DROITES
+                if (bonesDroit.isPresent()) {
+                    if (kart.keyLeftDown() && !kart.keyRightDown()) {
+                        bonesDroit.get().updateRotation(0, (3 * ROTATE_WHEELS_DEGREE + 180) * Mth.DEG_TO_RAD, 0);
+                    } else if (kart.keyRightDown() && !kart.keyLeftDown()) {
+                        bonesDroit.get().updateRotation(0,  (-3 * ROTATE_WHEELS_DEGREE - 180) * Mth.DEG_TO_RAD, 0);
+                    }
+                }
+            //LE KART NE DRIFT PAS
+            }else{
+                //ROUES A GAUCHES
+                if (bonesGauches.isPresent()) {
+                    if (kart.keyLeftDown() && !kart.keyRightDown()) {
+                        bonesGauches.get().updateRotation(0, ROTATE_WHEELS_DEGREE * Mth.DEG_TO_RAD, 0);
+                    }else if (kart.keyRightDown() && !kart.keyLeftDown()) {
+                        bonesGauches.get().updateRotation(0, -1 * ROTATE_WHEELS_DEGREE * Mth.DEG_TO_RAD, 0);
+                    }
+                }
+                //ROUES A DROITES
+                if (bonesDroit.isPresent()) {
+                    if (kart.keyLeftDown() && !kart.keyRightDown()) {
+                        bonesDroit.get().updateRotation(0, (ROTATE_WHEELS_DEGREE + 180) * Mth.DEG_TO_RAD, 0);
+                    } else if (kart.keyRightDown() && !kart.keyLeftDown()) {
+                        bonesDroit.get().updateRotation(0, (-ROTATE_WHEELS_DEGREE - 180) * Mth.DEG_TO_RAD, 0);
+                    }
                 }
             }
         } else {
@@ -75,8 +96,8 @@ public class KartModel extends GeoModel<Kart> {
                 }
                 //ON RECENTRE LE VEHICULE
                 else if(percentage_rotation_done!=0.0f){
-                        percentage_rotation_done = (float) (percentage_rotation_done + (-(Math.abs(percentage_rotation_done)/percentage_rotation_done) * 0.02));
-                    }
+                    percentage_rotation_done = (float) (percentage_rotation_done + (-(Math.abs(percentage_rotation_done)/percentage_rotation_done) * 0.02));
+                }
                 //APPLICATION DE L'INCLINAISON
                 bonesKart.get().updateRotation(0, 0, ROTATE_KART_DEGREE * Mth.DEG_TO_RAD * percentage_rotation_done);
             }

@@ -22,15 +22,15 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
 
 public class Kart extends Entity implements GeoEntity {
-    private static final EntityDataAccessor<Float> SPEED =
-            SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
     private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     //KEYS POUR LE KART
     private KeyMapping keyUp = KeyBinds.KART_UP_KEY;
     private KeyMapping keyDown = KeyBinds.KART_DOWN_KEY;
     private KeyMapping keyLeft = KeyBinds.KART_LEFT_KEY;
     private KeyMapping keyRight = KeyBinds.KART_RIGHT_KEY;
-    private KeyMapping keyJump = KeyBinds.KART_JUMP_KEY;
+    private KeyMapping keyDelta = KeyBinds.KART_DELTA_KEY;
+    private KeyMapping keyDrift = KeyBinds.KART_DRIFT_KEY;
     private boolean previousKeyJump = false;
     //ATTRIBUTS GENERAUX DES KARTS
     private static final float MIN_SPEED = 0.075f;
@@ -44,16 +44,16 @@ public class Kart extends Entity implements GeoEntity {
     private final float MAX_SPEED = 0.8f;
     private final float DELTA_SPEED = MAX_SPEED + 0.1f;
     private final float ACCELERATION_BOOST = 0.04f;
-    private final float MANIABILITE_COEEF = 5.0f;
+    private final float MANIABILITE_COEEF = 3.0f;
     private final float PLAYER_POS_X = 0;
     private final float PLAYER_POS_Y = -0.5f;
     private final float PLAYER_POS_Z = 0;
+    public final float DRIFT_ANGLE = 1.5f;
     //ATTRIBUTS DE CONDUITE
-    public boolean isDrifting = false;
     public boolean deltaOn = false;
+    public boolean isDrifting = false;
     public int deltaAnimationState = 0;
     private float fallSpeed = BASE_FALL_SPEED;
-
 
     /////////////////
     // OBLIGATOIRE //
@@ -75,10 +75,19 @@ public class Kart extends Entity implements GeoEntity {
     protected void addAdditionalSaveData(CompoundTag p_20139_) {}
 
     @Override
+    /**
+     * "Associe" le "processus" d'animation au kart
+     */
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
     }
 
+    /**
+     * Gère les animations en fonction du statut du kart
+     * @param tAnimationState
+     * @return
+     * @param <T>
+     */
     private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
         //VITESSE GENERALE DES ANIMATIONS (test)
         tAnimationState.getController().setAnimationSpeed(1.5f);
@@ -248,18 +257,37 @@ public class Kart extends Entity implements GeoEntity {
                 deltaOn = true;
             else if(this.deltaOn==true && (keyJumpOk() || this.isOnGround()))
                 deltaOn = false;
-            this.previousKeyJump = keyJump.isDown();
+            this.previousKeyJump = keyDelta.isDown();
 
             //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
             if(this.getSpeed()!=0){
-                //ROTATION GAUCHE
-                if (keyLeft.isDown() && !keyRight.isDown())
-                    if(this.getSpeed()>0) this.setYRot(this.getYRot()-MANIABILITE_COEEF);
-                    else this.setYRot(this.getYRot()+MANIABILITE_COEEF);
-                //ROTATION DROITE
-                else if (keyRight.isDown() && !keyLeft.isDown())
-                    if(this.getSpeed()>0) this.setYRot(this.getYRot()+MANIABILITE_COEEF);
-                    else this.setYRot(this.getYRot()-MANIABILITE_COEEF);
+                //LE KART DRIFT ET AVANCE
+                if(keyDrift.isDown() && this.getSpeed()>0){
+                    //DRIFT A GAUCHE
+                    if (keyLeft.isDown() && !keyRight.isDown()) {
+                        this.isDrifting = true;
+                        this.setYRot(this.getYRot() - MANIABILITE_COEEF * DRIFT_ANGLE);
+                    //DRIFT A DROITE
+                    }else if (keyRight.isDown() && !keyLeft.isDown()) {
+                        this.isDrifting = true;
+                        this.setYRot(this.getYRot() + MANIABILITE_COEEF * DRIFT_ANGLE);
+                    }
+                //LE KART NE DRIFT PAS
+                }else{
+                    this.isDrifting = false;
+                    //ROTATION GAUCHE
+                    if (keyLeft.isDown() && !keyRight.isDown()) {
+                        if (this.getSpeed() > 0) this.setYRot(this.getYRot() - MANIABILITE_COEEF);
+                        else this.setYRot(this.getYRot() + MANIABILITE_COEEF);
+                    }
+                    //ROTATION DROITE
+                    else if (keyRight.isDown() && !keyLeft.isDown()) {
+                        if (this.getSpeed() > 0) this.setYRot(this.getYRot() + MANIABILITE_COEEF);
+                        else this.setYRot(this.getYRot() - MANIABILITE_COEEF);
+                    }
+                }
+            }else{
+                this.isDrifting = false;
             }
 
             //VECTEUR DE MOUVEMENT : DELTA PLANE
@@ -390,7 +418,11 @@ public class Kart extends Entity implements GeoEntity {
         return this.keyRight.isDown();
     }
 
+    /**
+     * On détecte si le joueur vient de relacher la touche du deltaplane
+     * @return
+     */
     public boolean keyJumpOk(){
-        return !keyJump.isDown() && previousKeyJump==true;
+        return !keyDelta.isDown() && previousKeyJump==true;
     }
 }
