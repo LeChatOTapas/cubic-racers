@@ -18,6 +18,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -79,9 +80,9 @@ public class Kart extends Entity implements GeoEntity {
         this.entityData.define(SPEED, 0.0f);
     }
     @Override
-    protected void readAdditionalSaveData(CompoundTag p_20052_) {}
+    protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {}
     @Override
-    protected void addAdditionalSaveData(CompoundTag p_20139_) {}
+    protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {}
 
     @Override
     /**
@@ -162,7 +163,7 @@ public class Kart extends Entity implements GeoEntity {
     /**
      * Position du joueur dans le kart
      */
-    public void positionRider(Entity player) {
+    public void positionRider(@NotNull Entity player) {
         super.positionRider(player);
         double x = player.getX() + PLAYER_POS_X;
         double y = player.getY() + PLAYER_POS_Y;
@@ -174,7 +175,7 @@ public class Kart extends Entity implements GeoEntity {
     /**
      * Gestion des interraction avec le kart
      */
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         //Si le joueur interragis avec le kart + sneak en même temps (???)
         if (player.isShiftKeyDown()){
             //Si le joueur est passagé du kart
@@ -205,14 +206,14 @@ public class Kart extends Entity implements GeoEntity {
     /**
      * installe le joueur sur le kart
      */
-    public boolean startRiding(Entity rider) {
+    public boolean startRiding(@NotNull Entity rider) {
         Player player = (Player) rider;
         return super.startRiding(player);
     }
 
     @Override
     /**
-     * Le conducteur peut interragir (??? - tester de voir à false ce que sa fait)
+     * Le conducteur peut interragir (??? - tester de voir à false ce que ça fait)
      */
     public boolean canRiderInteract() {
         return true;
@@ -222,7 +223,7 @@ public class Kart extends Entity implements GeoEntity {
     /**
      * Peut monter le kart
      */
-    protected boolean canRide(Entity rider) {
+    protected boolean canRide(@NotNull Entity rider) {
         return true;
     }
 
@@ -243,16 +244,16 @@ public class Kart extends Entity implements GeoEntity {
         //SINON AU BOLOUT
         }else{
             //ACTIVATION DU DELTA PLANE
-            if(this.deltaOn==false && !this.isOnGround() && keyJumpOk())
+            if(!this.deltaOn && !this.isOnGround() && keyJumpOk())
                 deltaOn = true;
-            else if(this.deltaOn==true && (keyJumpOk() || this.isOnGround()))
+            else if(this.deltaOn && (keyJumpOk() || this.isOnGround()))
                 deltaOn = false;
             this.previousKeyJump = keyDelta.isDown();
 
             //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
             if(this.getSpeed()!=0){
                 //LE KART DRIFT ET AVANCE ASSEZ VITE
-                if(keyDrift.isDown() && !this.horizontalCollision && this.deltaOn==false && this.getSpeed()>MAX_SPEED*0.25){
+                if(keyDrift.isDown() && !this.horizontalCollision && !this.deltaOn && this.getSpeed()>MAX_SPEED*0.25){
                     //INIT DU DRIFT
                     if(this.driftingTime==0){
                         if(keyLeft.isDown() && !keyRight.isDown()){
@@ -317,7 +318,7 @@ public class Kart extends Entity implements GeoEntity {
             }
 
             //VECTEUR DE MOUVEMENT : DELTA PLANE
-            if(deltaOn==true) {
+            if(deltaOn) {
                 this.fallSpeed = DELTA_FALL_SPEED;
                 this.setSpeed(DELTA_SPEED);
                 this.setKartMovement();
@@ -327,7 +328,7 @@ public class Kart extends Entity implements GeoEntity {
                 this.setKartMovement();
             //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
             }else if (keyDown.isDown() && this.getSpeed() >= -(MAX_SPEED/2)) {
-                this.setSpeed((float) (this.getSpeed() - ACCELERATION_BOOST));
+                this.setSpeed(this.getSpeed() - ACCELERATION_BOOST);
                 this.setKartMovement();
             //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
             }else {
@@ -347,7 +348,7 @@ public class Kart extends Entity implements GeoEntity {
         //VITESSE DE CHUTE
         if(this.isOnGround()){
             fallSpeed = BASE_FALL_SPEED;
-        }else if(!this.isOnGround() && this.deltaOn==false && fallSpeed>=FALL_SPEED_LIMIT)
+        }else if(!this.isOnGround() && !this.deltaOn && fallSpeed>=FALL_SPEED_LIMIT)
             fallSpeed = fallSpeed * FALL_SPEED_MULTIPLIER;
 
         //INITIE LE MOUVEMENT
@@ -444,7 +445,7 @@ public class Kart extends Entity implements GeoEntity {
      * @return
      */
     public boolean keyJumpOk(){
-        return !keyDelta.isDown() && previousKeyJump==true;
+        return !keyDelta.isDown() && previousKeyJump;
     }
 
     /**
@@ -452,10 +453,9 @@ public class Kart extends Entity implements GeoEntity {
      * @param msg
      */
     public void sendConductorMessage(String msg){
-        if (this.getFirstPassenger() == null || !(this.getFirstPassenger() instanceof Player))
+        if (this.getFirstPassenger() == null || !(this.getFirstPassenger() instanceof Player player))
             return;
 
-        Player player = (Player) this.getFirstPassenger();
         if(this.getSpeed()!=0)
             player.sendSystemMessage(Component.literal(msg));
     }
