@@ -78,11 +78,9 @@ public class Kart extends Entity implements GeoEntity {
     protected void defineSynchedData() {
         this.entityData.define(SPEED, 0.0f);
     }
-
-    @Override //TO DO ?????????????
+    @Override
     protected void readAdditionalSaveData(CompoundTag p_20052_) {}
-
-    @Override //TO DO ?????????????
+    @Override
     protected void addAdditionalSaveData(CompoundTag p_20139_) {}
 
     @Override
@@ -147,27 +145,15 @@ public class Kart extends Entity implements GeoEntity {
     public boolean isPickable() {
         return true;
     }
-
     @Override
-    /**
-     * Gravite on
-     */
     public boolean isNoGravity() {
         return false;
     }
-
-        @Override
-    /**
-     * Jusqu'à quel hauteur il peut monter sans sauter (ici 1 bloc de haut)
-     */
+    @Override
     public float getStepHeight() {
         return 1.0f;
     }
-
     @Override
-    /**
-     * Peut-on la pousser (les collisions en générale)
-     */
     public boolean isPushable() {
         return false;
     }
@@ -265,8 +251,8 @@ public class Kart extends Entity implements GeoEntity {
 
             //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
             if(this.getSpeed()!=0){
-                //LE KART DRIFT ET AVANCE
-                if(keyDrift.isDown() && !this.horizontalCollision && this.deltaOn==false && this.getSpeed()>0){
+                //LE KART DRIFT ET AVANCE ASSEZ VITE
+                if(keyDrift.isDown() && !this.horizontalCollision && this.deltaOn==false && this.getSpeed()>MAX_SPEED*0.25){
                     //INIT DU DRIFT
                     if(this.driftingTime==0){
                         if(keyLeft.isDown() && !keyRight.isDown()){
