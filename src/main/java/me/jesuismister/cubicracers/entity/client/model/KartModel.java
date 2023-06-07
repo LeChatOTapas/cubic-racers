@@ -17,8 +17,7 @@ import java.util.Optional;
 
 public class KartModel extends GeoModel<Kart> {
     private static float ROTATE_WHEELS_DEGREE = 15;
-    private static float ROTATE_KART_DEGREE = 5;
-    private float percentage_rotation_done = 0;
+    public static float ROTATE_KART_DEGREE = 5;
 
     @Override
     public ResourceLocation getModelResource(Kart kart) {
@@ -46,7 +45,7 @@ public class KartModel extends GeoModel<Kart> {
         if (!kart.deltaOn) {
             Optional<GeoBone> bonesGauches = this.getBone("roue_avant_gauche");
             Optional<GeoBone> bonesDroit = this.getBone("roue_avant_droite");
-            percentage_rotation_done = 0;
+            kart.pourcentage_inclinaison = 0;
 
             //DRIFT A GAUCHE
             if (kart.isDrifting && kart.driftingSens.equals("Left")) {
@@ -103,18 +102,18 @@ public class KartModel extends GeoModel<Kart> {
             if (bonesKart.isPresent()) {
                 //INCLINAISON DU VEHICULE A GAUCHE
                 if(kart.keyLeftDown() && !kart.keyRightDown()){
-                    if(percentage_rotation_done < 1.0f) percentage_rotation_done += 0.02f;
+                    if(kart.pourcentage_inclinaison < 1.0f) kart.pourcentage_inclinaison += 0.02f;
                 }
                 //INCLINAISON DU VEHICULE A DROITE
                 else if(kart.keyRightDown() && !kart.keyLeftDown()){
-                    if(percentage_rotation_done > -1.0f) percentage_rotation_done -= 0.02f;
+                    if(kart.pourcentage_inclinaison > -1.0f) kart.pourcentage_inclinaison -= 0.02f;
                 }
                 //ON RECENTRE LE VEHICULE
-                else if(percentage_rotation_done!=0.0f){
-                    percentage_rotation_done = (float) (percentage_rotation_done + (-(Math.abs(percentage_rotation_done)/percentage_rotation_done) * 0.02));
+                else if(kart.pourcentage_inclinaison!=0.0f){
+                    kart.pourcentage_inclinaison = (float) (kart.pourcentage_inclinaison + (-(Math.abs(kart.pourcentage_inclinaison)/kart.pourcentage_inclinaison) * 0.02));
                 }
                 //APPLICATION DE L'INCLINAISON
-                bonesKart.get().updateRotation(0, 0, ROTATE_KART_DEGREE * Mth.DEG_TO_RAD * percentage_rotation_done);
+                bonesKart.get().updateRotation(0, 0, ROTATE_KART_DEGREE * Mth.DEG_TO_RAD * kart.pourcentage_inclinaison);
             }
         }
     }

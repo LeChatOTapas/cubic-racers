@@ -66,6 +66,7 @@ public class Kart extends Entity implements GeoEntity {
     public boolean deltaOn = false;
     public int deltaAnimationState = 0;
     private float fallSpeed = BASE_FALL_SPEED;
+    public float pourcentage_inclinaison = 0;
 
     /////////////////
     // OBLIGATOIRE //
@@ -243,6 +244,11 @@ public class Kart extends Entity implements GeoEntity {
             }
         //SINON AU BOLOUT
         }else{
+            //SI COLLISION, ON RESET LE BOOST DU DRIFT
+            if(this.horizontalCollision) {
+                this.driftingTime = 0;
+            }
+
             //ACTIVATION DU DELTA PLANE
             if(!this.deltaOn && !this.isOnGround() && keyJumpOk())
                 deltaOn = true;
@@ -343,6 +349,7 @@ public class Kart extends Entity implements GeoEntity {
 
             //ON BOUGE LA CAMERA DU CONDUCTEUR
             this.getFirstPassenger().setYRot(this.getYRot());
+            this.getFirstPassenger().setYBodyRot(this.getYRot());
         }
 
         //VITESSE DE CHUTE
