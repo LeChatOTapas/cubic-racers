@@ -42,7 +42,7 @@ public class Kart extends Entity implements GeoEntity {
     private static final float MIN_SPEED = 0.075f;
     private static final float FREINAGE_SPEED = 1.1f;
     private static final float BASE_FALL_SPEED = -0.5f;
-    private static final float DELTA_FALL_SPEED = -0.2f;
+    private static final float REDUCED_FALL_SPEED = -0.2f;
     private static final float FALL_SPEED_LIMIT = -3.0f;
     private static final float FALL_SPEED_MULTIPLIER = 1.05f;
     private static final float COEFF_FROTTEMENT  = 0.85f;
@@ -65,6 +65,7 @@ public class Kart extends Entity implements GeoEntity {
     //ATTRIBUTS DE CONDUITE
     public boolean deltaOn = false;
     public int deltaAnimationState = 0;
+    public int waterAnimationState = 0;
     private float fallSpeed = BASE_FALL_SPEED;
     public float pourcentage_inclinaison = 0;
 
@@ -103,33 +104,72 @@ public class Kart extends Entity implements GeoEntity {
         //VITESSE GENERALE DES ANIMATIONS (test)
         tAnimationState.getController().setAnimationSpeed(1.5f);
 
-        //ANIMATION: DELTA PLANE ON
-        if(this.deltaOn) {
-            deltaAnimationState = 1;
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("delta_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
-        //ANIMATION : MARCHE AVANT
-        }else if(this.getSpeed()>MIN_SPEED) {
-            if(deltaAnimationState==1){
-                deltaAnimationState = 2;
+        //ANIMATION : DANS L'EAU
+        if(this.isInWater()) {
+            //ANIMATION : MARCHE AVANT
+            if(this.getSpeed()>MIN_SPEED) {
+                //ANIMATION : MARCHE AVANT - ENTREE DANS L'EAU
+                if(waterAnimationState==0 || waterAnimationState==3){
+                    waterAnimationState = 1;
+                    tAnimationState.getController().setAnimation(RawAnimation.begin()
+                            .then("water_on", Animation.LoopType.PLAY_ONCE)
+                            .then("marche_avant_water", Animation.LoopType.LOOP)
+                    );
+                //ANIMATION : MARCHE AVANT - SIMPLE
+                }else if(waterAnimationState==2){
+                    tAnimationState.getController().setAnimation(RawAnimation.begin()
+                            .then("marche_avant_water", Animation.LoopType.LOOP));
+                }
+            //ANIMATION : MARCHE ARRIERE
+            }else if(this.getSpeed()<(-MIN_SPEED)){
+                waterAnimationState = 2;
                 tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("delta_off", Animation.LoopType.PLAY_ONCE)
-                        .then("marche_avant", Animation.LoopType.LOOP)
-                );
-            }else if(deltaAnimationState==0){
+                        .then("marche_arriere_water", Animation.LoopType.LOOP));
+            //ANIMATION : ARRET
+            }else{
+                waterAnimationState = 2;
                 tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("marche_avant", Animation.LoopType.LOOP));
+                        .then("arret_water", Animation.LoopType.HOLD_ON_LAST_FRAME));
             }
-        //ANIMATION : MARCHE ARRIERE
-        }else if(this.getSpeed()<(-MIN_SPEED)){
-            deltaAnimationState = 0;
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("marche_arriere", Animation.LoopType.LOOP));
-        //ANIMATION : ARRET
-        }else{
-            deltaAnimationState = 0;
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("arret", Animation.LoopType.HOLD_ON_LAST_FRAME));
+        //ANIMATION : HORS DE L'EAU
+        }else {
+            //ANIMATION : DANS LES AIRS
+            if(this.deltaOn) {
+                deltaAnimationState = 1;
+                tAnimationState.getController().setAnimation(RawAnimation.begin()
+                            .then("delta_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
+            //ANIMATION : MARCHE AVANT
+            }else if(this.getSpeed()>MIN_SPEED) {
+                //ANIMATION : MARCHE AVANT - ATTERISSAGE
+                if(deltaAnimationState==1){
+                    deltaAnimationState = 2;
+                    tAnimationState.getController().setAnimation(RawAnimation.begin()
+                            .then("delta_off", Animation.LoopType.PLAY_ONCE)
+                            .then("marche_avant", Animation.LoopType.LOOP));
+                //ANIMATION : MARCHE AVANT
+                }else if(waterAnimationState>0){
+                    waterAnimationState = 3;
+                    tAnimationState.getController().setAnimation(RawAnimation.begin()
+                            .then("water_off", Animation.LoopType.PLAY_ONCE)
+                            .then("marche_avant", Animation.LoopType.LOOP));
+                    //ANIMATION : MARCHE AVANT
+                }else if(deltaAnimationState==0 && waterAnimationState==0){
+                    tAnimationState.getController().setAnimation(RawAnimation.begin()
+                            .then("marche_avant", Animation.LoopType.LOOP));
+                }
+            //ANIMATION : MARCHE ARRIERE
+            }else if(this.getSpeed()<(-MIN_SPEED)){
+                deltaAnimationState = 0;
+                waterAnimationState = 0;
+                tAnimationState.getController().setAnimation(RawAnimation.begin()
+                        .then("marche_arriere", Animation.LoopType.LOOP));
+            //ANIMATION : ARRET
+            }else{
+                deltaAnimationState = 0;
+                waterAnimationState = 0;
+                tAnimationState.getController().setAnimation(RawAnimation.begin()
+                        .then("arret", Animation.LoopType.HOLD_ON_LAST_FRAME));
+            }
         }
 
         return PlayState.CONTINUE;
@@ -325,7 +365,6 @@ public class Kart extends Entity implements GeoEntity {
 
             //VECTEUR DE MOUVEMENT : DELTA PLANE
             if(deltaOn) {
-                this.fallSpeed = DELTA_FALL_SPEED;
                 this.setSpeed(DELTA_SPEED);
                 this.setKartMovement();
             //VECTEUR DE MOUVEMENT : MARCHE AVANT !!!
@@ -333,7 +372,7 @@ public class Kart extends Entity implements GeoEntity {
                 this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
                 this.setKartMovement();
             //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
-            }else if (keyDown.isDown() && this.getSpeed() >= -(MAX_SPEED/2)) {
+            }else if (keyDown.isDown()) {
                 this.setSpeed(this.getSpeed() - ACCELERATION_BOOST);
                 this.setKartMovement();
             //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
@@ -353,10 +392,13 @@ public class Kart extends Entity implements GeoEntity {
         }
 
         //VITESSE DE CHUTE
-        if(this.isOnGround()){
+        if(this.isOnGround() && !this.isInWater()){
             fallSpeed = BASE_FALL_SPEED;
-        }else if(!this.isOnGround() && !this.deltaOn && fallSpeed>=FALL_SPEED_LIMIT)
+        }else if(this.isInWater() || this.deltaOn){
+            this.fallSpeed = REDUCED_FALL_SPEED;
+        }else if(!this.isOnGround() && !this.deltaOn && fallSpeed>=FALL_SPEED_LIMIT) {
             fallSpeed = fallSpeed * FALL_SPEED_MULTIPLIER;
+        }
 
         //INITIE LE MOUVEMENT
         this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z));
