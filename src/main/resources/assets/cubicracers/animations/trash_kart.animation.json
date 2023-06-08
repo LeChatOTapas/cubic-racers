@@ -82,44 +82,7 @@
 					"relative_to": {
 						"rotation": "entity"
 					},
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [-360, 0, 0]
-						}
-					}
-				},
-				"roue_avant_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [-360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_gauche": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [360, 0, 0]
-						}
-					}
+					"rotation": [0, 0, 0.01]
 				},
 				"delta": {
 					"scale": {
@@ -146,44 +109,7 @@
 					"relative_to": {
 						"rotation": "entity"
 					},
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.5": {
-							"vector": [-360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.5": {
-							"vector": [360, 0, 0]
-						}
-					}
-				},
-				"roue_avant_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.5": {
-							"vector": [360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_gauche": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.5": {
-							"vector": [-360, 0, 0]
-						}
-					}
+					"rotation": [0, 0, 0.01]
 				},
 				"delta": {
 					"scale": {
@@ -227,46 +153,6 @@
 						}
 					}
 				},
-				"roue_avant_gauche": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [-720, 0, 0]
-						}
-					}
-				},
-				"roue_avant_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [-720, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_gauche": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [720, 0, 0]
-						}
-					}
-				},
 				"water_wheel": {
 					"scale": {
 						"vector": [0, 0, 0]
@@ -299,46 +185,6 @@
 						}
 					}
 				},
-				"roue_avant_gauche": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [720, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [-720, 0, 0]
-						}
-					}
-				},
-				"roue_avant_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [-720, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_gauche": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"2.0": {
-							"vector": [720, 0, 0]
-						}
-					}
-				},
 				"water_wheel": {
 					"scale": {
 						"vector": [0, 0, 0]
@@ -364,44 +210,7 @@
 					"relative_to": {
 						"rotation": "entity"
 					},
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [-360, 0, 0]
-						}
-					}
-				},
-				"roue_avant_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [-360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_gauche": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [360, 0, 0]
-						}
-					}
+					"rotation": [0, 0, 0.01]
 				},
 				"delta": {
 					"scale": {
@@ -433,44 +242,7 @@
 					"relative_to": {
 						"rotation": "entity"
 					},
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.5": {
-							"vector": [-360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.5": {
-							"vector": [360, 0, 0]
-						}
-					}
-				},
-				"roue_avant_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.5": {
-							"vector": [360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_gauche": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.5": {
-							"vector": [-360, 0, 0]
-						}
-					}
+					"rotation": [0, 0, 0.01]
 				},
 				"delta": {
 					"scale": {
@@ -502,44 +274,7 @@
 					"relative_to": {
 						"rotation": "entity"
 					},
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [-360, 0, 0]
-						}
-					}
-				},
-				"roue_avant_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [-360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_gauche": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [360, 0, 0]
-						}
-					}
+					"rotation": [0, 0, 0.01]
 				},
 				"delta": {
 					"scale": {
@@ -571,44 +306,7 @@
 					"relative_to": {
 						"rotation": "entity"
 					},
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [-360, 0, 0]
-						}
-					}
-				},
-				"roue_avant_droite": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [-360, 0, 0]
-						}
-					}
-				},
-				"roue_arriere_gauche": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [360, 0, 0]
-						}
-					}
+					"rotation": [0, 0, 0.01]
 				},
 				"delta": {
 					"scale": {

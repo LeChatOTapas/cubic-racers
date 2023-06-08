@@ -40,16 +40,16 @@ public class Kart extends Entity implements GeoEntity {
     private boolean previousKeyJump = false;
     //ATTRIBUTS GENERAUX DES KARTS
     private static final float MIN_SPEED = 0.075f;
-    private static final float FREINAGE_SPEED = 1.1f;
+    private static final float FREINAGE_SPEED = 1.05f;
     private static final float BASE_FALL_SPEED = -0.5f;
     private static final float REDUCED_FALL_SPEED = -0.2f;
     private static final float FALL_SPEED_LIMIT = -3.0f;
     private static final float FALL_SPEED_MULTIPLIER = 1.05f;
     private static final float COEFF_FROTTEMENT  = 0.85f;
     //ATTRIBUTS DU KART
-    private final float MAX_SPEED = 0.8f;
+    public final float MAX_SPEED = 0.8f;
     private final float DELTA_SPEED = MAX_SPEED + 0.1f;
-    private final float ACCELERATION_BOOST = 0.04f;
+    private final float ACCELERATION_BOOST = 0.02f;
     private final float BOOST = 0.5f;
     private final float MANIABILITE_COEEF = 3.0f;
     private final float PLAYER_POS_X = 0;
@@ -68,6 +68,7 @@ public class Kart extends Entity implements GeoEntity {
     public int waterAnimationState = 0;
     private float fallSpeed = BASE_FALL_SPEED;
     public float pourcentage_inclinaison = 0;
+    public float actual_rotation_wheels = 0;
 
     /////////////////
     // OBLIGATOIRE //
