@@ -1,5 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.KartObject.Banana;
+import me.jesuismister.cubicracers.KartObject.KartObject;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.KeyMapping;
@@ -77,6 +79,9 @@ public class Kart extends Entity implements GeoEntity {
     public float pourcentage_inclinaison = 0;
     public float actual_rotation_wheels = 0;
 
+    //OBJET
+    public String objet = "None";
+
     /////////////////
     // OBLIGATOIRE //
     /////////////////
@@ -104,6 +109,26 @@ public class Kart extends Entity implements GeoEntity {
     protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {}
     @Override
     protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {}
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
+    @Override
+    public boolean isPickable() {
+        return true;
+    }
+    @Override
+    public boolean isNoGravity() {
+        return false;
+    }
+    @Override
+    public float getStepHeight() {
+        return 1.0f;
+    }
+    @Override
+    public boolean isPushable() {
+        return false;
+    }
 
     @Override
     /**
@@ -192,31 +217,6 @@ public class Kart extends Entity implements GeoEntity {
         }
 
         return PlayState.CONTINUE;
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
-
-    ////////////
-    // AJOUTS //
-    ////////////
-    @Override
-    public boolean isPickable() {
-        return true;
-    }
-    @Override
-    public boolean isNoGravity() {
-        return false;
-    }
-    @Override
-    public float getStepHeight() {
-        return 1.0f;
-    }
-    @Override
-    public boolean isPushable() {
-        return false;
     }
 
     @Override
@@ -342,7 +342,7 @@ public class Kart extends Entity implements GeoEntity {
                             this.setYRot(this.getYRot() - MANIABILITE_COEEF * DRIFT_ANGLE);
                         //PLUS MAINTIENT DROITE
                         }else if (keyRight.isDown() && !keyLeft.isDown()){
-                            this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE*0.5f));
+                            this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE*0.3f));
                         //NE MAINTIENT RIEN
                         }else{
                             if(this.driftingTime<3.0f) driftingTime += 0.02f;
