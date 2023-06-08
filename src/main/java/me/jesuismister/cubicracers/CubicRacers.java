@@ -3,7 +3,7 @@ package me.jesuismister.cubicracers;
 import me.jesuismister.cubicracers.entity.client.renderer.KartRenderer;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import me.jesuismister.cubicracers.init.BlockInit;
-import me.jesuismister.cubicracers.init.EntityInit;
+import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.init.ItemInit;
 import me.jesuismister.cubicracers.init.ModCreativeModeTabs;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
@@ -27,8 +27,8 @@ public class CubicRacers {
     public CubicRacers(){
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        EntityInit.initAllKarts(); //IMPORTANT DE LE METTRE AVANT LE "EntityInit.ENTITY_TYPES.register(bus)"
-        EntityInit.ENTITY_TYPES.register(bus);
+        KartInit.initAllKarts(); //IMPORTANT DE LE METTRE AVANT LE "EntityInit.ENTITY_TYPES.register(bus)"
+        KartInit.ENTITY_TYPES.register(bus);
 
         BlockInit.BLOCKS.register(bus);
         ItemInit.ITEMS.register(bus);
@@ -52,7 +52,7 @@ public class CubicRacers {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
-            for(RegistryObject<EntityType<Kart>> kart : EntityInit.KARTS){
+            for(RegistryObject<EntityType<Kart>> kart : KartInit.KARTS){
                 EntityRenderers.register(kart.get(), KartRenderer::new);
             }
         }

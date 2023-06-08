@@ -60,9 +60,7 @@ public class Kart extends Entity implements GeoEntity {
     private final float ACCELERATION_BOOST;
     private final float BOOST;
     private final float MANIABILITE_COEEF;
-    private final float PLAYER_POS_X;
     private final float PLAYER_POS_Y;
-    private final float PLAYER_POS_Z;
 
     //ATTRIBUTS DU DRIFT
     private static final float DRIFT_ANGLE = 1.5f;
@@ -83,7 +81,7 @@ public class Kart extends Entity implements GeoEntity {
     // OBLIGATOIRE //
     /////////////////
     public Kart(EntityType<?> entityType, Level level, String texture, String model, String animation, float maxSpeed,
-    float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosX, float playerPosY, float playerPosZ) {
+    float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY) {
         super(entityType, level);
         this.TEXTURE = texture;
         this.MODEL = model;
@@ -95,9 +93,7 @@ public class Kart extends Entity implements GeoEntity {
         this.BOOST = boost;
         this.MANIABILITE_COEEF = maniabiliteCoeff;
 
-        this.PLAYER_POS_X = playerPosX;
         this.PLAYER_POS_Y = playerPosY;
-        this.PLAYER_POS_Z = playerPosZ;
     }
 
     @Override
@@ -229,9 +225,9 @@ public class Kart extends Entity implements GeoEntity {
      */
     public void positionRider(@NotNull Entity player) {
         super.positionRider(player);
-        double x = player.getX() + PLAYER_POS_X;
+        double x = player.getX();
         double y = player.getY() + PLAYER_POS_Y;
-        double z = player.getZ() + PLAYER_POS_Z;
+        double z = player.getZ();
         player.setPos(x, y, z);
     }
 
