@@ -25,7 +25,7 @@ displayName="Cubic Racers" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://docs.minecraftforge.net/en/latest/misc/updatechecker/
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="https://gitlab.com/Quentin3010/en-cours-mc-kart-mod" #optional
+displayURL="https://gitlab.com/Quentin3010/en-cours-mc-kartAbstract-mod" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="logo.png" #optional
 # A text field displayed in the mod UI

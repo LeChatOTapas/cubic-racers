@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers;
 
 import me.jesuismister.cubicracers.entity.client.renderer.KartRenderer;
+import me.jesuismister.cubicracers.entity.custom.Kart;
 import me.jesuismister.cubicracers.init.BlockInit;
 import me.jesuismister.cubicracers.init.EntityInit;
 import me.jesuismister.cubicracers.init.ItemInit;
@@ -8,6 +9,7 @@ import me.jesuismister.cubicracers.init.ModCreativeModeTabs;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.event.CreativeModeTabEvent;
@@ -16,6 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.RegistryObject;
 
 @Mod(CubicRacers.MODID)
 public class CubicRacers {
@@ -24,7 +27,9 @@ public class CubicRacers {
     public CubicRacers(){
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        EntityInit.initAllKarts(); //IMPORTANT DE LE METTRE AVANT LE "EntityInit.ENTITY_TYPES.register(bus)"
         EntityInit.ENTITY_TYPES.register(bus);
+
         BlockInit.BLOCKS.register(bus);
         ItemInit.ITEMS.register(bus);
         ParticlesInit.PARTICLE_TYPES.register(bus);
@@ -47,7 +52,9 @@ public class CubicRacers {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
-            EntityRenderers.register(EntityInit.KART.get(), KartRenderer::new);
+            for(RegistryObject<EntityType<Kart>> kart : EntityInit.KARTS){
+                EntityRenderers.register(kart.get(), KartRenderer::new);
+            }
         }
 
         @SubscribeEvent

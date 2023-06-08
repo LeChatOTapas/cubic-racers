@@ -30,6 +30,7 @@ import software.bernie.geckolib.core.object.PlayState;
 public class Kart extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+
     //KEYS POUR LE KART
     private final KeyMapping keyUp = KeyBinds.KART_UP_KEY;
     private final KeyMapping keyDown = KeyBinds.KART_DOWN_KEY;
@@ -38,6 +39,7 @@ public class Kart extends Entity implements GeoEntity {
     private final KeyMapping keyDelta = KeyBinds.KART_DELTA_KEY;
     private final KeyMapping keyDrift = KeyBinds.KART_DRIFT_KEY;
     private boolean previousKeyJump = false;
+
     //ATTRIBUTS GENERAUX DES KARTS
     private static final float MIN_SPEED = 0.075f;
     private static final float FREINAGE_SPEED = 1.05f;
@@ -46,15 +48,22 @@ public class Kart extends Entity implements GeoEntity {
     private static final float FALL_SPEED_LIMIT = -3.0f;
     private static final float FALL_SPEED_MULTIPLIER = 1.05f;
     private static final float COEFF_FROTTEMENT  = 0.85f;
+
+    //PATH
+    public final String TEXTURE;
+    public final String MODEL;
+    public final String ANIMATION;
+
     //ATTRIBUTS DU KART
-    public final float MAX_SPEED = 0.8f;
-    private final float DELTA_SPEED = MAX_SPEED + 0.1f;
-    private final float ACCELERATION_BOOST = 0.02f;
-    private final float BOOST = 0.5f;
-    private final float MANIABILITE_COEEF = 3.0f;
-    private final float PLAYER_POS_X = 0;
-    private final float PLAYER_POS_Y = -0.5f;
-    private final float PLAYER_POS_Z = 0;
+    public final float MAX_SPEED;
+    private final float DELTA_SPEED;
+    private final float ACCELERATION_BOOST;
+    private final float BOOST;
+    private final float MANIABILITE_COEEF;
+    private final float PLAYER_POS_X;
+    private final float PLAYER_POS_Y;
+    private final float PLAYER_POS_Z;
+
     //ATTRIBUTS DU DRIFT
     private static final float DRIFT_ANGLE = 1.5f;
     public boolean isDrifting = false;
@@ -73,9 +82,22 @@ public class Kart extends Entity implements GeoEntity {
     /////////////////
     // OBLIGATOIRE //
     /////////////////
-    public Kart(EntityType<?> entityType, Level level) {
+    public Kart(EntityType<?> entityType, Level level, String texture, String model, String animation, float maxSpeed,
+    float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosX, float playerPosY, float playerPosZ) {
         super(entityType, level);
-        this.noPhysics = false;
+        this.TEXTURE = texture;
+        this.MODEL = model;
+        this.ANIMATION = animation;
+
+        this.MAX_SPEED = maxSpeed;
+        this.DELTA_SPEED = MAX_SPEED + 0.1f;
+        this.ACCELERATION_BOOST = accelerationBoost;
+        this.BOOST = boost;
+        this.MANIABILITE_COEEF = maniabiliteCoeff;
+
+        this.PLAYER_POS_X = playerPosX;
+        this.PLAYER_POS_Y = playerPosY;
+        this.PLAYER_POS_Z = playerPosZ;
     }
 
     @Override

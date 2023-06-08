@@ -11,23 +11,23 @@ import software.bernie.geckolib.model.GeoModel;
 import java.util.Optional;
 
 public class KartModel extends GeoModel<Kart> {
-    private static float WHEELS_ROTATION_DEGREE = 30;
+    private static float WHEELS_ROTATION_DEGREE = 7;
     private static float WHEELS_TURN_DEGREE = 15;
     private static float ROTATE_KART_DEGREE = 5;
 
     @Override
     public ResourceLocation getModelResource(Kart kart) {
-        return new ResourceLocation(CubicRacers.MODID, "geo/trash_kart.geo.json");
+        return new ResourceLocation(CubicRacers.MODID, kart.MODEL);
     }
 
     @Override
     public ResourceLocation getTextureResource(Kart kart) {
-        return new ResourceLocation(CubicRacers.MODID, "textures/entity/trash_kart.png");
+        return new ResourceLocation(CubicRacers.MODID, kart.TEXTURE);
     }
 
     @Override
     public ResourceLocation getAnimationResource(Kart kart) {
-        return new ResourceLocation(CubicRacers.MODID, "animations/trash_kart.animation.json");
+        return new ResourceLocation(CubicRacers.MODID, kart.ANIMATION);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class KartModel extends GeoModel<Kart> {
             }
 
             //ON CALCUL L'ANGLE DE ROTATION EN X
-            kart.actual_rotation_wheels += Math.toRadians((kart.getSpeed()/kart.MAX_SPEED) * WHEELS_ROTATION_DEGREE);
+            kart.actual_rotation_wheels += Math.toRadians(Math.abs(kart.getSpeed())/ kart.MAX_SPEED * WHEELS_ROTATION_DEGREE);
 
             //UPDATE
             bonesGaucheAvant.get().updateRotation(-kart.actual_rotation_wheels, rotYGauche, 0);
@@ -121,7 +121,7 @@ public class KartModel extends GeoModel<Kart> {
             }
             //ON RECENTRE LE VEHICULE
             else if(kart.pourcentage_inclinaison!=0.0f){
-                kart.pourcentage_inclinaison = (float) (kart.pourcentage_inclinaison + (-(Math.abs(kart.pourcentage_inclinaison)/kart.pourcentage_inclinaison) * 0.02));
+                kart.pourcentage_inclinaison = (float) (kart.pourcentage_inclinaison + (-(Math.abs(kart.pourcentage_inclinaison)/ kart.pourcentage_inclinaison) * 0.02));
             }
 
             //UPDATE

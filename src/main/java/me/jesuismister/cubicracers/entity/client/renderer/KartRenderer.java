@@ -17,7 +17,7 @@ public class KartRenderer extends GeoEntityRenderer<Kart> {
 
     @Override
     public ResourceLocation getTextureLocation(Kart animatable) {
-        return new ResourceLocation(CubicRacers.MODID, "textures/entity/trash_kart.png");
+        return new ResourceLocation(CubicRacers.MODID, animatable.TEXTURE);
     }
 
     @Override

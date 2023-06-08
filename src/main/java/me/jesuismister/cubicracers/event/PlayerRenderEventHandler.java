@@ -9,7 +9,6 @@ import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 @Mod.EventBusSubscriber(modid = CubicRacers.MODID, value = Dist.CLIENT)
 public class PlayerRenderEventHandler {
