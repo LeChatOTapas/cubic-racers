@@ -1,7 +1,5 @@
 package me.jesuismister.cubicracers.entity.custom;
 
-import me.jesuismister.cubicracers.KartObject.Banana;
-import me.jesuismister.cubicracers.KartObject.KartObject;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.KeyMapping;
@@ -80,7 +78,7 @@ public class Kart extends Entity implements GeoEntity {
     public float actual_rotation_wheels = 0;
 
     //OBJET
-    public String objet = "None";
+    public String objet = "Banana"; //None, Banana, Green_shell, Bob_omb, Mushroom, Golden_Mushroom, False_Cube
 
     /////////////////
     // OBLIGATOIRE //
@@ -145,9 +143,6 @@ public class Kart extends Entity implements GeoEntity {
      * @param <T>
      */
     private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
-        //VITESSE GENERALE DES ANIMATIONS (test)
-        tAnimationState.getController().setAnimationSpeed(1.5f);
-
         //ANIMATION : DANS L'EAU
         if(this.isInWater()) {
             //ANIMATION : MARCHE AVANT
@@ -587,11 +582,9 @@ public class Kart extends Entity implements GeoEntity {
         double z = this.getZ();
 
         //BOOSTER GAUCHE
-        minecraft.particleEngine.createParticle(particle, x - x1, y - y1, z - z1,
-                x2, y2, z2);
+        minecraft.particleEngine.createParticle(particle, x - x1, y - y1, z - z1, x2, y2, z2);
         //BOOSTER DROIT
-        minecraft.particleEngine.createParticle(particle, x + x1, y + y1, z + z1,
-                x2, y2, z2);
+        minecraft.particleEngine.createParticle(particle, x + x1, y + y1, z + z1, x2, y2, z2);
     }
 
 }

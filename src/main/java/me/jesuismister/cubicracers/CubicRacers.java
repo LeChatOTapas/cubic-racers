@@ -1,14 +1,13 @@
 package me.jesuismister.cubicracers;
 
+import me.jesuismister.cubicracers.entity.client.renderer.BananaRenderer;
 import me.jesuismister.cubicracers.entity.client.renderer.KartRenderer;
 import me.jesuismister.cubicracers.entity.custom.Kart;
-import me.jesuismister.cubicracers.init.BlockInit;
-import me.jesuismister.cubicracers.init.KartInit;
-import me.jesuismister.cubicracers.init.ItemInit;
-import me.jesuismister.cubicracers.init.ModCreativeModeTabs;
+import me.jesuismister.cubicracers.init.*;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -29,6 +28,8 @@ public class CubicRacers {
 
         KartInit.initAllKarts(); //IMPORTANT DE LE METTRE AVANT LE "EntityInit.ENTITY_TYPES.register(bus)"
         KartInit.ENTITY_TYPES.register(bus);
+
+        KartObjectInit.KART_OBJECT_TYPES.register(bus);
 
         BlockInit.BLOCKS.register(bus);
         ItemInit.ITEMS.register(bus);
@@ -55,6 +56,8 @@ public class CubicRacers {
             for(RegistryObject<EntityType<Kart>> kart : KartInit.KARTS){
                 EntityRenderers.register(kart.get(), KartRenderer::new);
             }
+
+            EntityRenderers.register(KartObjectInit.BANANA.get(), BananaRenderer::new);
         }
 
         @SubscribeEvent

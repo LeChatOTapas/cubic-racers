@@ -2,7 +2,6 @@ package me.jesuismister.cubicracers.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.KartObject.Banana;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
@@ -25,7 +24,8 @@ public class ItemHudOverlay {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             if(kart.objet==null) RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);
-            else if(kart.objet.equals("None")) RenderSystem.setShaderTexture(0, BANANA_ITEM_BOX);
+            else if(kart.objet.equals("Banana")) RenderSystem.setShaderTexture(0, BANANA_ITEM_BOX);
+            else RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);
 
             GuiComponent.blit(poseStack, 5, 5, 0, 0, imageSize, imageSize, imageSize, imageSize);
         }
