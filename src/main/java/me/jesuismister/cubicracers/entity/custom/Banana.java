@@ -6,6 +6,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -17,6 +18,8 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
 
+import java.util.List;
+
 public class Banana extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(Banana.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
@@ -24,8 +27,9 @@ public class Banana extends Entity implements GeoEntity {
     public static final String TEXTURE = "textures/entity/banana.png";
     public static final String MODEL = "geo/banana.geo.json";
     public static final String ANIMATION = "animations/banana.animation.json";
+    public static final float HITBOX = 1f;
 
-    private static final int TICK_TO_DESPAWN = 20*60;
+    private static final int TICK_TO_DESPAWN = 20 * 60;
     private int tickAlive = 0;
 
 
@@ -46,30 +50,40 @@ public class Banana extends Entity implements GeoEntity {
     protected void defineSynchedData() {
         this.entityData.define(SPEED, 0.0f);
     }
+
     @Override
-    protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {}
+    protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {
+    }
+
     @Override
-    protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {}
+    protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {
+    }
+
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
     }
+
     @Override
     public boolean isPickable() {
         return false;
     }
+
     @Override
     public boolean isNoGravity() {
         return false;
     }
+
     @Override
     public float getStepHeight() {
         return 1.0f;
     }
+
     @Override
     public boolean isPushable() {
         return false;
     }
+
     @Override
     protected boolean canRide(@NotNull Entity rider) {
         return false;
@@ -78,11 +92,36 @@ public class Banana extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
+        // Récupérer toutes les entités proches de la banane
+        List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
+
+        // Parcourir toutes les entités proches
+        for (Entity entity : nearbyEntities) {
+            if (entity instanceof Player) {
+                if(entity.getVehicle()!=null && entity.getVehicle() instanceof Kart){
+                    Kart kart = (Kart) entity.getVehicle();
+                    // Collision détectée entre la banane et le kart
+                    // Effectuer les actions appropriées, par exemple :
+                    if (kart.canMove) {
+                        Kart.listeStunKart.add(kart.getUUID());
+                        kart.animationTime = Kart.SPINNING_ANIMATION_TIME;
+
+                        kart.deltaOn = false;
+                        kart.driftingTimeBoost = 0;
+                        kart.resetDrift();
+                    }
+
+                    // Supprimer la banane après la collision si nécessaire
+                    this.remove(RemovalReason.DISCARDED);
+                }
+            }
+        }
 
         //DETRUIT LA BANANE AU BOUT D'UN MOMENT
-        if(tickAlive>TICK_TO_DESPAWN){
+        if (tickAlive > TICK_TO_DESPAWN) {
             this.remove(RemovalReason.DISCARDED);
         }
         tickAlive++;
+
     }
 }

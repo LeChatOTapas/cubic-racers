@@ -21,13 +21,14 @@ public class KartRenderer extends GeoEntityRenderer<Kart> {
     }
 
     @Override
-    public void render(Kart entity, float entityYaw, float partialTick, PoseStack poseStack,
-                       MultiBufferSource bufferSource, int packedLight) {
+    public void render(Kart entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
 
         //Tourne le kart dans la direction où il regarde
         Quaternionf rotation = new Quaternionf();
-        rotation.rotateY((float) - Math.toRadians(entityYaw));
+        //TOURNE LE KART DANS LA DIRECTION OU IL REGARDE
+        //float rotationObject = (float) -Math.toRadians(entity.animationTime / Kart.SPINNING_ANIMATION_TIME) * 720;
+        rotation.rotateY((float) -Math.toRadians(entityYaw));
         poseStack.mulPose(rotation);
 
         //Render le kart

@@ -4,6 +4,7 @@ import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
@@ -34,6 +35,13 @@ public class KartModel extends GeoModel<Kart> {
     public void setCustomAnimations(Kart kart, long instanceId, AnimationState<Kart> animationState) {
         super.setCustomAnimations(kart, instanceId, animationState);
 
+        Optional<GeoBone> bonesKart = this.getBone("kart");
+        if (!bonesKart.isPresent()){
+            return;
+        }
+
+        Player player = (Player) kart.getFirstPassenger();
+
         //INCLINAISON DES ROUES
         if (!kart.deltaOn) {
             kart.pourcentage_inclinaison = 0;
@@ -42,9 +50,9 @@ public class KartModel extends GeoModel<Kart> {
             Optional<GeoBone> bonesGaucheAvant = this.getBone("roue_avant_gauche");
             Optional<GeoBone> bonesDroiteAvant = this.getBone("roue_avant_droite");
             Optional<GeoBone> bonesGaucheArriere = this.getBone("roue_arriere_gauche");
-            Optional<GeoBone> bonesDroiteArriere= this.getBone("roue_arriere_droite");
+            Optional<GeoBone> bonesDroiteArriere = this.getBone("roue_arriere_droite");
 
-            if(!bonesGaucheArriere.isPresent() || !bonesDroiteArriere.isPresent() || !bonesGaucheAvant.isPresent() || !bonesDroiteAvant.isPresent())
+            if (!bonesGaucheArriere.isPresent() || !bonesDroiteArriere.isPresent() || !bonesGaucheAvant.isPresent() || !bonesDroiteAvant.isPresent())
                 return;
 
             //ON CALCUL L'ANGLE D'INCLINAISON EN Y
@@ -54,51 +62,51 @@ public class KartModel extends GeoModel<Kart> {
             //DRIFT A GAUCHE
             if (kart.isDrifting && kart.driftingSens.equals("Left")) {
                 //PLUS MAINTIENT GAUCHE
-                if(kart.keyLeft.isDown() && !kart.keyRight.isDown()){
+                if (kart.keyIsDown(player, kart.keyLeft) && !kart.keyIsDown(player, kart.keyRight)) {
                     rotYGauche = 3 * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (3 * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
-                //PLUS MAINTIENT DROITE
-                }else if (kart.keyRight.isDown() && !kart.keyLeft.isDown()){
+                    //PLUS MAINTIENT DROITE
+                } else if (kart.keyIsDown(player, kart.keyRight) && !kart.keyIsDown(player, kart.keyLeft)) {
                     rotYGauche = 1.5f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (1.5f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
-                //NE MAINTIENT RIEN
-                }else{
+                    //NE MAINTIENT RIEN
+                } else {
                     rotYGauche = 2.25f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (2.25f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
                 }
-            //DRIFT A DROITE
-            }else if (kart.isDrifting && kart.driftingSens.equals("Right")) {
+                //DRIFT A DROITE
+            } else if (kart.isDrifting && kart.driftingSens.equals("Right")) {
                 //PLUS MAINTIENT DROITE
-                if(kart.keyRight.isDown() && !kart.keyLeft.isDown()){
+                if (kart.keyIsDown(player, kart.keyRight) && !kart.keyIsDown(player, kart.keyLeft)) {
                     rotYGauche = -3 * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                    rotYDroit =  (-3 * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
-                //PLUS MAINTIENT GAUCHE
-                }else if (kart.keyLeft.isDown() && !kart.keyRight.isDown()){
+                    rotYDroit = (-3 * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
+                    //PLUS MAINTIENT GAUCHE
+                } else if (kart.keyIsDown(player, kart.keyLeft) && !kart.keyIsDown(player, kart.keyRight)) {
                     rotYGauche = -1.5f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                    rotYDroit =  (-1.5f * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
-                //NE MAINTIENT RIEN
-                }else {
+                    rotYDroit = (-1.5f * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
+                    //NE MAINTIENT RIEN
+                } else {
                     rotYGauche = -2.25f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                    rotYDroit =  (-2.25f * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
+                    rotYDroit = (-2.25f * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
                 }
-            //LE KART NE DRIFT PAS
-            }else{
+                //LE KART NE DRIFT PAS
+            } else {
                 //ROUES A GAUCHES
-                if (kart.keyLeftDown() && !kart.keyRightDown()) {
+                if (kart.keyIsDown(player, kart.keyLeft) && !kart.keyIsDown(player, kart.keyRight)) {
                     rotYGauche = WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                }else if (kart.keyRightDown() && !kart.keyLeftDown()) {
+                } else if (kart.keyIsDown(player, kart.keyRight) && !kart.keyIsDown(player, kart.keyLeft)) {
                     rotYGauche = -1 * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                 }
                 //ROUES A DROITES
-                if (kart.keyLeftDown() && !kart.keyRightDown()) {
+                if (kart.keyIsDown(player, kart.keyLeft) && !kart.keyIsDown(player, kart.keyRight)) {
                     rotYDroit = (WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
-                } else if (kart.keyRightDown() && !kart.keyLeftDown()) {
+                } else if (kart.keyIsDown(player, kart.keyRight) && !kart.keyIsDown(player, kart.keyLeft)) {
                     rotYDroit = (-WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
                 }
             }
 
             //ON CALCUL L'ANGLE DE ROTATION EN X
-            kart.actual_rotation_wheels += Math.toRadians(Math.abs(kart.getSpeed())/ kart.MAX_SPEED * WHEELS_ROTATION_DEGREE);
+            kart.actual_rotation_wheels += Math.toRadians(Math.abs(kart.getSpeed()) / kart.MAX_SPEED * WHEELS_ROTATION_DEGREE);
 
             //UPDATE
             bonesGaucheAvant.get().updateRotation(-kart.actual_rotation_wheels, rotYGauche, 0);
@@ -106,22 +114,19 @@ public class KartModel extends GeoModel<Kart> {
             bonesGaucheArriere.get().updateRotation(-kart.actual_rotation_wheels, 0, 0);
             bonesDroiteArriere.get().updateRotation(kart.actual_rotation_wheels, bonesDroiteArriere.get().getRotY(), 0);
 
-        //INCLINAISON DU VEHICULE (PAS BESOIN DE BOUGER LES ROUES CAR PAS DE ROUE EN DELTA PLANE)
+            //INCLINAISON DU VEHICULE (PAS BESOIN DE BOUGER LES ROUES CAR PAS DE ROUE EN DELTA PLANE)
         } else {
-            Optional<GeoBone> bonesKart = this.getBone("kart");
-            if(!bonesKart.isPresent()) return;
-
             //INCLINAISON DU VEHICULE A GAUCHE
-            if(kart.keyLeftDown() && !kart.keyRightDown()){
-                if(kart.pourcentage_inclinaison < 1.0f) kart.pourcentage_inclinaison += 0.02f;
+            if (kart.keyIsDown(player, kart.keyLeft) && !kart.keyIsDown(player, kart.keyRight)) {
+                if (kart.pourcentage_inclinaison < 1.0f) kart.pourcentage_inclinaison += 0.02f;
             }
             //INCLINAISON DU VEHICULE A DROITE
-            else if(kart.keyRightDown() && !kart.keyLeftDown()){
-                if(kart.pourcentage_inclinaison > -1.0f) kart.pourcentage_inclinaison -= 0.02f;
+            else if (kart.keyIsDown(player, kart.keyRight) && !kart.keyIsDown(player, kart.keyLeft)) {
+                if (kart.pourcentage_inclinaison > -1.0f) kart.pourcentage_inclinaison -= 0.02f;
             }
             //ON RECENTRE LE VEHICULE
-            else if(kart.pourcentage_inclinaison!=0.0f){
-                kart.pourcentage_inclinaison = (float) (kart.pourcentage_inclinaison + (-(Math.abs(kart.pourcentage_inclinaison)/ kart.pourcentage_inclinaison) * 0.02));
+            else if (kart.pourcentage_inclinaison != 0.0f) {
+                kart.pourcentage_inclinaison = (float) (kart.pourcentage_inclinaison + (-(Math.abs(kart.pourcentage_inclinaison) / kart.pourcentage_inclinaison) * 0.02));
             }
 
             //UPDATE

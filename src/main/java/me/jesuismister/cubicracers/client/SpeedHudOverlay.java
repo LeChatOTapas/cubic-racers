@@ -11,10 +11,11 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 public class SpeedHudOverlay {
 
     public static final IGuiOverlay HUD_SPEED = (((gui, poseStack, partialTick, screenWidth, screenHeight) -> {
-        if(shouldPrint(gui.getMinecraft().player)){
+        if (shouldPrint(gui.getMinecraft().player)) {
             Kart kart = (Kart) gui.getMinecraft().player.getVehicle();
+            if(kart.getLevel().toString().contains("Server")) return;
 
-            String text = "Speed: " + (kart.getSpeed());
+            String text = "Speed: " + kart.getSpeed();
             int textWidth = Minecraft.getInstance().font.width(text);
             int textX = (screenWidth - textWidth) / 2;
 
@@ -23,6 +24,6 @@ public class SpeedHudOverlay {
     }));
 
     private static boolean shouldPrint(LocalPlayer player) {
-        return player!=null && player.getVehicle()!=null && player.getVehicle() instanceof Kart;
+        return player != null && player.getVehicle() != null && player.getVehicle() instanceof Kart;
     }
 }

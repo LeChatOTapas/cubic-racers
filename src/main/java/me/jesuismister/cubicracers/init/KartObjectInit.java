@@ -15,8 +15,8 @@ public class KartObjectInit {
 
     public static final RegistryObject<EntityType<Banana>> BANANA = KART_OBJECT_TYPES.register(
             "banana", () -> EntityType.Builder.<Banana>of((type, level) ->
-            new Banana(type, level), MobCategory.MISC).sized(0.5f, 0.5f)
-            .build(new ResourceLocation(CubicRacers.MODID, "banana").toString()));
+                            new Banana(type, level), MobCategory.MISC).sized(Banana.HITBOX, Banana.HITBOX)
+                    .build(new ResourceLocation(CubicRacers.MODID, "banana").toString()));
 
 
 }
