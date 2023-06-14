@@ -9,6 +9,7 @@ import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.event.CreativeModeTabEvent;
@@ -26,13 +27,16 @@ public class CubicRacers {
     public CubicRacers(){
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        KartInit.initAllKarts(); //IMPORTANT DE LE METTRE AVANT LE "EntityInit.ENTITY_TYPES.register(bus)"
+        KartInit.initAllKarts(); //IMPORTANT DE LE METTRE AVANT LE "KartInit.ENTITY_TYPES.register(bus)"
         KartInit.ENTITY_TYPES.register(bus);
 
         KartObjectInit.KART_OBJECT_TYPES.register(bus);
 
         BlockInit.BLOCKS.register(bus);
+
+        ItemInit.initSpawnKartItem();
         ItemInit.ITEMS.register(bus);
+
         ParticlesInit.PARTICLE_TYPES.register(bus);
 
         bus.addListener(this::addCreativeTab);
@@ -43,6 +47,9 @@ public class CubicRacers {
             event.accept(ItemInit.EXAMPLE_ITEM);
             event.accept(ItemInit.EXAMPLE_SWORD);
             event.accept(ItemInit.EXAMPLE_BLOCK_ITEM);
+            for(RegistryObject<Item> r : ItemInit.KARTS_SPAWN_ITEM){
+                event.accept(r);
+            }
         }
     }
 
@@ -53,7 +60,7 @@ public class CubicRacers {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
-            for(RegistryObject<EntityType<Kart>> kart : KartInit.KARTS){
+            for(RegistryObject<EntityType<Kart>> kart : KartInit.KARTS.values()){
                 EntityRenderers.register(kart.get(), KartRenderer::new);
             }
 

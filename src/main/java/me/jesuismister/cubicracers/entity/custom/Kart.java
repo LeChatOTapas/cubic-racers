@@ -1,5 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.entity.KartData;
+import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.KeyMapping;
@@ -98,6 +100,7 @@ public class Kart extends Entity implements GeoEntity {
     public Kart(EntityType<?> entityType, Level level, String texture, String model, String animation, float maxSpeed,
                 float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY) {
         super(entityType, level);
+
         this.TEXTURE = texture;
         this.MODEL = model;
         this.ANIMATION = animation;
@@ -109,6 +112,18 @@ public class Kart extends Entity implements GeoEntity {
         this.MANIABILITE_COEEF = maniabiliteCoeff;
 
         this.PLAYER_POS_Y = playerPosY;
+    }
+
+    public Kart(Level level, double x, double y, double z, String name, String texture, String model, String animation,
+                float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY) {
+
+        this(KartInit.KARTS.get(name).get(), level, texture, model, animation, maxSpeed, accelerationBoost, boost,
+                maniabiliteCoeff, playerPosY);
+
+        this.setPos(x, y, z);
+        this.xo = x;
+        this.yo = y;
+        this.zo = z;
     }
 
     @Override
@@ -462,9 +477,9 @@ public class Kart extends Entity implements GeoEntity {
         this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z));
 
         //SPAWN DE L'OBJECT
-        if(canMove && isKeyDown(player, keyObject)){
+        if (canMove && isKeyDown(player, keyObject)) {
             //SI L'OBJET DANS LE KART EST UNE BANANE
-            if(this.object.equals("Banana")){
+            if (this.object.equals("Banana")) {
                 Banana.spawnBanana(this.getLevel(), this);
                 sendConductorMessage("BANANE !!!!!");
             }
@@ -646,7 +661,6 @@ public class Kart extends Entity implements GeoEntity {
     public static boolean isKeyDown(Player conducteur, KeyMapping key) {
         if (conducteur == null) return false;
 
-        return key.isDown() && conducteur != null && conducteur.getVehicle() instanceof Kart;
+        return key.isDown() && conducteur.getVehicle() instanceof Kart;
     }
-
 }
