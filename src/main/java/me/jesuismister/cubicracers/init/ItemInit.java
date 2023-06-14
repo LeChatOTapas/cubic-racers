@@ -29,9 +29,8 @@ public class ItemInit {
     //ITEMS SPAWN KART
     public static final List<RegistryObject<Item>> KARTS_SPAWN_ITEM = new ArrayList<>();
 
-    public static void initSpawnKartItem(){
-        for(KartData d : KartInit.KARTS_DATA){
-            System.out.println("NAME = " + d.name);
+    public static void initSpawnKartItem() {
+        for (KartData d : KartInit.KARTS_DATA) {
             KARTS_SPAWN_ITEM.add(ITEMS.register(d.name, () -> new KartItem(new Item.Properties(), d.name)));
         }
     }

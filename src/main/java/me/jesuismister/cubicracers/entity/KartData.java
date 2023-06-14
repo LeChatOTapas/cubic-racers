@@ -27,8 +27,8 @@ public class KartData {
     }
 
     public static KartData getKartData(List<KartData> kartsData, String kartName) {
-        for(KartData d : kartsData){
-            if(d.name.equals(kartName)) return d;
+        for (KartData d : kartsData) {
+            if (d.name.equals(kartName)) return d;
         }
         return null;
     }

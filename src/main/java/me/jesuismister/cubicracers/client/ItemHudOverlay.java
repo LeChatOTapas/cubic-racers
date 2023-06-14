@@ -16,23 +16,31 @@ public class ItemHudOverlay {
             "textures/kart/banana_item_box.png");
 
     public static final IGuiOverlay HUD_ITEM_BOX = (((gui, poseStack, partialTick, screenWidth, screenHeight) -> {
-        if(shouldPrint(gui.getMinecraft().player)){
+        if (shouldPrint(gui.getMinecraft().player)) {
             Kart kart = (Kart) gui.getMinecraft().player.getVehicle();
-            if(kart==null) return;
+            if (kart == null) return;
 
             int imageSize = 32;
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            if(kart.object==null) RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);
-            else if(kart.object.equals("Banana")) RenderSystem.setShaderTexture(0, BANANA_ITEM_BOX);
+
+            //CHOIX DE LA TEXTURE EN FONCTION DE L'OBJET EN STOCK
+            if (kart.kartItem == null) RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);
+            else if (kart.kartItem.equals("Banana")) RenderSystem.setShaderTexture(0, BANANA_ITEM_BOX);
             else RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);
 
             GuiComponent.blit(poseStack, 5, 5, 0, 0, imageSize, imageSize, imageSize, imageSize);
         }
     }));
 
+    /**
+     * Méthode qui détermine si l'HUD doit être affiché
+     *
+     * @param player
+     * @return
+     */
     private static boolean shouldPrint(LocalPlayer player) {
-        return player!=null && player.getVehicle()!=null && player.getVehicle() instanceof Kart;
+        return player != null && player.getVehicle() != null && player.getVehicle() instanceof Kart;
     }
 }

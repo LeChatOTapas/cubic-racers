@@ -13,6 +13,7 @@ public class KartObjectInit {
     public static final DeferredRegister<EntityType<?>> KART_OBJECT_TYPES =
             DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, CubicRacers.MODID);
 
+    //BANANE
     public static final RegistryObject<EntityType<Banana>> BANANA = KART_OBJECT_TYPES.register(
             "banana", () -> EntityType.Builder.<Banana>of((type, level) ->
                             new Banana(type, level), MobCategory.MISC).sized(Banana.HITBOX, Banana.HITBOX)

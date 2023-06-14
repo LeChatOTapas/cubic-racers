@@ -96,16 +96,17 @@ public class Banana extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        // Récupérer toutes les entités proches de la banane
+        //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
         List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
 
-        // Parcourir toutes les entités proches
+        //PARCOURIR LA LISTE DES ENTITES PROCHES
         for (Entity entity : nearbyEntities) {
+            //ON CHECK QUE LES ENTITES "PLAYER"
             if (entity instanceof Player) {
+                //ON CHECK QUE LES "PLAYER" DANS UN "KART"
                 if(entity.getVehicle()!=null && entity.getVehicle() instanceof Kart){
                     Kart kart = (Kart) entity.getVehicle();
-                    // Collision détectée entre la banane et le kart
-                    // Effectuer les actions appropriées, par exemple :
+                    //ON ENCLENCHE LA PROCEDURE DE STUN
                     if (kart.canMove) {
                         Kart.listeStunKart.add(kart.getUUID());
                         kart.animationTime = Kart.SPINNING_ANIMATION_TIME;
@@ -115,19 +116,24 @@ public class Banana extends Entity implements GeoEntity {
                         kart.resetDrift();
                     }
 
-                    // Supprimer la banane après la collision si nécessaire
+                    //SUPPRIMER LA BANANE APRES LA COLLISION
                     this.remove(RemovalReason.DISCARDED);
                 }
             }
         }
 
-        //DETRUIT LA BANANE AU BOUT D'UN MOMENT
+        //DETRUIRE LA BANANE AU BOUT D'UN MOMENT
         if (tickAlive > TICK_TO_DESPAWN) {
             this.remove(RemovalReason.DISCARDED);
         }
         tickAlive++;
     }
 
+    /**
+     * Spawn la banane derrière le kart
+     * @param level
+     * @param kart
+     */
     public static void spawnBanana(Level level, Kart kart) {
         if (level != null) {
             Banana banana = new Banana(KartObjectInit.BANANA.get(), level);

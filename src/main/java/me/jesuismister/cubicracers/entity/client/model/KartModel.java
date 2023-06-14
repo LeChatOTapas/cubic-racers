@@ -36,7 +36,7 @@ public class KartModel extends GeoModel<Kart> {
         super.setCustomAnimations(kart, instanceId, animationState);
 
         Optional<GeoBone> bonesKart = this.getBone("kart");
-        if (!bonesKart.isPresent()){
+        if (!bonesKart.isPresent()) {
             return;
         }
 
@@ -65,32 +65,38 @@ public class KartModel extends GeoModel<Kart> {
                 if (kart.isKeyDown(player, kart.keyLeft) && !kart.isKeyDown(player, kart.keyRight)) {
                     rotYGauche = 3 * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (3 * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
-                    //PLUS MAINTIENT DROITE
-                } else if (kart.isKeyDown(player, kart.keyRight) && !kart.isKeyDown(player, kart.keyLeft)) {
+                }
+                //PLUS MAINTIENT DROITE
+                else if (kart.isKeyDown(player, kart.keyRight) && !kart.isKeyDown(player, kart.keyLeft)) {
                     rotYGauche = 1.5f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (1.5f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
-                    //NE MAINTIENT RIEN
-                } else {
+                }
+                //NE MAINTIENT RIEN
+                else {
                     rotYGauche = 2.25f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (2.25f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
                 }
-                //DRIFT A DROITE
-            } else if (kart.isDrifting && kart.driftingSens.equals("Right")) {
+            }
+            //DRIFT A DROITE
+            else if (kart.isDrifting && kart.driftingSens.equals("Right")) {
                 //PLUS MAINTIENT DROITE
                 if (kart.isKeyDown(player, kart.keyRight) && !kart.isKeyDown(player, kart.keyLeft)) {
                     rotYGauche = -3 * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (-3 * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
-                    //PLUS MAINTIENT GAUCHE
-                } else if (kart.isKeyDown(player, kart.keyLeft) && !kart.isKeyDown(player, kart.keyRight)) {
+                }
+                //PLUS MAINTIENT GAUCHE
+                else if (kart.isKeyDown(player, kart.keyLeft) && !kart.isKeyDown(player, kart.keyRight)) {
                     rotYGauche = -1.5f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (-1.5f * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
-                    //NE MAINTIENT RIEN
-                } else {
+                }
+                //NE MAINTIENT RIEN
+                else {
                     rotYGauche = -2.25f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (-2.25f * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
                 }
-                //LE KART NE DRIFT PAS
-            } else {
+            }
+            //LE KART NE DRIFT PAS
+            else {
                 //ROUES A GAUCHES
                 if (kart.isKeyDown(player, kart.keyLeft) && !kart.isKeyDown(player, kart.keyRight)) {
                     rotYGauche = WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
@@ -113,9 +119,9 @@ public class KartModel extends GeoModel<Kart> {
             bonesDroiteAvant.get().updateRotation(kart.actual_rotation_wheels, rotYDroit, 0);
             bonesGaucheArriere.get().updateRotation(-kart.actual_rotation_wheels, 0, 0);
             bonesDroiteArriere.get().updateRotation(kart.actual_rotation_wheels, bonesDroiteArriere.get().getRotY(), 0);
-
-            //INCLINAISON DU VEHICULE (PAS BESOIN DE BOUGER LES ROUES CAR PAS DE ROUE EN DELTA PLANE)
-        } else {
+        }
+        //INCLINAISON DU VEHICULE (PAS BESOIN DE BOUGER LES ROUES CAR PAS DE ROUE EN DELTA PLANE)
+        else {
             //INCLINAISON DU VEHICULE A GAUCHE
             if (kart.isKeyDown(player, kart.keyLeft) && !kart.isKeyDown(player, kart.keyRight)) {
                 if (kart.pourcentage_inclinaison < 1.0f) kart.pourcentage_inclinaison += 0.02f;

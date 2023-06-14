@@ -35,8 +35,8 @@ public class DriftParticles extends TextureSheetParticle {
         fadeOut();
     }
 
-    private void fadeOut(){
-        this.alpha = (-(1/(float)lifetime)*age*1);
+    private void fadeOut() {
+        this.alpha = (-(1 / (float) lifetime) * age * 1);
     }
 
     @Override

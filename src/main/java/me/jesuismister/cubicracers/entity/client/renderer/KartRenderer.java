@@ -7,6 +7,7 @@ import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
@@ -16,22 +17,20 @@ public class KartRenderer extends GeoEntityRenderer<Kart> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(Kart animatable) {
+    public @NotNull ResourceLocation getTextureLocation(Kart animatable) {
         return new ResourceLocation(CubicRacers.MODID, animatable.TEXTURE);
     }
 
     @Override
-    public void render(Kart entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+    public void render(@NotNull Kart entity, float entityYaw, float partialTick, PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
 
-        //Tourne le kart dans la direction où il regarde
-        Quaternionf rotation = new Quaternionf();
         //TOURNE LE KART DANS LA DIRECTION OU IL REGARDE
-        //float rotationObject = (float) -Math.toRadians(entity.animationTime / Kart.SPINNING_ANIMATION_TIME) * 720;
+        Quaternionf rotation = new Quaternionf();
         rotation.rotateY((float) -Math.toRadians(entityYaw));
         poseStack.mulPose(rotation);
 
-        //Render le kart
+        //RENDER LE KART
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
 
         poseStack.popPose();

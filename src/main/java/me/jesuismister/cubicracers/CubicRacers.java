@@ -7,7 +7,6 @@ import me.jesuismister.cubicracers.init.*;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.renderer.entity.EntityRenderers;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
@@ -24,7 +23,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class CubicRacers {
     public static final String MODID = "cubicracers";
 
-    public CubicRacers(){
+    public CubicRacers() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         KartInit.initAllKarts(); //IMPORTANT DE LE METTRE AVANT LE "KartInit.ENTITY_TYPES.register(bus)"
@@ -34,7 +33,7 @@ public class CubicRacers {
 
         BlockInit.BLOCKS.register(bus);
 
-        ItemInit.initSpawnKartItem();
+        ItemInit.initSpawnKartItem(); //IMPORTANT DE LE METTRE AVANT LE "ItemInit.ITEMS.register(bus)"
         ItemInit.ITEMS.register(bus);
 
         ParticlesInit.PARTICLE_TYPES.register(bus);
@@ -42,40 +41,47 @@ public class CubicRacers {
         bus.addListener(this::addCreativeTab);
     }
 
-    private void addCreativeTab(CreativeModeTabEvent.BuildContents event){
-        if(event.getTab() == ModCreativeModeTabs.CUBIC_RACERS_TAB){
+    /**
+     * Ajoute les items dans l'onglet créatif
+     *
+     * @param event
+     */
+    private void addCreativeTab(CreativeModeTabEvent.BuildContents event) {
+        if (event.getTab() == ModCreativeModeTabs.CUBIC_RACERS_TAB) {
             event.accept(ItemInit.EXAMPLE_ITEM);
             event.accept(ItemInit.EXAMPLE_SWORD);
             event.accept(ItemInit.EXAMPLE_BLOCK_ITEM);
-            for(RegistryObject<Item> r : ItemInit.KARTS_SPAWN_ITEM){
+            for (RegistryObject<Item> r : ItemInit.KARTS_SPAWN_ITEM) {
                 event.accept(r);
             }
         }
     }
 
-    // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents
-    {
+    public static class ClientModEvents {
         @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event)
-        {
-            for(RegistryObject<EntityType<Kart>> kart : KartInit.KARTS.values()){
+        public static void onClientSetup(FMLClientSetupEvent event) {
+            //REGISTER TOUS LES KARTS
+            for (RegistryObject<EntityType<Kart>> kart : KartInit.KARTS.values()) {
                 EntityRenderers.register(kart.get(), KartRenderer::new);
             }
 
+            //REGISTER TOUS LES ITEMS DE KART
             EntityRenderers.register(KartObjectInit.BANANA.get(), BananaRenderer::new);
         }
 
         @SubscribeEvent
-        public static void onKeyRegister(RegisterKeyMappingsEvent event){
+        /**
+         * Enregistre les conctrôles du kart
+         */
+        public static void onKeyRegister(RegisterKeyMappingsEvent event) {
             event.register(KeyBinds.KART_UP_KEY);
             event.register(KeyBinds.KART_DOWN_KEY);
             event.register(KeyBinds.KART_LEFT_KEY);
             event.register(KeyBinds.KART_RIGHT_KEY);
             event.register(KeyBinds.KART_DELTA_KEY);
             event.register(KeyBinds.KART_DRIFT_KEY);
-            event.register(KeyBinds.KART_OBJECT_KEY);
+            event.register(KeyBinds.KART_ITEM_KEY);
         }
     }
 }

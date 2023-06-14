@@ -10,9 +10,9 @@ import net.minecraftforge.fml.common.Mod;
 
 public class ClientEvents {
     @Mod.EventBusSubscriber(modid = CubicRacers.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class ClientModBusEvents{
+    public static class ClientModBusEvents {
         @SubscribeEvent
-        public static void registerGuiOverlay(RegisterGuiOverlaysEvent event){
+        public static void registerGuiOverlay(RegisterGuiOverlaysEvent event) {
             event.registerAboveAll("item_box_hud", ItemHudOverlay.HUD_ITEM_BOX);
             event.registerAboveAll("speed_hud", SpeedHudOverlay.HUD_SPEED);
         }

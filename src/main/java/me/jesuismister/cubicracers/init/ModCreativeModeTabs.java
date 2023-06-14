@@ -14,7 +14,7 @@ public class ModCreativeModeTabs {
     public static CreativeModeTab CUBIC_RACERS_TAB;
 
     @SubscribeEvent
-    public static void registerCreativeModeTabs(CreativeModeTabEvent.Register event){
+    public static void registerCreativeModeTabs(CreativeModeTabEvent.Register event) {
         CUBIC_RACERS_TAB = event.registerCreativeModeTab(new ResourceLocation(CubicRacers.MODID, "cubicracers_tab"),
                 builder -> builder.icon(() -> new ItemStack(ItemInit.EXAMPLE_ITEM.get()))
                         .title(Component.translatable("creativemodetab.cubicracers_tab")));

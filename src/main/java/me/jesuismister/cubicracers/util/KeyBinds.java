@@ -17,7 +17,7 @@ public class KeyBinds {
 
     public static final String KEY_DELTA = "key.cubicracers.delta";
     public static final String KEY_DRIFT = "key.cubicracers.drift";
-    public static final String KEY_OBJECT = "key.cubicracers.object";
+    public static final String KEY_ITEM = "key.cubicracers.item";
 
     public static final KeyMapping KART_UP_KEY = new KeyMapping(KEY_UP, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_W, KEY_KART_CATEOGRY);
@@ -31,6 +31,6 @@ public class KeyBinds {
             GLFW.GLFW_KEY_SPACE, KEY_KART_CATEOGRY);
     public static final KeyMapping KART_DRIFT_KEY = new KeyMapping(KEY_DRIFT, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_B, KEY_KART_CATEOGRY);
-    public static final KeyMapping KART_OBJECT_KEY = new KeyMapping(KEY_OBJECT, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
+    public static final KeyMapping KART_ITEM_KEY = new KeyMapping(KEY_ITEM, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_G, KEY_KART_CATEOGRY);
 }
