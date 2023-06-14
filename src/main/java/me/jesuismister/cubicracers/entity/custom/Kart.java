@@ -43,6 +43,7 @@ public class Kart extends Entity implements GeoEntity {
     private final KeyMapping keyDelta = KeyBinds.KART_DELTA_KEY;
     private final KeyMapping keyDrift = KeyBinds.KART_DRIFT_KEY;
     private boolean previousKeyJump = false;
+    private final KeyMapping keyObject = KeyBinds.KART_OBJECT_KEY;
 
     //ATTRIBUTS GENERAUX DES KARTS
     public static List<UUID> listeStunKart = new ArrayList<>();
@@ -88,9 +89,8 @@ public class Kart extends Entity implements GeoEntity {
     public boolean canMove = true;
     public float lastYRot = 0;
 
-    //OBJET
-    public String objet = "Banana"; //None, Banana, Green_shell, Bob_omb, Mushroom, Golden_Mushroom,
-    //False_Cube, Blue Shell (random player), Klaxon
+    //OBJECTS
+    public String object = "Banana"; //None, Banana, Green_shell, Bob_omb, Mushroom, Golden_Mushroom, False_Cube, Blue Shell (random player), Klaxon
 
     /////////////////
     // OBLIGATOIRE //
@@ -103,7 +103,7 @@ public class Kart extends Entity implements GeoEntity {
         this.ANIMATION = animation;
 
         this.MAX_SPEED = maxSpeed;
-        this.DELTA_SPEED = MAX_SPEED + 0.1f;
+        this.DELTA_SPEED = MAX_SPEED;
         this.ACCELERATION_BOOST = accelerationBoost;
         this.BOOST = boost;
         this.MANIABILITE_COEEF = maniabiliteCoeff;
@@ -329,34 +329,28 @@ public class Kart extends Entity implements GeoEntity {
             this.driftingTime = 0;
         }
 
-        if(this.getLevel().toString().contains("Server") && this.animationTime<=0){
+        //DETECTE SI LE KART EST EN SITUATION DE "STUN", GENRE BANANE OU CARAPACE
+        if (this.getLevel().toString().contains("Server") && this.animationTime <= 0) {
             Kart.listeStunKart.remove(this.getUUID());
         }
         this.canMove = !Kart.listeStunKart.contains(this.getUUID());
-        String text = "AnimTime = " + animationTime + " (" + canMove + ") " + this.getLevel().toString() + "(" + this.getLevel().toString().contains("Server") + ")";
-        text += "\nliste = " + Kart.listeStunKart.toString();
-        text += "\nuuid = " + this.getUUID();
-        text += "\n";
-        if(this.getLevel().toString().contains("Server")){
-            sendConductorMessage(text);
-        }
 
         //ACTIVATION DU DELTA PLANE
         if (!this.deltaOn && !this.isOnGround() && keyJumpOk(player))
             deltaOn = true;
         else if (this.deltaOn && (keyJumpOk(player) || this.isOnGround()))
             deltaOn = false;
-        this.previousKeyJump = keyIsDown(player, keyDelta);
+        this.previousKeyJump = isKeyDown(player, keyDelta);
 
         //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
         if (this.getSpeed() != 0 && this.canMove) {
             //LE KART DRIFT ET AVANCE ASSEZ VITE
-            if (keyIsDown(player, keyDrift) && !this.horizontalCollision && !this.deltaOn && this.getSpeed() > MAX_SPEED * 0.25) {
+            if (isKeyDown(player, keyDrift) && !this.horizontalCollision && !this.deltaOn && this.getSpeed() > MAX_SPEED * 0.25) {
                 //INIT DU DRIFT
                 if (this.driftingTime == 0) {
-                    if (keyIsDown(player, keyLeft) && !keyIsDown(player, keyRight)) {
+                    if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
                         this.setDrifting("Left");
-                    } else if (keyIsDown(player, keyRight) && !keyIsDown(player, keyLeft)) {
+                    } else if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
                         this.setDrifting("Right");
                     }
                 }
@@ -371,11 +365,11 @@ public class Kart extends Entity implements GeoEntity {
                 //DRIFT A GAUCHE
                 if (this.isDrifting && this.driftingSens.equals("Left")) {
                     //PLUS MAINTIENT GAUCHE
-                    if (keyIsDown(player, keyLeft) && !keyIsDown(player, keyRight)) {
+                    if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
                         if (this.driftingTime < 3.0f) driftingTime += 0.06f;
                         this.setYRot(this.getYRot() - MANIABILITE_COEEF * DRIFT_ANGLE);
                         //PLUS MAINTIENT DROITE
-                    } else if (keyIsDown(player, keyRight) && !keyIsDown(player, keyLeft)) {
+                    } else if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
                         this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE * 0.3f));
                         //NE MAINTIENT RIEN
                     } else {
@@ -385,11 +379,11 @@ public class Kart extends Entity implements GeoEntity {
                     //DRIFT A DROITE
                 } else if (this.isDrifting && this.driftingSens.equals("Right")) {
                     //PLUS MAINTIENT DROITE
-                    if (keyIsDown(player, keyRight) && !keyIsDown(player, keyLeft)) {
+                    if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
                         if (this.driftingTime < 3.0f) driftingTime += 0.06f;
                         this.setYRot(this.getYRot() + MANIABILITE_COEEF * DRIFT_ANGLE);
                         //PLUS MAINTIENT GAUCHE
-                    } else if (keyIsDown(player, keyLeft) && !keyIsDown(player, keyRight)) {
+                    } else if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
                         this.setYRot(this.getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE * 0.5f));
                         //NE MAINTIENT RIEN
                     } else {
@@ -402,12 +396,12 @@ public class Kart extends Entity implements GeoEntity {
                 this.resetDrift();
 
                 //ROTATION GAUCHE
-                if (keyIsDown(player, keyLeft) && !keyIsDown(player, keyRight)) {
+                if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
                     if (this.getSpeed() > 0) this.setYRot(this.getYRot() - MANIABILITE_COEEF);
                     else this.setYRot(this.getYRot() + MANIABILITE_COEEF);
                 }
                 //ROTATION DROITE
-                else if (keyIsDown(player, keyRight) && !keyIsDown(player, keyLeft)) {
+                else if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
                     if (this.getSpeed() > 0) this.setYRot(this.getYRot() + MANIABILITE_COEEF);
                     else this.setYRot(this.getYRot() - MANIABILITE_COEEF);
                 }
@@ -418,21 +412,20 @@ public class Kart extends Entity implements GeoEntity {
 
         if (!this.canMove) {
             this.setYRot(this.getYRot() + (1 / Kart.SPINNING_ANIMATION_TIME) * 720);
-            //this.setSpeed(0.30f * ((Kart.SPINNING_ANIMATION_TIME - this.animationTime) / Kart.SPINNING_ANIMATION_TIME));
             this.setSpeed(0);
             this.setKartMovement();
             this.animationTime--;
             //VECTEUR DE MOUVEMENT : DELTA PLANE
-        } else{
+        } else {
             if (deltaOn) {
                 this.setSpeed(DELTA_SPEED);
                 this.setKartMovement();
                 //VECTEUR DE MOUVEMENT : MARCHE AVANT !!!
-            } else if (keyIsDown(player, keyUp)) {
+            } else if (isKeyDown(player, keyUp)) {
                 this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
                 this.setKartMovement();
                 //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
-            } else if (keyIsDown(player, keyDown)) {
+            } else if (isKeyDown(player, keyDown)) {
                 this.setSpeed(this.getSpeed() - ACCELERATION_BOOST);
                 this.setKartMovement();
                 //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
@@ -448,15 +441,12 @@ public class Kart extends Entity implements GeoEntity {
         }
 
         //ON BOUGE LA CAMERA DU CONDUCTEUR
-        if(player!=null){
-            if(!this.canMove){
-                player.setYRot(this.lastYRot);
-                player.setYBodyRot(this.lastYRot);
-            }else{
-                player.setYRot(this.getYRot());
-                player.setYBodyRot(this.getYRot());
+        if (player != null) {
+            if (this.canMove) {
                 this.lastYRot = this.getYRot();
             }
+            player.setYRot(this.lastYRot);
+            player.setYBodyRot(this.lastYRot);
         }
 
         //VITESSE DE CHUTE
@@ -470,6 +460,16 @@ public class Kart extends Entity implements GeoEntity {
 
         //INITIE LE MOUVEMENT
         this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z));
+
+        //SPAWN DE L'OBJECT
+        if(canMove && isKeyDown(player, keyObject)){
+            //SI L'OBJET DANS LE KART EST UNE BANANE
+            if(this.object.equals("Banana")){
+                Banana.spawnBanana(this.getLevel(), this);
+                sendConductorMessage("BANANE !!!!!");
+            }
+            this.object = "None";
+        }
     }
 
     /**
@@ -549,7 +549,7 @@ public class Kart extends Entity implements GeoEntity {
      * @return
      */
     public boolean keyJumpOk(Player player) {
-        return player!=null && !keyIsDown(player, keyDelta) && previousKeyJump;
+        return player != null && !isKeyDown(player, keyDelta) && previousKeyJump;
     }
 
     /**
@@ -560,7 +560,7 @@ public class Kart extends Entity implements GeoEntity {
     public void sendConductorMessage(String msg) {
         try {
             Minecraft minecraft = Minecraft.getInstance();
-            if(minecraft.player==null || minecraft.player.getVehicle()==null || !(minecraft.player.getVehicle() instanceof Kart))
+            if (minecraft.player == null || minecraft.player.getVehicle() == null || !(minecraft.player.getVehicle() instanceof Kart))
                 return;
             minecraft.player.sendSystemMessage(Component.literal(msg));
         } catch (Exception e) {
@@ -599,7 +599,7 @@ public class Kart extends Entity implements GeoEntity {
         double motionX = -Math.sin(Math.toRadians(yaw));
         double motionZ = Math.cos(Math.toRadians(yaw));
         spawnParticules(particle, 0.25 * Math.cos(Math.toRadians(yaw)), 0, 0.25 * Math.sin(Math.toRadians(yaw)),
-                motionX * 0.5f, 0.25f, motionZ * 0.5f);
+                motionX * 0.5f, 0, motionZ * 0.5f);
     }
 
     /**
@@ -630,20 +630,21 @@ public class Kart extends Entity implements GeoEntity {
         double y = this.getY();
         double z = this.getZ();
 
-        //BOOSTER GAUCHE
+        //SPAWN PARTICULES GAUCHES
         minecraft.particleEngine.createParticle(particle, x - x1, y - y1, z - z1, x2, y2, z2);
-        //BOOSTER DROIT
+        //SPAWN PARTICULES DROITES
         minecraft.particleEngine.createParticle(particle, x + x1, y + y1, z + z1, x2, y2, z2);
     }
 
     /**
      * On vérifie que l'input provient bien du joueur qui est dans le kart
+     *
      * @param conducteur
      * @param key
      * @return
      */
-    public static boolean keyIsDown(Player conducteur, KeyMapping key){
-        if(conducteur==null) return false;
+    public static boolean isKeyDown(Player conducteur, KeyMapping key) {
+        if (conducteur == null) return false;
 
         return key.isDown() && conducteur != null && conducteur.getVehicle() instanceof Kart;
     }

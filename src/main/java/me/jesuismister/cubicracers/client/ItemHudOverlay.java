@@ -18,13 +18,14 @@ public class ItemHudOverlay {
     public static final IGuiOverlay HUD_ITEM_BOX = (((gui, poseStack, partialTick, screenWidth, screenHeight) -> {
         if(shouldPrint(gui.getMinecraft().player)){
             Kart kart = (Kart) gui.getMinecraft().player.getVehicle();
+            if(kart==null) return;
 
             int imageSize = 32;
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            if(kart.objet==null) RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);
-            else if(kart.objet.equals("Banana")) RenderSystem.setShaderTexture(0, BANANA_ITEM_BOX);
+            if(kart.object==null) RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);
+            else if(kart.object.equals("Banana")) RenderSystem.setShaderTexture(0, BANANA_ITEM_BOX);
             else RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);
 
             GuiComponent.blit(poseStack, 5, 5, 0, 0, imageSize, imageSize, imageSize, imageSize);

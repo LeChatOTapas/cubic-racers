@@ -68,6 +68,7 @@ public class CubicRacers {
             event.register(KeyBinds.KART_RIGHT_KEY);
             event.register(KeyBinds.KART_DELTA_KEY);
             event.register(KeyBinds.KART_DRIFT_KEY);
+            event.register(KeyBinds.KART_OBJECT_KEY);
         }
     }
 }

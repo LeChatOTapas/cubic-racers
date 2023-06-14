@@ -1,5 +1,6 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.init.KartObjectInit;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -19,22 +20,25 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Banana extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(Banana.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+    private static EntityType<?> entityType;
 
     public static final String TEXTURE = "textures/entity/banana.png";
     public static final String MODEL = "geo/banana.geo.json";
     public static final String ANIMATION = "animations/banana.animation.json";
     public static final float HITBOX = 1f;
 
-    private static final int TICK_TO_DESPAWN = 20 * 60;
+    private static final int TICK_TO_DESPAWN = 20 * 90; //1min 30s
     private int tickAlive = 0;
 
 
     public Banana(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
+        Banana.entityType = p_19870_;
     }
 
     @Override
@@ -122,6 +126,14 @@ public class Banana extends Entity implements GeoEntity {
             this.remove(RemovalReason.DISCARDED);
         }
         tickAlive++;
+    }
 
+    public static void spawnBanana(Level level, Kart kart) {
+        if (level != null) {
+            Banana banana = new Banana(KartObjectInit.BANANA.get(), level);
+            double angle = Math.toRadians(kart.getYRot());
+            banana.setPos(kart.getX() + (Math.sin(angle) * 2f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2f));
+            level.addFreshEntity(banana);
+        }
     }
 }
