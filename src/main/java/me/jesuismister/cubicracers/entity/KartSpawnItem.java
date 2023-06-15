@@ -1,7 +1,7 @@
-package me.jesuismister.cubicracers.init;
+package me.jesuismister.cubicracers.entity;
 
-import me.jesuismister.cubicracers.entity.KartData;
 import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.init.KartInit;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -21,12 +21,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class KartItem extends Item {
+public class KartSpawnItem extends Item {
     public String kartName;
 
     private static final Predicate<Entity> ENTITY_PREDICATE = EntitySelector.NO_SPECTATORS.and(Entity::isPickable);
 
-    public KartItem(Properties properties, String name) {
+    public KartSpawnItem(Properties properties, String name) {
         super(properties);
         kartName = name;
     }

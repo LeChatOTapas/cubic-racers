@@ -385,7 +385,7 @@ public class Kart extends Entity implements GeoEntity {
         }
 
         //DETECTE SI LE KART EST EN SITUATION DE "STUN", GENRE BANANE OU CARAPACE
-        if (this.getLevel().toString().contains("Server") && this.animationTime <= 0) {
+        if (!this.getLevel().isClientSide() && this.animationTime <= 0) {
             Kart.listeStunKart.remove(this.getUUID());
         }
         this.canMove = !Kart.listeStunKart.contains(this.getUUID());

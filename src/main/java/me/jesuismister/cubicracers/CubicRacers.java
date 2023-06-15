@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers;
 
 import me.jesuismister.cubicracers.entity.client.renderer.BananaRenderer;
+import me.jesuismister.cubicracers.entity.client.renderer.ItemBoxRenderer;
 import me.jesuismister.cubicracers.entity.client.renderer.KartRenderer;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import me.jesuismister.cubicracers.init.*;
@@ -29,7 +30,7 @@ public class CubicRacers {
         KartInit.initAllKarts(); //IMPORTANT DE LE METTRE AVANT LE "KartInit.ENTITY_TYPES.register(bus)"
         KartInit.ENTITY_TYPES.register(bus);
 
-        KartObjectInit.KART_OBJECT_TYPES.register(bus);
+        KartItemsInit.ENTITY_TYPES.register(bus);
 
         BlockInit.BLOCKS.register(bus);
 
@@ -51,6 +52,7 @@ public class CubicRacers {
             event.accept(ItemInit.EXAMPLE_ITEM);
             event.accept(ItemInit.EXAMPLE_SWORD);
             event.accept(ItemInit.EXAMPLE_BLOCK_ITEM);
+            event.accept(ItemInit.ITEM_BOX_SPAWN_ITEM);
             for (RegistryObject<Item> r : ItemInit.KARTS_SPAWN_ITEM) {
                 event.accept(r);
             }
@@ -67,7 +69,8 @@ public class CubicRacers {
             }
 
             //REGISTER TOUS LES ITEMS DE KART
-            EntityRenderers.register(KartObjectInit.BANANA.get(), BananaRenderer::new);
+            EntityRenderers.register(KartItemsInit.ITEM_BOX.get(), ItemBoxRenderer::new);
+            EntityRenderers.register(KartItemsInit.BANANA.get(), BananaRenderer::new);
         }
 
         @SubscribeEvent

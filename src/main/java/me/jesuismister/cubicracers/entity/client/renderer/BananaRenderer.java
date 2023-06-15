@@ -25,13 +25,7 @@ public class BananaRenderer extends GeoEntityRenderer<Banana> {
     public void render(@NotNull Banana banana, float entityYaw, float partialTick, PoseStack poseStack,
                        @NotNull MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
-        /*
-        Quaternionf rotation = new Quaternionf();
-        rotation.rotateY((float) - Math.toRadians(entityYaw));
-        poseStack.mulPose(rotation);*/
-
         super.render(banana, entityYaw, partialTick, poseStack, bufferSource, packedLight);
-
         poseStack.popPose();
     }
 }

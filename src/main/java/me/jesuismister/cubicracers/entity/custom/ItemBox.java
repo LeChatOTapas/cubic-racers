@@ -14,28 +14,38 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animatable.instance.SingletonAnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.object.PlayState;
 
 import java.util.List;
 
-public class Banana extends Entity implements GeoEntity {
-    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(Banana.class, EntityDataSerializers.FLOAT);
+public class ItemBox extends Entity implements GeoEntity {
+    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(ItemBox.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
 
-    public static final String TEXTURE = "textures/entity/banana.png";
-    public static final String MODEL = "geo/banana.geo.json";
-    public static final String ANIMATION = "animations/banana.animation.json";
-    public static final float HITBOX = 1f;
+    public static final String TEXTURE = "textures/entity/item_box.png";
+    public static final String MODEL = "geo/item_box.geo.json";
+    public static final String ANIMATION = "animations/item_box.animation.json";
+    public static final float HITBOX_X = 1f;
+    public static final float HITBOX_Y = 2f;
 
-    private static final int TICK_TO_DESPAWN = 20 * 90; //1min 30s
-    private int tickAlive = 0;
+    private static final double BANANA_DROP_RATE = 100; //BORNE DE 0 à 100
 
+    private static final int TICK_TO_GET_BACK_ITEM = 20 * 6; //6s
+    private int tickDisabled = 0;
+    private boolean hasItem = true;
 
-    public Banana(EntityType<?> p_19870_, Level p_19871_) {
+    public ItemBox(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
+    }
+
+    public ItemBox(Level level, double x, double y, double z) {
+        this(KartItemsInit.ITEM_BOX.get(), level);
+
+        this.xo = Math.floor(x) + 0.5f;
+        this.yo = y;
+        this.zo = Math.floor(z)+ 0.5f;
+        this.setPos(xo, yo, zo);
     }
 
     @Override
@@ -44,6 +54,13 @@ public class Banana extends Entity implements GeoEntity {
     }
 
     private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
+        if(hasItem){
+            tAnimationState.getController().setAnimation(RawAnimation.begin()
+                    .then("box_on", Animation.LoopType.LOOP));
+        }else{
+            tAnimationState.getController().setAnimation(RawAnimation.begin()
+                    .then("box_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
+        }
         return PlayState.CONTINUE;
     }
 
@@ -96,44 +113,32 @@ public class Banana extends Entity implements GeoEntity {
             //ON CHECK QUE LES ENTITES "PLAYER"
             if (entity instanceof Player) {
                 //ON CHECK QUE LES "PLAYER" DANS UN "KART"
-                if(entity.getVehicle()!=null && entity.getVehicle() instanceof Kart kart){
-                    //ON ENCLENCHE LA PROCEDURE DE STUN
-                    if (kart.canMove) {
-                        Kart.listeStunKart.add(kart.getUUID());
-                        kart.animationTime = Kart.SPINNING_ANIMATION_TIME;
+                if(hasItem && entity.getVehicle()!=null && entity.getVehicle() instanceof Kart kart){
+                    hasItem = false;
+                    tickDisabled = 0;
+                    giveRandomItem(kart);
 
-                        kart.deltaOn = false;
-                        kart.driftingTimeBoost = 0;
-                        kart.resetDrift();
-
-                        //POUR EVITER DE STUN PLUSIEURS VEHICULES SUR UNE MEME BANANE
-                        return;
-                    }
-
-                    //SUPPRIMER LA BANANE APRES LA COLLISION
-                    this.remove(RemovalReason.DISCARDED);
+                    //POUR EVITER DE DONNER UN OBJET A PLUSIEURS VEHICULES
+                    return;
                 }
             }
         }
 
-        //DETRUIRE LA BANANE AU BOUT D'UN MOMENT
-        if (tickAlive > TICK_TO_DESPAWN) {
-            this.remove(RemovalReason.DISCARDED);
+        //REAPPROVISIONNER LE CUBE AU BOUT DE X SECONDES
+        if (!hasItem){
+            if(tickDisabled > TICK_TO_GET_BACK_ITEM) hasItem = true;
+            tickDisabled++;
         }
-        tickAlive++;
     }
 
     /**
-     * Spawn la banane derrière le kart
-     * @param level
+     * Méthode qui donne un item au kart donné en paramètre
      * @param kart
      */
-    public static void spawnBanana(Level level, Kart kart) {
-        if (level != null) {
-            Banana banana = new Banana(KartItemsInit.BANANA.get(), level);
-            double angle = Math.toRadians(kart.getYRot());
-            banana.setPos(kart.getX() + (Math.sin(angle) * 2f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2f));
-            level.addFreshEntity(banana);
+    public void giveRandomItem(Kart kart){
+        double rand = Math.random()*100;
+        if(0<rand && rand < BANANA_DROP_RATE){
+            kart.kartItem = "Banana";
         }
     }
 }
