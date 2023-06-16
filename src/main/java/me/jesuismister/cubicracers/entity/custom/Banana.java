@@ -18,12 +18,13 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
 public class Banana extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(Banana.class, EntityDataSerializers.FLOAT);
-    private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public static final String TEXTURE = "textures/entity/banana.png";
     public static final String MODEL = "geo/banana.geo.json";
@@ -67,7 +68,7 @@ public class Banana extends Entity implements GeoEntity {
 
     @Override
     public boolean isPickable() {
-        return false;
+        return true;
     }
 
     @Override

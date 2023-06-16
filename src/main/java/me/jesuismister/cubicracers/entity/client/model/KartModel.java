@@ -12,7 +12,7 @@ import software.bernie.geckolib.model.GeoModel;
 import java.util.Optional;
 
 public class KartModel extends GeoModel<Kart> {
-    private static float WHEELS_ROTATION_DEGREE = 7;
+    private static float WHEELS_ROTATION_DEGREE = 5;
     private static float WHEELS_TURN_DEGREE = 15;
     private static float ROTATE_KART_DEGREE = 5;
 
@@ -62,12 +62,12 @@ public class KartModel extends GeoModel<Kart> {
             //DRIFT A GAUCHE
             if (kart.isDrifting && kart.driftingSens.equals("Left")) {
                 //PLUS MAINTIENT GAUCHE
-                if (kart.isKeyDown(player, kart.keyLeft) && !kart.isKeyDown(player, kart.keyRight)) {
+                if (Kart.isKeyDown(player, kart.keyLeft) && !Kart.isKeyDown(player, kart.keyRight)) {
                     rotYGauche = 3 * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (3 * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
                 }
                 //PLUS MAINTIENT DROITE
-                else if (kart.isKeyDown(player, kart.keyRight) && !kart.isKeyDown(player, kart.keyLeft)) {
+                else if (Kart.isKeyDown(player, kart.keyRight) && !Kart.isKeyDown(player, kart.keyLeft)) {
                     rotYGauche = 1.5f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (1.5f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
                 }
@@ -80,12 +80,12 @@ public class KartModel extends GeoModel<Kart> {
             //DRIFT A DROITE
             else if (kart.isDrifting && kart.driftingSens.equals("Right")) {
                 //PLUS MAINTIENT DROITE
-                if (kart.isKeyDown(player, kart.keyRight) && !kart.isKeyDown(player, kart.keyLeft)) {
+                if (Kart.isKeyDown(player, kart.keyRight) && !Kart.isKeyDown(player, kart.keyLeft)) {
                     rotYGauche = -3 * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (-3 * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
                 }
                 //PLUS MAINTIENT GAUCHE
-                else if (kart.isKeyDown(player, kart.keyLeft) && !kart.isKeyDown(player, kart.keyRight)) {
+                else if (Kart.isKeyDown(player, kart.keyLeft) && !Kart.isKeyDown(player, kart.keyRight)) {
                     rotYGauche = -1.5f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (-1.5f * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
                 }
@@ -98,21 +98,22 @@ public class KartModel extends GeoModel<Kart> {
             //LE KART NE DRIFT PAS
             else {
                 //ROUES A GAUCHES
-                if (kart.isKeyDown(player, kart.keyLeft) && !kart.isKeyDown(player, kart.keyRight)) {
+                if (Kart.isKeyDown(player, kart.keyLeft) && !Kart.isKeyDown(player, kart.keyRight)) {
                     rotYGauche = WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                } else if (kart.isKeyDown(player, kart.keyRight) && !kart.isKeyDown(player, kart.keyLeft)) {
+                } else if (Kart.isKeyDown(player, kart.keyRight) && !Kart.isKeyDown(player, kart.keyLeft)) {
                     rotYGauche = -1 * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                 }
                 //ROUES A DROITES
-                if (kart.isKeyDown(player, kart.keyLeft) && !kart.isKeyDown(player, kart.keyRight)) {
+                if (Kart.isKeyDown(player, kart.keyLeft) && !Kart.isKeyDown(player, kart.keyRight)) {
                     rotYDroit = (WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
-                } else if (kart.isKeyDown(player, kart.keyRight) && !kart.isKeyDown(player, kart.keyLeft)) {
+                } else if (Kart.isKeyDown(player, kart.keyRight) && !Kart.isKeyDown(player, kart.keyLeft)) {
                     rotYDroit = (-WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
                 }
             }
 
             //ON CALCUL L'ANGLE DE ROTATION EN X
-            kart.actual_rotation_wheels += Math.toRadians(Math.abs(kart.getSpeed()) / kart.MAX_SPEED * WHEELS_ROTATION_DEGREE);
+            kart.actual_rotation_wheels = (float) (kart.actual_rotation_wheels +
+                    Math.toRadians(kart.getSpeed() * 10 * WHEELS_ROTATION_DEGREE)) % Math.abs(360);
 
             //UPDATE
             bonesGaucheAvant.get().updateRotation(-kart.actual_rotation_wheels, rotYGauche, 0);
@@ -123,11 +124,11 @@ public class KartModel extends GeoModel<Kart> {
         //INCLINAISON DU VEHICULE (PAS BESOIN DE BOUGER LES ROUES CAR PAS DE ROUE EN DELTA PLANE)
         else {
             //INCLINAISON DU VEHICULE A GAUCHE
-            if (kart.isKeyDown(player, kart.keyLeft) && !kart.isKeyDown(player, kart.keyRight)) {
+            if (Kart.isKeyDown(player, kart.keyLeft) && !Kart.isKeyDown(player, kart.keyRight)) {
                 if (kart.pourcentage_inclinaison < 1.0f) kart.pourcentage_inclinaison += 0.02f;
             }
             //INCLINAISON DU VEHICULE A DROITE
-            else if (kart.isKeyDown(player, kart.keyRight) && !kart.isKeyDown(player, kart.keyLeft)) {
+            else if (Kart.isKeyDown(player, kart.keyRight) && !Kart.isKeyDown(player, kart.keyLeft)) {
                 if (kart.pourcentage_inclinaison > -1.0f) kart.pourcentage_inclinaison -= 0.02f;
             }
             //ON RECENTRE LE VEHICULE

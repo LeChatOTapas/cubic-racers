@@ -15,33 +15,35 @@ public class PlayerRenderEventHandler {
 
     @SubscribeEvent
     public static void onPlayerRenderPre(RenderLivingEvent.Pre<Player, PlayerModel<Player>> event) {
-        Player player = (Player) event.getEntity();
-        if (player.isPassenger() && player.getVehicle() instanceof Kart) {
-            //Kart kart = (Kart) player.getVehicle();
+        if(event.getEntity() instanceof Player player){
+            if (player.isPassenger() && player.getVehicle() instanceof Kart) {
+                //Kart kart = (Kart) player.getVehicle();
 
-            //TO DO
-            //JE VEUX INCLINER LE JOUEUR EN MÊME TEMPS QUE LE VEHICULE
-            //QUAND IL EST EN DELTA PLANE, MAIS JE N'YN ARRIVE PAS
-            Quaternionf q = new Quaternionf();
-            q.rotateZ((float) Math.toRadians(0));
-            q.rotateZ((float) Math.toRadians(0));
-            q.rotateZ((float) Math.toRadians(0));
+                //TO DO
+                //JE VEUX INCLINER LE JOUEUR EN MÊME TEMPS QUE LE VEHICULE
+                //QUAND IL EST EN DELTA PLANE, MAIS JE N'YN ARRIVE PAS
+                Quaternionf q = new Quaternionf();
+                q.rotateZ((float) Math.toRadians(0));
+                q.rotateZ((float) Math.toRadians(0));
+                q.rotateZ((float) Math.toRadians(0));
 
-            //kart.sendConductorMessage("P | x = " + player.getXRot() + " / y = " + player.getYRot());
-            //kart.sendConductorMessage("K | x = " + kart.getXRot() + " / y = " + kart.getYRot());
-            //kart.sendConductorMessage("Q | x = " + q.x() + " / y = " + q.y() + " / z = " + q.z());
-            //kart.sendConductorMessage("");
+                //kart.sendConductorMessage("P | x = " + player.getXRot() + " / y = " + player.getYRot());
+                //kart.sendConductorMessage("K | x = " + kart.getXRot() + " / y = " + kart.getYRot());
+                //kart.sendConductorMessage("Q | x = " + q.x() + " / y = " + q.y() + " / z = " + q.z());
+                //kart.sendConductorMessage("");
 
-            event.getPoseStack().pushPose();
-            event.getPoseStack().mulPose(q);
+                event.getPoseStack().pushPose();
+                event.getPoseStack().mulPose(q);
+            }
         }
     }
 
     @SubscribeEvent
     public static void onPlayerRenderPost(RenderLivingEvent.Post<Player, PlayerModel<Player>> event) {
-        Player player = (Player) event.getEntity();
-        if (player.isPassenger() && player.getVehicle() instanceof Kart) {
-            event.getPoseStack().popPose();
+        if(event.getEntity() instanceof Player player) {
+            if (player.isPassenger() && player.getVehicle() instanceof Kart) {
+                event.getPoseStack().popPose();
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -16,12 +17,13 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animatable.instance.SingletonAnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
 public class ItemBox extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(ItemBox.class, EntityDataSerializers.FLOAT);
-    private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public static final String TEXTURE = "textures/entity/item_box.png";
     public static final String MODEL = "geo/item_box.geo.json";
@@ -84,7 +86,7 @@ public class ItemBox extends Entity implements GeoEntity {
 
     @Override
     public boolean isPickable() {
-        return false;
+        return true;
     }
 
     @Override
@@ -140,5 +142,19 @@ public class ItemBox extends Entity implements GeoEntity {
         if(0<rand && rand < BANANA_DROP_RATE){
             kart.kartItem = "Banana";
         }
+    }
+
+    @Override
+    /**
+     * Méthode qui fait en sorte de détruire la box quand elle prend des dégats
+     */
+    public boolean hurt(DamageSource damage, float p_19947_) {
+        if(damage.getEntity() instanceof Player player){
+            if(player.getVehicle()==null){
+                this.remove(RemovalReason.KILLED);
+                return true;
+            }
+        }
+        return false;
     }
 }

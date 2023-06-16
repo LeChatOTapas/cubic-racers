@@ -15,6 +15,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -23,10 +24,10 @@ import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animatable.instance.SingletonAnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.UUID;
 
 public class Kart extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
-    private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     //KEYS POUR LE KART
     private final KeyMapping keyUp = KeyBinds.KART_UP_KEY;
@@ -122,6 +123,7 @@ public class Kart extends Entity implements GeoEntity {
         this.MANIABILITE_COEEF = maniabiliteCoeff;
 
         this.PLAYER_POS_Y = playerPosY;
+        this.setInvulnerable(false);
     }
 
     /**
@@ -159,12 +161,10 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     @Override
-    protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {
-    }
+    protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {}
 
     @Override
-    protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {
-    }
+    protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {}
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
@@ -188,6 +188,11 @@ public class Kart extends Entity implements GeoEntity {
 
     @Override
     public boolean isPushable() {
+        return false;
+    }
+
+    @Override
+    public boolean isPushedByFluid() {
         return false;
     }
 
@@ -320,27 +325,13 @@ public class Kart extends Entity implements GeoEntity {
      * Gestion des interraction avec le kart
      */
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        //SI LE JOUEUR SNEAK
-        if (player.isShiftKeyDown()) {
-            //SI LE JOUEUR EST DANS LE KART
-            if (this.hasPassenger(player)) {
-                //ALORS ON SORT LE JOUEUR DU KART
-                player.stopRiding();
-                return InteractionResult.SUCCESS;
-            } else {
-                return InteractionResult.PASS;
-            }
-        }
-        //SI LE JOUEUR NE SNEAK PAS
-        else {
-            //SI LE JOUEUR N'EST PAS DANS LE KART
-            if (!this.hasPassenger(player)) {
-                //AALORS LE JOUEUR MONTE DANS LE KART
-                player.startRiding(this);
-                return InteractionResult.SUCCESS;
-            } else {
-                return InteractionResult.PASS;
-            }
+        //SI LE JOUEUR N'EST PAS DANS LE KART
+        if (this.getFirstPassenger()==null) {
+            //ALORS LE JOUEUR MONTE DANS LE KART
+            player.startRiding(this);
+            return InteractionResult.SUCCESS;
+        } else {
+            return InteractionResult.PASS;
         }
     }
 
@@ -485,6 +476,7 @@ public class Kart extends Entity implements GeoEntity {
             this.setKartMovement();
             this.animationTime--;
         }
+
         //SI LE KART N'EST PAS STUN
         else {
             //VECTEUR DE MOUVEMENT : DELTA PLANE
@@ -506,12 +498,11 @@ public class Kart extends Entity implements GeoEntity {
             else {
                 //SI PAS DE BOOST
                 if (this.driftingTimeBoost <= 0) {
-                    if (this.getSpeed() > 0) this.slowDownKart();
-                    else if (this.getSpeed() < 0) this.slowDownKart();
+                    this.slowDownKart();
                 }
                 //SI BOOST
                 else {
-                    this.setSpeed(this.getSpeed());
+                    this.setSpeed(0);
                     this.setKartMovement();
                 }
             }
@@ -583,7 +574,7 @@ public class Kart extends Entity implements GeoEntity {
             //SPAWN DES PARTICULES DE BOOST
             this.spawnBoostParticules(ParticleTypes.FLAME);
             //CALCUL DE LA VITESSE AVEC BOOST
-            clamped_speed = MAX_SPEED + BOOST;
+            clamped_speed = Mth.clamp(this.getSpeed() + BOOST, 0, MAX_SPEED + BOOST);
             driftingTimeBoost -= 0.1f;
         }
         //SINON LE KART AVANCE NORMALEMENT
@@ -732,5 +723,19 @@ public class Kart extends Entity implements GeoEntity {
      */
     public static boolean isKeyDown(Player conducteur, KeyMapping key) {
         return conducteur != null && key.isDown() && conducteur.getVehicle() instanceof Kart;
+    }
+
+    @Override
+    /**
+     * Méthode qui fait en sorte de détruire le kart quand il prend des dégats
+     */
+    public boolean hurt(DamageSource damage, float p_19947_) {
+        if(damage.getEntity() instanceof Player player){
+            if(player.getVehicle()==null){
+                this.remove(RemovalReason.KILLED);
+                return true;
+            }
+        }
+        return false;
     }
 }
