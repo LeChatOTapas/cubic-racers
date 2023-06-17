@@ -104,7 +104,7 @@ public class Banana extends Entity implements GeoEntity {
                         kart.animationTime = Kart.SPINNING_ANIMATION_TIME;
 
                         kart.deltaOn = false;
-                        kart.driftingTimeBoost = 0;
+                        kart.timeBoost = 0;
                         kart.resetDrift();
 
                         //POUR EVITER DE STUN PLUSIEURS VEHICULES SUR UNE MEME BANANE

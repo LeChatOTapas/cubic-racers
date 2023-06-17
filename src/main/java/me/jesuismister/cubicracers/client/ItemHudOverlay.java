@@ -14,6 +14,8 @@ public class ItemHudOverlay {
             "textures/kart/empty_item_box.png");
     private static final ResourceLocation BANANA_ITEM_BOX = new ResourceLocation(CubicRacers.MODID,
             "textures/kart/banana_item_box.png");
+    private static final ResourceLocation MUSHROOM_ITEM_BOX = new ResourceLocation(CubicRacers.MODID,
+            "textures/kart/mushroom_item_box.png");
 
     public static final IGuiOverlay HUD_ITEM_BOX = (((gui, poseStack, partialTick, screenWidth, screenHeight) -> {
         if (shouldPrint(gui.getMinecraft().player)) {
@@ -26,8 +28,8 @@ public class ItemHudOverlay {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             //CHOIX DE LA TEXTURE EN FONCTION DE L'OBJET EN STOCK
-            if (kart.kartItem == null) RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);
-            else if (kart.kartItem.equals("Banana")) RenderSystem.setShaderTexture(0, BANANA_ITEM_BOX);
+            if (kart.kartItem.equals("Banana")) RenderSystem.setShaderTexture(0, BANANA_ITEM_BOX);
+            else if (kart.kartItem.equals("Mushroom")) RenderSystem.setShaderTexture(0, MUSHROOM_ITEM_BOX);
             else RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);
 
             GuiComponent.blit(poseStack, 5, 5, 0, 0, imageSize, imageSize, imageSize, imageSize);
@@ -41,6 +43,6 @@ public class ItemHudOverlay {
      * @return
      */
     private static boolean shouldPrint(LocalPlayer player) {
-        return player != null && player.getVehicle() != null && player.getVehicle() instanceof Kart;
+        return player != null && player.getVehicle() != null && player.getVehicle() instanceof Kart && player.getLevel().isClientSide();
     }
 }

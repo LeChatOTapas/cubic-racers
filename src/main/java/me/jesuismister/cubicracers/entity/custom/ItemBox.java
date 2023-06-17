@@ -1,6 +1,8 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.init.KartItemsInit;
+import me.jesuismister.cubicracers.util.ClientRandom;
+import me.jesuismister.cubicracers.util.ServerRandom;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -14,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animatable.instance.SingletonAnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
@@ -31,7 +32,8 @@ public class ItemBox extends Entity implements GeoEntity {
     public static final float HITBOX_X = 1f;
     public static final float HITBOX_Y = 2f;
 
-    private static final double BANANA_DROP_RATE = 100; //BORNE DE 0 à 100
+    private static final double BANANA_DROP_RATE = 50; //BORNE DE 0 à 50
+    private static final double MUSHROOM_DROP_RATE = 100; //BORNE DE 50 à 100
 
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 6; //6s
     private int tickDisabled = 0;
@@ -46,7 +48,7 @@ public class ItemBox extends Entity implements GeoEntity {
 
         this.xo = Math.floor(x) + 0.5f;
         this.yo = y;
-        this.zo = Math.floor(z)+ 0.5f;
+        this.zo = Math.floor(z) + 0.5f;
         this.setPos(xo, yo, zo);
     }
 
@@ -56,10 +58,10 @@ public class ItemBox extends Entity implements GeoEntity {
     }
 
     private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
-        if(hasItem){
+        if (hasItem) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("box_on", Animation.LoopType.LOOP));
-        }else{
+        } else {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("box_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
         }
@@ -107,6 +109,7 @@ public class ItemBox extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
+
         //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
         List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
 
@@ -115,7 +118,7 @@ public class ItemBox extends Entity implements GeoEntity {
             //ON CHECK QUE LES ENTITES "PLAYER"
             if (entity instanceof Player) {
                 //ON CHECK QUE LES "PLAYER" DANS UN "KART"
-                if(hasItem && entity.getVehicle()!=null && entity.getVehicle() instanceof Kart kart){
+                if (hasItem && entity.getVehicle() != null && entity.getVehicle() instanceof Kart kart) {
                     hasItem = false;
                     tickDisabled = 0;
                     giveRandomItem(kart);
@@ -127,20 +130,31 @@ public class ItemBox extends Entity implements GeoEntity {
         }
 
         //REAPPROVISIONNER LE CUBE AU BOUT DE X SECONDES
-        if (!hasItem){
-            if(tickDisabled > TICK_TO_GET_BACK_ITEM) hasItem = true;
+        if (!hasItem) {
+            if (tickDisabled > TICK_TO_GET_BACK_ITEM) hasItem = true;
             tickDisabled++;
         }
     }
 
     /**
      * Méthode qui donne un item au kart donné en paramètre
+     *
      * @param kart
      */
-    public void giveRandomItem(Kart kart){
-        double rand = Math.random()*100;
-        if(0<rand && rand < BANANA_DROP_RATE){
+    public void giveRandomItem(Kart kart) {
+        if(!kart.kartItem.equals("None")) return;
+
+        double rand;
+        if(this.getLevel().isClientSide()){
+            rand = ClientRandom.nextInt(100);
+        }else{
+            rand = ServerRandom.nextInt(100);
+        }
+
+        if (0 <= rand && rand < BANANA_DROP_RATE) {
             kart.kartItem = "Banana";
+        } else if (BANANA_DROP_RATE < rand && rand < MUSHROOM_DROP_RATE) {
+            kart.kartItem = "Mushroom";
         }
     }
 
@@ -149,8 +163,8 @@ public class ItemBox extends Entity implements GeoEntity {
      * Méthode qui fait en sorte de détruire la box quand elle prend des dégats
      */
     public boolean hurt(DamageSource damage, float p_19947_) {
-        if(damage.getEntity() instanceof Player player){
-            if(player.getVehicle()==null){
+        if (damage.getEntity() instanceof Player player) {
+            if (player.getVehicle() == null) {
                 this.remove(RemovalReason.KILLED);
                 return true;
             }

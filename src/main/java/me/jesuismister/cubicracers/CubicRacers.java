@@ -6,7 +6,9 @@ import me.jesuismister.cubicracers.entity.client.renderer.KartRenderer;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import me.jesuismister.cubicracers.init.*;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
+import me.jesuismister.cubicracers.util.ClientRandom;
 import me.jesuismister.cubicracers.util.KeyBinds;
+import me.jesuismister.cubicracers.util.ServerRandom;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -40,6 +42,10 @@ public class CubicRacers {
         ParticlesInit.PARTICLE_TYPES.register(bus);
 
         bus.addListener(this::addCreativeTab);
+
+        long seed = System.currentTimeMillis();
+        ClientRandom.initialize(seed);
+        ServerRandom.initialize(seed);
     }
 
     /**

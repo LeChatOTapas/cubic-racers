@@ -75,7 +75,7 @@ public class Kart extends Entity implements GeoEntity {
     public boolean isDrifting = false;
     public String driftingSens = "None";
     public float driftingTime = 0.0f;
-    public float driftingTimeBoost = 0.0f;
+    public float timeBoost = 0.0f;
 
     //ATTRIBUTS DE CONDUITE
     public boolean deltaOn = false;
@@ -92,21 +92,10 @@ public class Kart extends Entity implements GeoEntity {
     public float lastYRot = 0;
 
     //KART ITEM
-    public String kartItem = "Banana"; //None, Banana, Green_shell, Bob_omb, Mushroom, Golden_Mushroom, False_Cube, Blue Shell (random player), Klaxon
+    public String kartItem = "Mushroom"; //None, Banana, Green_shell, Bob_omb, Mushroom, Star, False_Cube, Thunder, Klaxon
 
     /**
      * Constructeur de base
-     *
-     * @param entityType
-     * @param level
-     * @param texture
-     * @param model
-     * @param animation
-     * @param maxSpeed
-     * @param accelerationBoost
-     * @param boost
-     * @param maniabiliteCoeff
-     * @param playerPosY
      */
     public Kart(EntityType<?> entityType, Level level, String texture, String model, String animation, float maxSpeed,
                 float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY) {
@@ -128,20 +117,6 @@ public class Kart extends Entity implements GeoEntity {
 
     /**
      * Constructeur pour le spawn via item
-     *
-     * @param level
-     * @param x
-     * @param y
-     * @param z
-     * @param name
-     * @param texture
-     * @param model
-     * @param animation
-     * @param maxSpeed
-     * @param accelerationBoost
-     * @param boost
-     * @param maniabiliteCoeff
-     * @param playerPosY
      */
     public Kart(Level level, double x, double y, double z, String name, String texture, String model, String animation,
                 float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY) {
@@ -161,10 +136,12 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     @Override
-    protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {}
+    protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {
+    }
 
     @Override
-    protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {}
+    protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {
+    }
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
@@ -197,9 +174,6 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     @Override
-    /**
-     * "Associe" le "processus" d'animation au kart
-     */
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
     }
@@ -207,8 +181,6 @@ public class Kart extends Entity implements GeoEntity {
     /**
      * Gère les animations en fonction du statut du kart
      *
-     * @param tAnimationState
-     * @param <T>
      * @return
      */
     private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
@@ -326,7 +298,7 @@ public class Kart extends Entity implements GeoEntity {
      */
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         //SI LE JOUEUR N'EST PAS DANS LE KART
-        if (this.getFirstPassenger()==null) {
+        if (this.getFirstPassenger() == null) {
             //ALORS LE JOUEUR MONTE DANS LE KART
             player.startRiding(this);
             return InteractionResult.SUCCESS;
@@ -415,7 +387,7 @@ public class Kart extends Entity implements GeoEntity {
                 if (this.isDrifting && this.driftingSens.equals("Left")) {
                     //LE JOUEUR MAINTIENT LA TOUCHE GAUCHE
                     if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
-                        if (this.driftingTime < 3.0f) driftingTime += 0.06f;
+                        if (isKeyDown(player, keyUp) && this.driftingTime < 3.0f) driftingTime += 0.06f;
                         this.setYRot(this.getYRot() - MANIABILITE_COEEF * DRIFT_ANGLE);
                     }
                     //LE JOUEUR MAINTIENT LA TOUCHE DROITE
@@ -424,14 +396,14 @@ public class Kart extends Entity implements GeoEntity {
                     }
                     //LE JOUEUR NE MAINTIENT RIEN
                     else {
-                        if (this.driftingTime < 3.0f) driftingTime += 0.02f;
+                        if (isKeyDown(player, keyUp) && this.driftingTime < 3.0f) driftingTime += 0.02f;
                         this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE * 0.75f));
                     }
                 }
                 //DRIFT INITIAL : DRIFT A DROITE
                 else if (this.isDrifting && this.driftingSens.equals("Right")) {
                     //LE JOUEUR MAINTIENT LA TOUCHE GAUCHE
-                    if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
+                    if (isKeyDown(player, keyUp) && isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
                         if (this.driftingTime < 3.0f) driftingTime += 0.06f;
                         this.setYRot(this.getYRot() + MANIABILITE_COEEF * DRIFT_ANGLE);
                     }
@@ -441,7 +413,7 @@ public class Kart extends Entity implements GeoEntity {
                     }
                     //LE JOUEUR NE MAINTIENT RIEN
                     else {
-                        if (this.driftingTime < 3.0f) driftingTime += 0.02f;
+                        if (isKeyDown(player, keyUp) && this.driftingTime < 3.0f) driftingTime += 0.02f;
                         this.setYRot(this.getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE * 0.75f));
                     }
                 }
@@ -469,6 +441,20 @@ public class Kart extends Entity implements GeoEntity {
             this.resetDrift();
         }
 
+        //USE DE L'ITEM
+        if (canMove && isKeyDown(player, keyItem)) {
+            //SI L'OBJET DANS LE KART EST UNE BANANE
+            if (this.kartItem.equals("Banana")) {
+                Banana.spawnBanana(this.getLevel(), this);
+                sendConductorMessage("BANANE !!!!!");
+            } else if (this.kartItem.equals("Mushroom")) {
+                this.timeBoost += 4.0f;
+                setSpeed(MAX_SPEED);
+                sendConductorMessage("MUSHROOM !!!!!");
+            }
+            this.kartItem = "None";
+        }
+
         //SI LE KART EST STUN
         if (!this.canMove) {
             this.setYRot(this.getYRot() + (1 / Kart.SPINNING_ANIMATION_TIME) * 720);
@@ -493,16 +479,18 @@ public class Kart extends Entity implements GeoEntity {
             else if (isKeyDown(player, keyDown)) {
                 this.setSpeed(this.getSpeed() - ACCELERATION_BOOST);
                 this.setKartMovement();
+                this.resetDriftWithNoBoost();
             }
             //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
             else {
                 //SI PAS DE BOOST
-                if (this.driftingTimeBoost <= 0) {
+                if (this.timeBoost <= 0) {
                     this.slowDownKart();
+                    this.setKartMovement();
                 }
                 //SI BOOST
                 else {
-                    this.setSpeed(0);
+                    this.slowDownKart();
                     this.setKartMovement();
                 }
             }
@@ -532,16 +520,6 @@ public class Kart extends Entity implements GeoEntity {
 
         //INITIE LE MOUVEMENT
         this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z));
-
-        //SPAWN DE L'ITEM
-        if (canMove && isKeyDown(player, keyItem)) {
-            //SI L'OBJET DANS LE KART EST UNE BANANE
-            if (this.kartItem.equals("Banana")) {
-                Banana.spawnBanana(this.getLevel(), this);
-                sendConductorMessage("BANANE !!!!!");
-            }
-            this.kartItem = "None";
-        }
     }
 
     /**
@@ -570,12 +548,12 @@ public class Kart extends Entity implements GeoEntity {
 
         float clamped_speed;
         //BOOST LE JOUEUR S'IL A FINI DE DRIFT
-        if (this.driftingTimeBoost > 0 && !this.isDrifting) {
+        if (this.timeBoost > 0 && this.driftingTime == 0) {
             //SPAWN DES PARTICULES DE BOOST
             this.spawnBoostParticules(ParticleTypes.FLAME);
             //CALCUL DE LA VITESSE AVEC BOOST
             clamped_speed = Mth.clamp(this.getSpeed() + BOOST, 0, MAX_SPEED + BOOST);
-            driftingTimeBoost -= 0.1f;
+            timeBoost -= 0.1f;
         }
         //SINON LE KART AVANCE NORMALEMENT
         else {
@@ -650,7 +628,16 @@ public class Kart extends Entity implements GeoEntity {
      * Reset les attributs de drift du kart
      */
     public void resetDrift() {
-        if (driftingTime != 0) this.driftingTimeBoost = (float) Math.floor(driftingTime);
+        if (driftingTime != 0) this.timeBoost = (float) Math.floor(driftingTime);
+        this.isDrifting = false;
+        this.driftingTime = 0;
+        this.driftingSens = "None";
+    }
+
+    /**
+     * reset les attributs de drift du kart sans donner de boost
+     */
+    public void resetDriftWithNoBoost() {
         this.isDrifting = false;
         this.driftingTime = 0;
         this.driftingSens = "None";
@@ -730,8 +717,8 @@ public class Kart extends Entity implements GeoEntity {
      * Méthode qui fait en sorte de détruire le kart quand il prend des dégats
      */
     public boolean hurt(DamageSource damage, float p_19947_) {
-        if(damage.getEntity() instanceof Player player){
-            if(player.getVehicle()==null){
+        if (damage.getEntity() instanceof Player player) {
+            if (player.getVehicle() == null) {
                 this.remove(RemovalReason.KILLED);
                 return true;
             }
