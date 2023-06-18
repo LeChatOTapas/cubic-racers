@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "cubicracers:item/item_box_spawn_item"
+  }
+}

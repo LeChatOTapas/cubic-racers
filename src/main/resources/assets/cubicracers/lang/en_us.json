@@ -1,8 +1,15 @@
 {
   "item.cubicracers.example_item" : "Example Item",
-  "block.cubicracers.example_block" : "Example Block",
   "item.cubicracers.bb_example_sword": "Example Sword",
 
+  "block.cubicracers.example_block" : "Example Block",
+
+
+
+
   "creativemodetab.cubicracers_tab": "MC Kart",
-  "item.cubicracers.kart": "Trash Kart"
+
+  "item.cubicracers.trash_kart": "Trash Kart",
+  "item.cubicracers.trash_kart2": "Trash Kart2",
+  "item.cubicracers.item_box_spawn_item": "Item Box"
 }

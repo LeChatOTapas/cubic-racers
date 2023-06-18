@@ -75,6 +75,7 @@ public class Kart extends Entity implements GeoEntity {
     public boolean isDrifting = false;
     public String driftingSens = "None";
     public float driftingTime = 0.0f;
+    public float driftTimeBoost = 0.0f;
     public float timeBoost = 0.0f;
 
     //ATTRIBUTS DE CONDUITE
@@ -92,7 +93,7 @@ public class Kart extends Entity implements GeoEntity {
     public float lastYRot = 0;
 
     //KART ITEM
-    public String kartItem = "Mushroom"; //None, Banana, Green_shell, Bob_omb, Mushroom, Star, False_Cube, Thunder, Klaxon
+    public String kartItem = "Star"; //None, Banana, Green_shell, Bob_omb, Mushroom, Star, False_Cube, Thunder, Klaxon
 
     /**
      * Constructeur de base
@@ -451,6 +452,10 @@ public class Kart extends Entity implements GeoEntity {
                 this.timeBoost += 4.0f;
                 setSpeed(MAX_SPEED);
                 sendConductorMessage("MUSHROOM !!!!!");
+            } else if (this.kartItem.equals("Star")) {
+                this.timeBoost += 25.0f;
+                setSpeed(MAX_SPEED);
+                sendConductorMessage("STAR !!!!!");
             }
             this.kartItem = "None";
         }
@@ -459,6 +464,8 @@ public class Kart extends Entity implements GeoEntity {
         if (!this.canMove) {
             this.setYRot(this.getYRot() + (1 / Kart.SPINNING_ANIMATION_TIME) * 720);
             this.setSpeed(0);
+            this.driftTimeBoost = 0;
+            this.timeBoost = 0;
             this.setKartMovement();
             this.animationTime--;
         }
@@ -471,8 +478,12 @@ public class Kart extends Entity implements GeoEntity {
                 this.setKartMovement();
             }
             //VECTEUR DE MOUVEMENT : MARCHE AVANT !!!
-            else if (isKeyDown(player, keyUp)) {
-                this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
+            else if (isKeyDown(player, keyUp) || this.timeBoost>0) {
+                if(this.timeBoost<=0){
+                    this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
+                }else{
+                    this.setSpeed(MAX_SPEED);
+                }
                 this.setKartMovement();
             }
             //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
@@ -484,7 +495,7 @@ public class Kart extends Entity implements GeoEntity {
             //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
             else {
                 //SI PAS DE BOOST
-                if (this.timeBoost <= 0) {
+                if (this.driftTimeBoost <= 0) {
                     this.slowDownKart();
                     this.setKartMovement();
                 }
@@ -548,12 +559,13 @@ public class Kart extends Entity implements GeoEntity {
 
         float clamped_speed;
         //BOOST LE JOUEUR S'IL A FINI DE DRIFT
-        if (this.timeBoost > 0 && this.driftingTime == 0) {
+        if ((this.driftTimeBoost > 0 && this.driftingTime == 0) || this.timeBoost > 0) {
             //SPAWN DES PARTICULES DE BOOST
             this.spawnBoostParticules(ParticleTypes.FLAME);
             //CALCUL DE LA VITESSE AVEC BOOST
             clamped_speed = Mth.clamp(this.getSpeed() + BOOST, 0, MAX_SPEED + BOOST);
-            timeBoost -= 0.1f;
+            if(this.driftTimeBoost>0) driftTimeBoost -= 0.1f;
+            else if(this.timeBoost > 0) timeBoost -= 0.1f;
         }
         //SINON LE KART AVANCE NORMALEMENT
         else {
@@ -628,7 +640,7 @@ public class Kart extends Entity implements GeoEntity {
      * Reset les attributs de drift du kart
      */
     public void resetDrift() {
-        if (driftingTime != 0) this.timeBoost = (float) Math.floor(driftingTime);
+        if (driftingTime != 0) this.driftTimeBoost = (float) Math.floor(driftingTime);
         this.isDrifting = false;
         this.driftingTime = 0;
         this.driftingSens = "None";

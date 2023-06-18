@@ -32,8 +32,9 @@ public class ItemBox extends Entity implements GeoEntity {
     public static final float HITBOX_X = 1f;
     public static final float HITBOX_Y = 2f;
 
-    private static final double BANANA_DROP_RATE = 50; //BORNE DE 0 à 50
-    private static final double MUSHROOM_DROP_RATE = 100; //BORNE DE 50 à 100
+    private static final double BANANA_DROP_RATE = 33; //BORNE DE 0 à 33
+    private static final double MUSHROOM_DROP_RATE = 66; //BORNE DE 33 à 66
+    private static final double STAR_DROP_RATE = 100; //BORNE DE 66 à 100
 
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 6; //6s
     private int tickDisabled = 0;
@@ -151,10 +152,14 @@ public class ItemBox extends Entity implements GeoEntity {
             rand = ServerRandom.nextInt(100);
         }
 
+        //System.out.println(this.getLevel() + " : " + rand);
+
         if (0 <= rand && rand < BANANA_DROP_RATE) {
             kart.kartItem = "Banana";
         } else if (BANANA_DROP_RATE < rand && rand < MUSHROOM_DROP_RATE) {
             kart.kartItem = "Mushroom";
+        } else if (MUSHROOM_DROP_RATE < rand && rand < STAR_DROP_RATE) {
+            kart.kartItem = "Star";
         }
     }
 
