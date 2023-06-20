@@ -90,30 +90,19 @@ public class Banana extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
         //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
-        List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
+        List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0)); // Ajustez la valeur de l'inflation selon vos besoins
 
         //PARCOURIR LA LISTE DES ENTITES PROCHES
         for (Entity entity : nearbyEntities) {
             //ON CHECK QUE LES ENTITES "PLAYER"
-            if (entity instanceof Player) {
-                //ON CHECK QUE LES "PLAYER" DANS UN "KART"
-                if(entity.getVehicle()!=null && entity.getVehicle() instanceof Kart kart){
-                    //ON ENCLENCHE LA PROCEDURE DE STUN
-                    if (kart.canMove) {
-                        Kart.listeStunKart.add(kart.getUUID());
-                        kart.animationTime = Kart.SPINNING_ANIMATION_TIME;
-
-                        kart.deltaOn = false;
-                        kart.driftTimeBoost = 0;
-                        kart.resetDrift();
-
-                        //POUR EVITER DE STUN PLUSIEURS VEHICULES SUR UNE MEME BANANE
-                        return;
-                    }
-
-                    //SUPPRIMER LA BANANE APRES LA COLLISION
-                    this.remove(RemovalReason.DISCARDED);
+            if (entity instanceof Kart kart) {
+                //ON ENCLENCHE LA PROCEDURE DE STUN
+                if (kart.canMove) {
+                    Kart.stunKart(kart);
+                    return; //POUR EVITER DE STUN PLUSIEURS VEHICULES SUR UNE MEME BANANE
                 }
+                //SUPPRIMER LA BANANE APRES LA COLLISION
+                this.remove(RemovalReason.DISCARDED);
             }
         }
 
@@ -126,15 +115,15 @@ public class Banana extends Entity implements GeoEntity {
 
     /**
      * Spawn la banane derrière le kart
-     * @param level
+     *
      * @param kart
      */
-    public static void spawnBanana(Level level, Kart kart) {
-        if (level != null) {
-            Banana banana = new Banana(KartItemsInit.BANANA.get(), level);
+    public static void spawnBanana(Kart kart) {
+        if (kart.getLevel() != null) {
+            Banana banana = new Banana(KartItemsInit.BANANA.get(), kart.getLevel());
             double angle = Math.toRadians(kart.getYRot());
             banana.setPos(kart.getX() + (Math.sin(angle) * 2f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2f));
-            level.addFreshEntity(banana);
+            kart.getLevel().addFreshEntity(banana);
         }
     }
 }

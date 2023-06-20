@@ -23,8 +23,8 @@ public class KartInit {
     public static final Map<String, RegistryObject<EntityType<Kart>>> KARTS = new HashMap<>();
 
     public static void initAllKarts() {
-        KARTS_DATA.add(new KartData("trash_kart", 0.8f, 0.025f, 0.5f, 3.0f, -0.5f));
-        KARTS_DATA.add(new KartData("trash_kart2", 0.8f, 0.025f, 0.5f, 3.0f, -0.5f)); //PROVISOIRE - NE PAS OUBLIER D'ENLEVER LES TEXTURES INUTILES
+        KARTS_DATA.add(new KartData("trash_kart", 0.6f, 0.02f, 0.2f, 3.0f, -0.5f));
+        KARTS_DATA.add(new KartData("trash_kart2", 0.6f, 0.02f, 0.2f, 3.0f, -0.5f)); //PROVISOIRE - NE PAS OUBLIER D'ENLEVER LES TEXTURES INUTILES
 
         for (KartData d : KARTS_DATA) {
             addNewKart(d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY);

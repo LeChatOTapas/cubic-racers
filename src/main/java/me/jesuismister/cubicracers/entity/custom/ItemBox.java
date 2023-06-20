@@ -32,9 +32,10 @@ public class ItemBox extends Entity implements GeoEntity {
     public static final float HITBOX_X = 1f;
     public static final float HITBOX_Y = 2f;
 
-    private static final double BANANA_DROP_RATE = 33; //BORNE DE 0 à 33
-    private static final double MUSHROOM_DROP_RATE = 66; //BORNE DE 33 à 66
-    private static final double STAR_DROP_RATE = 100; //BORNE DE 66 à 100
+    private static final double BANANA_DROP_RATE = 25; //BORNE DE 0 à 25
+    private static final double MUSHROOM_DROP_RATE = 50; //BORNE DE 25 à 50
+    private static final double STAR_DROP_RATE = 75; //BORNE DE 50 à 75
+    private static final double THUNDER_DROP_RATE = 100; //BORNE DE 75 à 100
 
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 6; //6s
     private int tickDisabled = 0;
@@ -160,6 +161,8 @@ public class ItemBox extends Entity implements GeoEntity {
             kart.kartItem = "Mushroom";
         } else if (MUSHROOM_DROP_RATE < rand && rand < STAR_DROP_RATE) {
             kart.kartItem = "Star";
+        } else if (STAR_DROP_RATE < rand && rand < THUNDER_DROP_RATE) {
+            kart.kartItem = "Thunder";
         }
     }
 

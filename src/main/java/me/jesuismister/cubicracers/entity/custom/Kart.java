@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.init.KartInit;
+import me.jesuismister.cubicracers.itemKart.Thunder;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.KeyMapping;
@@ -93,7 +94,10 @@ public class Kart extends Entity implements GeoEntity {
     public float lastYRot = 0;
 
     //KART ITEM
-    public String kartItem = "Star"; //None, Banana, Green_shell, Bob_omb, Mushroom, Star, False_Cube, Thunder, Klaxon
+    public String kartItem = "Thunder"; //None, Banana, Green_shell, Bob_omb, Mushroom, Star, False_Cube, Thunder, Klaxon
+    private boolean isInvisible = false;
+    private float starBoost = 1f;
+    private float timeStar = 0;
 
     /**
      * Constructeur de base
@@ -348,7 +352,19 @@ public class Kart extends Entity implements GeoEntity {
             this.driftingTime = 0;
         }
 
-        //DETECTE SI LE KART EST EN SITUATION DE "STUN", GENRE BANANE OU CARAPACE
+        //SI EN ETOILE, ALORS ON STUN LES GENS QU'ON PERCUTE
+        if(this.isInvisible) {
+            List<Entity> nearbyEntities = level.getEntities(this, this.getBoundingBox().inflate(0.5f));
+            for (Entity entity : nearbyEntities) {
+                if (entity instanceof Kart kart) {
+                    if (kart.canMove) {
+                        Kart.stunKart(kart);
+                    }
+                }
+            }
+        }
+
+        //DETECTE SI LE KART EST EN SITUATION DE "STUN"
         if (!this.getLevel().isClientSide() && this.animationTime <= 0) {
             Kart.listeStunKart.remove(this.getUUID());
         }
@@ -446,18 +462,27 @@ public class Kart extends Entity implements GeoEntity {
         if (canMove && isKeyDown(player, keyItem)) {
             //SI L'OBJET DANS LE KART EST UNE BANANE
             if (this.kartItem.equals("Banana")) {
-                Banana.spawnBanana(this.getLevel(), this);
+                Banana.spawnBanana(this);
                 sendConductorMessage("BANANE !!!!!");
             } else if (this.kartItem.equals("Mushroom")) {
-                this.timeBoost += 4.0f;
+                this.timeBoost += 5.0f;
                 setSpeed(MAX_SPEED);
                 sendConductorMessage("MUSHROOM !!!!!");
             } else if (this.kartItem.equals("Star")) {
-                this.timeBoost += 25.0f;
+                this.timeStar += 20f;
+                this.starBoost = 1.5f;
+                this.isInvisible = true;
                 setSpeed(MAX_SPEED);
                 sendConductorMessage("STAR !!!!!");
+            } else if (this.kartItem.equals("Thunder")) {
+                Thunder.applyThunderToOthersKarts(this);
+                sendConductorMessage("THUNDER !!!!!");
             }
             this.kartItem = "None";
+        }
+        if (this.isInvisible && this.timeStar <= 0) {
+            this.isInvisible = false;
+            this.starBoost = 1f;
         }
 
         //SI LE KART EST STUN
@@ -478,10 +503,10 @@ public class Kart extends Entity implements GeoEntity {
                 this.setKartMovement();
             }
             //VECTEUR DE MOUVEMENT : MARCHE AVANT !!!
-            else if (isKeyDown(player, keyUp) || this.timeBoost>0) {
-                if(this.timeBoost<=0){
+            else if (isKeyDown(player, keyUp) || this.timeBoost > 0) {
+                if (this.timeBoost <= 0) {
                     this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
-                }else{
+                } else {
                     this.setSpeed(MAX_SPEED);
                 }
                 this.setKartMovement();
@@ -494,16 +519,8 @@ public class Kart extends Entity implements GeoEntity {
             }
             //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
             else {
-                //SI PAS DE BOOST
-                if (this.driftTimeBoost <= 0) {
-                    this.slowDownKart();
-                    this.setKartMovement();
-                }
-                //SI BOOST
-                else {
-                    this.slowDownKart();
-                    this.setKartMovement();
-                }
+                this.slowDownKart();
+                this.setKartMovement();
             }
         }
 
@@ -557,19 +574,23 @@ public class Kart extends Entity implements GeoEntity {
     public void setKartMovement() {
         double angle = Math.toRadians(this.getYRot());
 
-        float clamped_speed;
-        //BOOST LE JOUEUR S'IL A FINI DE DRIFT
-        if ((this.driftTimeBoost > 0 && this.driftingTime == 0) || this.timeBoost > 0) {
-            //SPAWN DES PARTICULES DE BOOST
+        //SPAWN DES PARTICULES DE BOOST
+        if((this.driftTimeBoost > 0 && this.driftingTime == 0) || this.timeBoost > 0 || this.timeStar > 0){
             this.spawnBoostParticules(ParticleTypes.FLAME);
+        }
+
+        float clamped_speed;
+        //BOOST LE JOUEUR S'IL A FINI DE DRIFT ET QU'IL EST PAS EN ETOILE
+        if (this.timeStar<0 && ((this.driftTimeBoost > 0 && this.driftingTime == 0) || this.timeBoost > 0)) {
             //CALCUL DE LA VITESSE AVEC BOOST
             clamped_speed = Mth.clamp(this.getSpeed() + BOOST, 0, MAX_SPEED + BOOST);
-            if(this.driftTimeBoost>0) driftTimeBoost -= 0.1f;
-            else if(this.timeBoost > 0) timeBoost -= 0.1f;
+            if (this.driftTimeBoost > 0) driftTimeBoost -= 0.1f;
+            else if (this.timeBoost > 0) timeBoost -= 0.1f;
         }
-        //SINON LE KART AVANCE NORMALEMENT
+        //SINON LE KART AVANCE NORMALEMENT (AVEC UN BOOST POTENTIELLE D'ETOILE)
         else {
-            clamped_speed = Mth.clamp(this.getSpeed(), -MAX_SPEED / 2, MAX_SPEED);
+            clamped_speed = Mth.clamp(this.getSpeed(), -MAX_SPEED*starBoost / 2, MAX_SPEED*starBoost);
+            if (this.timeStar > 0) timeStar -= 0.1f;
         }
         this.setSpeed(clamped_speed);
 
@@ -736,5 +757,16 @@ public class Kart extends Entity implements GeoEntity {
             }
         }
         return false;
+    }
+
+    public static void stunKart(Kart kart) {
+        if (kart.isInvisible) return;
+
+        Kart.listeStunKart.add(kart.getUUID());
+        kart.animationTime = Kart.SPINNING_ANIMATION_TIME;
+
+        kart.deltaOn = false;
+        kart.driftTimeBoost = 0;
+        kart.resetDrift();
     }
 }
