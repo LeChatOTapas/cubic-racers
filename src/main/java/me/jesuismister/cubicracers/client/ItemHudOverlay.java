@@ -20,10 +20,12 @@ public class ItemHudOverlay {
             "textures/kart/star_item_box.png");
     private static final ResourceLocation THUNDER_ITEM_BOX = new ResourceLocation(CubicRacers.MODID,
             "textures/kart/thunder_item_box.png");
-    private static final ResourceLocation BOM_OMB_ITEM_BOX = new ResourceLocation(CubicRacers.MODID,
-            "textures/kart/bom_omb_item_box.png");
+
+
     private static final ResourceLocation KLAXON_ITEM_BOX = new ResourceLocation(CubicRacers.MODID,
             "textures/kart/klaxon_item_box.png");
+    private static final ResourceLocation BOM_OMB_ITEM_BOX = new ResourceLocation(CubicRacers.MODID,
+            "textures/kart/bom_omb_item_box.png");
     private static final ResourceLocation GREEN_SHELL_ITEM_BOX = new ResourceLocation(CubicRacers.MODID,
             "textures/kart/green_shell_item_box.png");
     private static final ResourceLocation FAKE_BOX_ITEM_BOX = new ResourceLocation(CubicRacers.MODID,
@@ -44,8 +46,9 @@ public class ItemHudOverlay {
             else if (kart.kartItem.equals("Mushroom")) RenderSystem.setShaderTexture(0, MUSHROOM_ITEM_BOX);
             else if (kart.kartItem.equals("Star")) RenderSystem.setShaderTexture(0, STAR_ITEM_BOX);
             else if (kart.kartItem.equals("Thunder")) RenderSystem.setShaderTexture(0, THUNDER_ITEM_BOX);
-            else if (kart.kartItem.equals("Bom_omb")) RenderSystem.setShaderTexture(0, BOM_OMB_ITEM_BOX);
+
             else if (kart.kartItem.equals("Klaxon")) RenderSystem.setShaderTexture(0, KLAXON_ITEM_BOX);
+            else if (kart.kartItem.equals("Bom_omb")) RenderSystem.setShaderTexture(0, BOM_OMB_ITEM_BOX);
             else if (kart.kartItem.equals("Green_shell")) RenderSystem.setShaderTexture(0, GREEN_SHELL_ITEM_BOX);
             else if (kart.kartItem.equals("Fake_box")) RenderSystem.setShaderTexture(0, FAKE_BOX_ITEM_BOX);
             else RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);
