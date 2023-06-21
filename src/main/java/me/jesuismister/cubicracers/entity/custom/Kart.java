@@ -95,7 +95,7 @@ public class Kart extends Entity implements GeoEntity {
 
     //KART ITEM
     public String kartItem = "Thunder"; //None, Banana, Green_shell, Bob_omb, Mushroom, Star, False_Cube, Thunder, Klaxon
-    private boolean isInvisible = false;
+    private boolean isInvinsible = false;
     private float starBoost = 1f;
     private float timeStar = 0;
 
@@ -179,113 +179,6 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
-    }
-
-    /**
-     * Gère les animations en fonction du statut du kart
-     *
-     * @return
-     */
-    private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
-        //ANIMATION DE STUN
-        if (!this.canMove) {
-            //ANIMATION : ARRET SOUS L'EAU
-            if (this.isInWater()) {
-                waterAnimationState = 2;
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("arret_water", Animation.LoopType.HOLD_ON_LAST_FRAME));
-            }
-            //ANIMATION : ARRET
-            else {
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("arret", Animation.LoopType.HOLD_ON_LAST_FRAME));
-            }
-            return PlayState.CONTINUE;
-        }
-
-        //ANIMATION : DANS L'EAU
-        if (this.isInWater()) {
-            //ANIMATION : MARCHE AVANT
-            if (this.getSpeed() > MIN_SPEED) {
-                //ANIMATION : MARCHE AVANT - ENTREE DANS L'EAU
-                if (waterAnimationState == 0 || waterAnimationState == 3) {
-                    waterAnimationState = 1;
-                    tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("water_on", Animation.LoopType.PLAY_ONCE)
-                            .then("marche_avant_water", Animation.LoopType.LOOP)
-                    );
-                }
-                //ANIMATION : MARCHE AVANT - SIMPLE
-                else if (waterAnimationState == 2) {
-                    tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("marche_avant_water", Animation.LoopType.LOOP));
-                }
-            }
-            //ANIMATION : MARCHE ARRIERE
-            else if (this.getSpeed() < (-MIN_SPEED)) {
-                waterAnimationState = 2;
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("marche_arriere_water", Animation.LoopType.LOOP));
-            }
-            //ANIMATION : ARRET
-            else {
-                waterAnimationState = 2;
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("arret_water", Animation.LoopType.HOLD_ON_LAST_FRAME));
-            }
-        }
-        //ANIMATION : HORS DE L'EAU
-        else {
-            //ANIMATION : DANS LES AIRS
-            if (this.deltaOn) {
-                deltaAnimationState = 1;
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("delta_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
-            }
-            //ANIMATION : MARCHE AVANT
-            else if (this.getSpeed() > MIN_SPEED) {
-                //ANIMATION : MARCHE AVANT - ATTERISSAGE
-                if (deltaAnimationState == 1) {
-                    deltaAnimationState = 2;
-                    tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("delta_off", Animation.LoopType.PLAY_ONCE)
-                            .then("marche_avant", Animation.LoopType.LOOP));
-                }
-                //ANIMATION : MARCHE AVANT - SORTIE D'EAU
-                else if (waterAnimationState > 0) {
-                    waterAnimationState = 3;
-                    tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("water_off", Animation.LoopType.PLAY_ONCE)
-                            .then("marche_avant", Animation.LoopType.LOOP));
-                }
-                //ANIMATION : MARCHE AVANT
-                else if (deltaAnimationState == 0 && waterAnimationState == 0) {
-                    tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("marche_avant", Animation.LoopType.LOOP));
-                }
-            }
-            //ANIMATION : MARCHE ARRIERE
-            else if (this.getSpeed() < (-MIN_SPEED)) {
-                deltaAnimationState = 0;
-                waterAnimationState = 0;
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("marche_arriere", Animation.LoopType.LOOP));
-            }
-            //ANIMATION : ARRET
-            else {
-                deltaAnimationState = 0;
-                waterAnimationState = 0;
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("arret", Animation.LoopType.HOLD_ON_LAST_FRAME));
-            }
-        }
-
-        return PlayState.CONTINUE;
-    }
-
-    @Override
     /**
      * Position du joueur dans le kart
      */
@@ -312,6 +205,10 @@ public class Kart extends Entity implements GeoEntity {
         }
     }
 
+    //////////////////
+    // KART SECTION //
+    //////////////////
+
     @Override
     /**
      * installe le joueur sur le kart
@@ -335,219 +232,6 @@ public class Kart extends Entity implements GeoEntity {
      */
     protected boolean canRide(@NotNull Entity rider) {
         return true;
-    }
-
-    @Override
-    /**
-     * La fonction sert à gérer ce que fait le kart
-     */
-    public void tick() {
-        super.tick();
-        this.noPhysics = false;
-
-        Player player = (Player) this.getFirstPassenger();
-
-        //SI COLLISION, ON RESET LE BOOST DU DRIFT
-        if (this.horizontalCollision) {
-            this.driftingTime = 0;
-        }
-
-        //SI EN ETOILE, ALORS ON STUN LES GENS QU'ON PERCUTE
-        if(this.isInvisible) {
-            List<Entity> nearbyEntities = level.getEntities(this, this.getBoundingBox().inflate(0.5f));
-            for (Entity entity : nearbyEntities) {
-                if (entity instanceof Kart kart) {
-                    if (kart.canMove) {
-                        Kart.stunKart(kart);
-                    }
-                }
-            }
-        }
-
-        //DETECTE SI LE KART EST EN SITUATION DE "STUN"
-        if (!this.getLevel().isClientSide() && this.animationTime <= 0) {
-            Kart.listeStunKart.remove(this.getUUID());
-        }
-        this.canMove = !Kart.listeStunKart.contains(this.getUUID());
-
-        //ACTIVATION DU DELTA PLANE
-        if (!this.deltaOn && !this.isOnGround() && keyJumpOk(player))
-            deltaOn = true;
-        else if (this.deltaOn && (keyJumpOk(player) || this.isOnGround()))
-            deltaOn = false;
-        this.previousKeyJump = isKeyDown(player, keyDelta);
-
-        //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
-        if (this.getSpeed() != 0 && this.canMove) {
-            //SI LE JOUEUR APPUIE SUR LA TOUCHE DE DRIFT, QUE LE KART AVANCE ASSEZ VITE ET AUTRES CONDITIONS
-            if (isKeyDown(player, keyDrift) && !this.horizontalCollision && !this.deltaOn && this.getSpeed() > MAX_SPEED * 0.25) {
-                //INIT DU DRIFT SI PAS ENCORE FAIT
-                if (this.driftingTime == 0) {
-                    if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
-                        this.setDrifting("Left");
-                    } else if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
-                        this.setDrifting("Right");
-                    }
-                }
-
-                //SI LE DRIFT EST INITIALISE
-                if (this.isDrifting) {
-                    //SPAWN DES PARTICULES VIOLETTES
-                    if (this.driftingTime >= 3) spawnDriftParticules(ParticlesInit.DRIFT_PURPLE_PARTICLES.get());
-                        //SPAWN DES PARTICULES ROUGES
-                    else if (this.driftingTime >= 2) spawnDriftParticules(ParticlesInit.DRIFT_ORANGE_PARTICLES.get());
-                        //SPAWN DES PARTICULES BLEUES
-                    else if (this.driftingTime >= 1) spawnDriftParticules(ParticlesInit.DRIFT_BLUE_PARTICLES.get());
-                }
-
-                //DRIFT INITIAL : DRIFT A GAUCHE
-                if (this.isDrifting && this.driftingSens.equals("Left")) {
-                    //LE JOUEUR MAINTIENT LA TOUCHE GAUCHE
-                    if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
-                        if (isKeyDown(player, keyUp) && this.driftingTime < 3.0f) driftingTime += 0.06f;
-                        this.setYRot(this.getYRot() - MANIABILITE_COEEF * DRIFT_ANGLE);
-                    }
-                    //LE JOUEUR MAINTIENT LA TOUCHE DROITE
-                    else if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
-                        this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE * 0.3f));
-                    }
-                    //LE JOUEUR NE MAINTIENT RIEN
-                    else {
-                        if (isKeyDown(player, keyUp) && this.driftingTime < 3.0f) driftingTime += 0.02f;
-                        this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE * 0.75f));
-                    }
-                }
-                //DRIFT INITIAL : DRIFT A DROITE
-                else if (this.isDrifting && this.driftingSens.equals("Right")) {
-                    //LE JOUEUR MAINTIENT LA TOUCHE GAUCHE
-                    if (isKeyDown(player, keyUp) && isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
-                        if (this.driftingTime < 3.0f) driftingTime += 0.06f;
-                        this.setYRot(this.getYRot() + MANIABILITE_COEEF * DRIFT_ANGLE);
-                    }
-                    //LE JOUEUR MAINTIENT LA TOUCHE DROITE
-                    else if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
-                        this.setYRot(this.getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE * 0.5f));
-                    }
-                    //LE JOUEUR NE MAINTIENT RIEN
-                    else {
-                        if (isKeyDown(player, keyUp) && this.driftingTime < 3.0f) driftingTime += 0.02f;
-                        this.setYRot(this.getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE * 0.75f));
-                    }
-                }
-            }
-            //LE KART NE DRIFT PAS
-            else {
-                //ON RESET TOUS LES PARAMETRES EN RAPPORT AVEC LE DRIFT
-                this.resetDrift();
-
-                //SI LE JOUEUR MAINTIENT LE BOUTON GAUCHE : ROTATION GAUCHE
-                if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
-                    if (this.getSpeed() > 0) this.setYRot(this.getYRot() - MANIABILITE_COEEF);
-                    else this.setYRot(this.getYRot() + MANIABILITE_COEEF);
-                }
-                //SI LE JOUEUR MAINTIENT LE BOUTON DROIT : ROTATION DROITE
-                else if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
-                    if (this.getSpeed() > 0) this.setYRot(this.getYRot() + MANIABILITE_COEEF);
-                    else this.setYRot(this.getYRot() - MANIABILITE_COEEF);
-                }
-            }
-        }
-        //SI LE KART EST A L'ARRET
-        else {
-            //ON RESET TOUS LES PARAMETRES EN RAPPORT AVEC LE DRIFT
-            this.resetDrift();
-        }
-
-        //USE DE L'ITEM
-        if (canMove && isKeyDown(player, keyItem)) {
-            //SI L'OBJET DANS LE KART EST UNE BANANE
-            if (this.kartItem.equals("Banana")) {
-                Banana.spawnBanana(this);
-                sendConductorMessage("BANANE !!!!!");
-            } else if (this.kartItem.equals("Mushroom")) {
-                this.timeBoost += 5.0f;
-                setSpeed(MAX_SPEED);
-                sendConductorMessage("MUSHROOM !!!!!");
-            } else if (this.kartItem.equals("Star")) {
-                this.timeStar += 20f;
-                this.starBoost = 1.5f;
-                this.isInvisible = true;
-                setSpeed(MAX_SPEED);
-                sendConductorMessage("STAR !!!!!");
-            } else if (this.kartItem.equals("Thunder")) {
-                Thunder.applyThunderToOthersKarts(this);
-                sendConductorMessage("THUNDER !!!!!");
-            }
-            this.kartItem = "None";
-        }
-        if (this.isInvisible && this.timeStar <= 0) {
-            this.isInvisible = false;
-            this.starBoost = 1f;
-        }
-
-        //SI LE KART EST STUN
-        if (!this.canMove) {
-            this.setYRot(this.getYRot() + (1 / Kart.SPINNING_ANIMATION_TIME) * 720);
-            this.setSpeed(0);
-            this.driftTimeBoost = 0;
-            this.timeBoost = 0;
-            this.setKartMovement();
-            this.animationTime--;
-        }
-
-        //SI LE KART N'EST PAS STUN
-        else {
-            //VECTEUR DE MOUVEMENT : DELTA PLANE
-            if (deltaOn) {
-                this.setSpeed(DELTA_SPEED);
-                this.setKartMovement();
-            }
-            //VECTEUR DE MOUVEMENT : MARCHE AVANT !!!
-            else if (isKeyDown(player, keyUp) || this.timeBoost > 0) {
-                if (this.timeBoost <= 0) {
-                    this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
-                } else {
-                    this.setSpeed(MAX_SPEED);
-                }
-                this.setKartMovement();
-            }
-            //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
-            else if (isKeyDown(player, keyDown)) {
-                this.setSpeed(this.getSpeed() - ACCELERATION_BOOST);
-                this.setKartMovement();
-                this.resetDriftWithNoBoost();
-            }
-            //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
-            else {
-                this.slowDownKart();
-                this.setKartMovement();
-            }
-        }
-
-        //ON BOUGE LA CAMERA DU CONDUCTEUR
-        if (player != null) {
-            if (this.canMove) {
-                this.lastYRot = this.getYRot();
-            }
-            player.setYRot(this.lastYRot);
-            player.setYBodyRot(this.lastYRot);
-        }
-
-        //VITESSE DE CHUTE : SUR TERRE
-        if (this.isOnGround() && !this.isInWater()) {
-            fallSpeed = BASE_FALL_SPEED;
-        }
-        //VITESSE DE CHUTE : DANS LA MER OU EN DELTA
-        else if (this.isInWater() || this.deltaOn) {
-            this.fallSpeed = REDUCED_FALL_SPEED;
-        }
-        //VITESSE DE CHUTE : EN CHUTE LIBRE
-        else if (!this.isOnGround() && !this.deltaOn && fallSpeed >= FALL_SPEED_LIMIT) {
-            fallSpeed = fallSpeed * FALL_SPEED_MULTIPLIER;
-        }
-
-        //INITIE LE MOUVEMENT
-        this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z));
     }
 
     /**
@@ -575,13 +259,13 @@ public class Kart extends Entity implements GeoEntity {
         double angle = Math.toRadians(this.getYRot());
 
         //SPAWN DES PARTICULES DE BOOST
-        if((this.driftTimeBoost > 0 && this.driftingTime == 0) || this.timeBoost > 0 || this.timeStar > 0){
+        if (this.getSpeed() > 0 && (this.driftTimeBoost > 0 || this.timeBoost > 0)) {
             this.spawnBoostParticules(ParticleTypes.FLAME);
         }
 
         float clamped_speed;
         //BOOST LE JOUEUR S'IL A FINI DE DRIFT ET QU'IL EST PAS EN ETOILE
-        if (this.timeStar<0 && ((this.driftTimeBoost > 0 && this.driftingTime == 0) || this.timeBoost > 0)) {
+        if (!this.isInvinsible && (this.driftTimeBoost > 0 || this.timeBoost > 0)) {
             //CALCUL DE LA VITESSE AVEC BOOST
             clamped_speed = Mth.clamp(this.getSpeed() + BOOST, 0, MAX_SPEED + BOOST);
             if (this.driftTimeBoost > 0) driftTimeBoost -= 0.1f;
@@ -589,7 +273,7 @@ public class Kart extends Entity implements GeoEntity {
         }
         //SINON LE KART AVANCE NORMALEMENT (AVEC UN BOOST POTENTIELLE D'ETOILE)
         else {
-            clamped_speed = Mth.clamp(this.getSpeed(), -MAX_SPEED*starBoost / 2, MAX_SPEED*starBoost);
+            clamped_speed = Mth.clamp(this.getSpeed(), -MAX_SPEED * starBoost / 2, MAX_SPEED * starBoost);
             if (this.timeStar > 0) timeStar -= 0.1f;
         }
         this.setSpeed(clamped_speed);
@@ -759,8 +443,13 @@ public class Kart extends Entity implements GeoEntity {
         return false;
     }
 
+    /**
+     * Méthode static qui stun le kart
+     *
+     * @param kart
+     */
     public static void stunKart(Kart kart) {
-        if (kart.isInvisible) return;
+        if (kart.isInvinsible) return;
 
         Kart.listeStunKart.add(kart.getUUID());
         kart.animationTime = Kart.SPINNING_ANIMATION_TIME;
@@ -768,5 +457,389 @@ public class Kart extends Entity implements GeoEntity {
         kart.deltaOn = false;
         kart.driftTimeBoost = 0;
         kart.resetDrift();
+    }
+
+    //////////////////
+    // TICK SECTION //
+    //////////////////
+
+    @Override
+    public void tick() {
+        super.tick();
+        Player player = (Player) this.getFirstPassenger();
+
+        collision(); // GERE LES COLLISIONS DU KART
+
+        if (canMove && isKeyDown(player, keyItem)) useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
+
+        deltaplane(player); // ACTIVE LE DELTA PLANE
+        rotateOrDrift(player); // CALCUL LA ROTATION DU VEHCIULE
+
+        isStun(); // ON VOIT SI LE KART EST STUN
+        if (!this.canMove) applyStun(); // SI LE KART EST STUN, ON LE STOP
+        else setVectorMovment(player); // SINON ON CALCUL LE VECTEUR DE VITESSE
+
+        this.fallSpeed = calculateFallSpeed(); // CALCUL LA VITESSE DE CHUTE
+
+        this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
+        moveCamera(player); // BOUGE LA CAMERA EN CONSEQUENCE DU MOUVEMENT
+    }
+
+    /**
+     * Calcul la vitesse de chute du kart
+     *
+     * @return
+     */
+    private float calculateFallSpeed() {
+        //VITESSE DE CHUTE : DANS LA MER OU EN DELTA
+        if (this.isInWater() || this.deltaOn) {
+            return REDUCED_FALL_SPEED;
+        }
+        //VITESSE DE CHUTE : EN CHUTE LIBRE
+        else if (!this.isOnGround() && !this.deltaOn && fallSpeed >= FALL_SPEED_LIMIT) {
+            return fallSpeed * FALL_SPEED_MULTIPLIER;
+        }
+        //VITESSE DE CHUTE : SUR TERRE
+        return BASE_FALL_SPEED;
+    }
+
+    /**
+     * Bouge la camera du joueur dans la direction où se dirige le kart
+     *
+     * @param player
+     */
+    private void moveCamera(Player player) {
+        //ON BOUGE LA CAMERA DU CONDUCTEUR
+        if (player != null) {
+            if (this.canMove) {
+                this.lastYRot = this.getYRot();
+            }
+            player.setYRot(this.lastYRot);
+            player.setYBodyRot(this.lastYRot);
+        }
+    }
+
+    /**
+     * Calcul est applique le vecteur de mouvement du kart
+     *
+     * @param player
+     */
+    private void setVectorMovment(Player player) {
+        //VECTEUR DE MOUVEMENT : DELTA PLANE
+        if (deltaOn) {
+            this.setSpeed(DELTA_SPEED);
+        }
+        //VECTEUR DE MOUVEMENT : MARCHE AVANT !!!
+        else if (isKeyDown(player, keyUp) || this.timeBoost > 0) {
+            //SI ON AVANCE
+            if (this.timeBoost <= 0) {
+                this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
+            }
+            //SI BOOST
+            else {
+                this.setSpeed(MAX_SPEED);
+            }
+        }
+        //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
+        else if (isKeyDown(player, keyDown)) {
+            this.setSpeed(this.getSpeed() - ACCELERATION_BOOST);
+            this.resetDriftWithNoBoost();
+        }
+        //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
+        else {
+            this.slowDownKart();
+        }
+        this.setKartMovement();
+    }
+
+    /**
+     * Applique le stun au kart
+     */
+    private void applyStun() {
+        this.setYRot(this.getYRot() + (1 / Kart.SPINNING_ANIMATION_TIME) * 720);
+        this.setSpeed(0);
+        this.driftTimeBoost = 0;
+        this.timeBoost = 0;
+        this.setKartMovement();
+        this.animationTime--;
+    }
+
+    /**
+     * Utilise l'objet contenu dans le kart
+     */
+    private void useItem() {
+        //SI L'OBJET DANS LE KART EST UNE BANANE
+        if (this.kartItem.equals("Banana")) {
+            Banana.spawnBanana(this);
+            sendConductorMessage("BANANE !!!!!");
+        } else if (this.kartItem.equals("Mushroom")) {
+            this.timeBoost += 5.0f;
+            setSpeed(MAX_SPEED);
+            sendConductorMessage("MUSHROOM !!!!!");
+        } else if (this.kartItem.equals("Star")) {
+            this.timeStar += 20f;
+            this.starBoost = 1.5f;
+            this.isInvinsible = true;
+            setSpeed(MAX_SPEED);
+            sendConductorMessage("STAR !!!!!");
+        } else if (this.kartItem.equals("Thunder")) {
+            Thunder.applyThunderToOthersKarts(this);
+            sendConductorMessage("THUNDER !!!!!");
+        }
+        this.kartItem = "None";
+    }
+
+    /**
+     * Applique la rotation du kart en fonction de s'il tourne, drift, ou rien
+     *
+     * @param player
+     */
+    private void rotateOrDrift(Player player) {
+        //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
+        if (this.getSpeed() != 0 && this.canMove) {
+            //SI LE JOUEUR APPUIE SUR LA TOUCHE DE DRIFT, QUE LE KART AVANCE ASSEZ VITE ET AUTRES CONDITIONS
+            if (isKeyDown(player, keyDrift) && !this.horizontalCollision && !this.deltaOn && this.getSpeed() > MAX_SPEED * 0.25) {
+                //INIT DU DRIFT SI PAS ENCORE FAIT
+                if (this.driftingTime == 0) {
+                    if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
+                        this.setDrifting("Left");
+                    } else if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
+                        this.setDrifting("Right");
+                    }
+                }
+
+                //SI LE DRIFT EST INITIALISE
+                if (this.isDrifting) {
+                    //SPAWN DES PARTICULES VIOLETTES
+                    if (this.driftingTime >= 3) spawnDriftParticules(ParticlesInit.DRIFT_PURPLE_PARTICLES.get());
+                        //SPAWN DES PARTICULES ROUGES
+                    else if (this.driftingTime >= 2) spawnDriftParticules(ParticlesInit.DRIFT_ORANGE_PARTICLES.get());
+                        //SPAWN DES PARTICULES BLEUES
+                    else if (this.driftingTime >= 1) spawnDriftParticules(ParticlesInit.DRIFT_BLUE_PARTICLES.get());
+                }
+
+                //DRIFT INITIAL : DRIFT A GAUCHE
+                if (this.isDrifting && this.driftingSens.equals("Left")) {
+                    //LE JOUEUR MAINTIENT LA TOUCHE GAUCHE
+                    if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
+                        if (isKeyDown(player, keyUp) && this.driftingTime < 3.0f) driftingTime += 0.06f;
+                        this.setYRot(this.getYRot() - MANIABILITE_COEEF * DRIFT_ANGLE);
+                    }
+                    //LE JOUEUR MAINTIENT LA TOUCHE DROITE
+                    else if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
+                        this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE * 0.3f));
+                    }
+                    //LE JOUEUR NE MAINTIENT RIEN
+                    else {
+                        if (isKeyDown(player, keyUp) && this.driftingTime < 3.0f) driftingTime += 0.02f;
+                        this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE * 0.75f));
+                    }
+                }
+                //DRIFT INITIAL : DRIFT A DROITE
+                else if (this.isDrifting && this.driftingSens.equals("Right")) {
+                    //LE JOUEUR MAINTIENT LA TOUCHE GAUCHE
+                    if (isKeyDown(player, keyUp) && isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
+                        if (this.driftingTime < 3.0f) driftingTime += 0.06f;
+                        this.setYRot(this.getYRot() + MANIABILITE_COEEF * DRIFT_ANGLE);
+                    }
+                    //LE JOUEUR MAINTIENT LA TOUCHE DROITE
+                    else if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
+                        this.setYRot(this.getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE * 0.5f));
+                    }
+                    //LE JOUEUR NE MAINTIENT RIEN
+                    else {
+                        if (isKeyDown(player, keyUp) && this.driftingTime < 3.0f) driftingTime += 0.02f;
+                        this.setYRot(this.getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE * 0.75f));
+                    }
+                }
+            }
+            //LE KART NE DRIFT PAS
+            else {
+                //ON RESET TOUS LES PARAMETRES EN RAPPORT AVEC LE DRIFT
+                this.resetDrift();
+
+                //SI LE JOUEUR MAINTIENT LE BOUTON GAUCHE : ROTATION GAUCHE
+                if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
+                    if (this.getSpeed() > 0) this.setYRot(this.getYRot() - MANIABILITE_COEEF);
+                    else this.setYRot(this.getYRot() + MANIABILITE_COEEF);
+                }
+                //SI LE JOUEUR MAINTIENT LE BOUTON DROIT : ROTATION DROITE
+                else if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
+                    if (this.getSpeed() > 0) this.setYRot(this.getYRot() + MANIABILITE_COEEF);
+                    else this.setYRot(this.getYRot() - MANIABILITE_COEEF);
+                }
+            }
+        }
+        //SI LE KART EST A L'ARRET
+        else {
+            //ON RESET TOUS LES PARAMETRES EN RAPPORT AVEC LE DRIFT
+            this.resetDrift();
+        }
+    }
+
+    /**
+     * Active le deltaplane si demandé
+     *
+     * @param player
+     */
+    private void deltaplane(Player player) {
+        if (player == null) return;
+
+        //ACTIVATION DU DELTA PLANE
+        if (!this.deltaOn && !this.isOnGround() && keyJumpOk(player))
+            deltaOn = true;
+        else if (this.deltaOn && (keyJumpOk(player) || this.isOnGround()))
+            deltaOn = false;
+        this.previousKeyJump = isKeyDown(player, keyDelta);
+    }
+
+    /**
+     * Ajoute ou retire le kart de la liste des karts stun
+     */
+    private void isStun() {
+        //DETECTE SI LE KART EST EN SITUATION DE "STUN"
+        if (!this.getLevel().isClientSide() && this.animationTime <= 0) {
+            Kart.listeStunKart.remove(this.getUUID());
+        }
+        this.canMove = !Kart.listeStunKart.contains(this.getUUID());
+    }
+
+    /**
+     * Méthode qui gère tout ce qui touche aux collisions
+     */
+    private void collision() {
+        //SI COLLISION, ON RESET LE BOOST DU DRIFT
+        if (this.horizontalCollision) {
+            this.driftingTime = 0;
+        }
+
+        //SI EN ETOILE, ALORS ON STUN LES GENS QU'ON PERCUTE
+        if (this.isInvinsible) {
+            List<Entity> nearbyEntities = level.getEntities(this, this.getBoundingBox().inflate(0.5f));
+            for (Entity entity : nearbyEntities) {
+                if (entity instanceof Kart kart) {
+                    if (kart.canMove) {
+                        Kart.stunKart(kart);
+                    }
+                }
+            }
+        }
+
+        //ON VERIFIE QUE LE JOUEUR EST ENCORE EN ETOILE
+        if (this.isInvinsible && this.timeStar <= 0) {
+            this.isInvinsible = false;
+            this.starBoost = 1f;
+        }
+    }
+
+    ///////////////////////
+    // ANIMATION SECTION //
+    ///////////////////////
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
+        controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
+    }
+
+    /**
+     * Gère les animations en fonction du statut du kart
+     *
+     * @return
+     */
+    private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
+        //ANIMATION DE STUN
+        if (!this.canMove) {
+            //ANIMATION : ARRET SOUS L'EAU
+            if (this.isInWater()) {
+                waterAnimationState = 2;
+                tAnimationState.getController().setAnimation(RawAnimation.begin()
+                        .then("arret_water", Animation.LoopType.HOLD_ON_LAST_FRAME));
+            }
+            //ANIMATION : ARRET
+            else {
+                tAnimationState.getController().setAnimation(RawAnimation.begin()
+                        .then("arret", Animation.LoopType.HOLD_ON_LAST_FRAME));
+            }
+            return PlayState.CONTINUE;
+        }
+
+        //ANIMATION : DANS L'EAU
+        if (this.isInWater()) {
+            //ANIMATION : MARCHE AVANT
+            if (this.getSpeed() > MIN_SPEED) {
+                //ANIMATION : MARCHE AVANT - ENTREE DANS L'EAU
+                if (waterAnimationState == 0 || waterAnimationState == 3) {
+                    waterAnimationState = 1;
+                    tAnimationState.getController().setAnimation(RawAnimation.begin()
+                            .then("water_on", Animation.LoopType.PLAY_ONCE)
+                            .then("marche_avant_water", Animation.LoopType.LOOP)
+                    );
+                }
+                //ANIMATION : MARCHE AVANT - SIMPLE
+                else if (waterAnimationState == 2) {
+                    tAnimationState.getController().setAnimation(RawAnimation.begin()
+                            .then("marche_avant_water", Animation.LoopType.LOOP));
+                }
+            }
+            //ANIMATION : MARCHE ARRIERE
+            else if (this.getSpeed() < (-MIN_SPEED)) {
+                waterAnimationState = 2;
+                tAnimationState.getController().setAnimation(RawAnimation.begin()
+                        .then("marche_arriere_water", Animation.LoopType.LOOP));
+            }
+            //ANIMATION : ARRET
+            else {
+                waterAnimationState = 2;
+                tAnimationState.getController().setAnimation(RawAnimation.begin()
+                        .then("arret_water", Animation.LoopType.HOLD_ON_LAST_FRAME));
+            }
+        }
+        //ANIMATION : HORS DE L'EAU
+        else {
+            //ANIMATION : DANS LES AIRS
+            if (this.deltaOn) {
+                deltaAnimationState = 1;
+                tAnimationState.getController().setAnimation(RawAnimation.begin()
+                        .then("delta_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
+            }
+            //ANIMATION : MARCHE AVANT
+            else if (this.getSpeed() > MIN_SPEED) {
+                //ANIMATION : MARCHE AVANT - ATTERISSAGE
+                if (deltaAnimationState == 1) {
+                    deltaAnimationState = 2;
+                    tAnimationState.getController().setAnimation(RawAnimation.begin()
+                            .then("delta_off", Animation.LoopType.PLAY_ONCE)
+                            .then("marche_avant", Animation.LoopType.LOOP));
+                }
+                //ANIMATION : MARCHE AVANT - SORTIE D'EAU
+                else if (waterAnimationState > 0) {
+                    waterAnimationState = 3;
+                    tAnimationState.getController().setAnimation(RawAnimation.begin()
+                            .then("water_off", Animation.LoopType.PLAY_ONCE)
+                            .then("marche_avant", Animation.LoopType.LOOP));
+                }
+                //ANIMATION : MARCHE AVANT
+                else if (deltaAnimationState == 0 && waterAnimationState == 0) {
+                    tAnimationState.getController().setAnimation(RawAnimation.begin()
+                            .then("marche_avant", Animation.LoopType.LOOP));
+                }
+            }
+            //ANIMATION : MARCHE ARRIERE
+            else if (this.getSpeed() < (-MIN_SPEED)) {
+                deltaAnimationState = 0;
+                waterAnimationState = 0;
+                tAnimationState.getController().setAnimation(RawAnimation.begin()
+                        .then("marche_arriere", Animation.LoopType.LOOP));
+            }
+            //ANIMATION : ARRET
+            else {
+                deltaAnimationState = 0;
+                waterAnimationState = 0;
+                tAnimationState.getController().setAnimation(RawAnimation.begin()
+                        .then("arret", Animation.LoopType.HOLD_ON_LAST_FRAME));
+            }
+        }
+
+        return PlayState.CONTINUE;
     }
 }
