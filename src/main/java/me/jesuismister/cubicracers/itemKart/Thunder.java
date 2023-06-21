@@ -9,10 +9,12 @@ import net.minecraft.world.entity.player.Player;
 import java.util.List;
 
 public class Thunder {
+    private static final float RANGE = 1000;
+
     public static void applyThunderToOthersKarts(Kart kart){
         if(!(kart.getFirstPassenger() instanceof Player)) return;
 
-        List<Entity> nearbyEntities = kart.getLevel().getEntities(kart, kart.getBoundingBox().inflate(1000));
+        List<Entity> nearbyEntities = kart.getLevel().getEntities(kart, kart.getBoundingBox().inflate(RANGE));
 
         for (Entity entity : nearbyEntities) {
             if(entity instanceof Kart){
@@ -27,7 +29,7 @@ public class Thunder {
         LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, entity.getLevel());
         lightningBolt.setPos(entity.getX(), entity.getY(), entity.getZ());
         lightningBolt.setVisualOnly(true);
-        lightningBolt.setSilent(true); //POURQUOI CA MARCHE PAS ???
+        lightningBolt.setSilent(true);
         return lightningBolt;
     }
 }

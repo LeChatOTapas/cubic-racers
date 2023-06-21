@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.init.KartInit;
+import me.jesuismister.cubicracers.itemKart.Klaxon;
 import me.jesuismister.cubicracers.itemKart.Thunder;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.KeyBinds;
@@ -94,7 +95,7 @@ public class Kart extends Entity implements GeoEntity {
     public float lastYRot = 0;
 
     //KART ITEM
-    public String kartItem = "Thunder"; //None, Banana, Green_shell, Bob_omb, Mushroom, Star, False_Cube, Thunder, Klaxon
+    public String kartItem = "Klaxon"; //None, Banana, Green_shell, Bob_omb, Mushroom, Star, False_Cube, Thunder, Klaxon
     private boolean isInvinsible = false;
     private float starBoost = 1f;
     private float timeStar = 0;
@@ -259,7 +260,7 @@ public class Kart extends Entity implements GeoEntity {
         double angle = Math.toRadians(this.getYRot());
 
         //SPAWN DES PARTICULES DE BOOST
-        if (this.getSpeed() > 0 && (this.driftTimeBoost > 0 || this.timeBoost > 0)) {
+        if (!this.isInvinsible && this.getSpeed() > 0 && (this.driftTimeBoost > 0 || this.timeBoost > 0)) {
             this.spawnBoostParticules(ParticleTypes.FLAME);
         }
 
@@ -580,11 +581,14 @@ public class Kart extends Entity implements GeoEntity {
             this.timeStar += 20f;
             this.starBoost = 1.5f;
             this.isInvinsible = true;
-            setSpeed(MAX_SPEED);
+            setSpeed(MAX_SPEED*starBoost);
             sendConductorMessage("STAR !!!!!");
         } else if (this.kartItem.equals("Thunder")) {
             Thunder.applyThunderToOthersKarts(this);
             sendConductorMessage("THUNDER !!!!!");
+        } else if (this.kartItem.equals("Klaxon")) {
+            Klaxon.applyKlaxonToOthersKarts(this);
+            sendConductorMessage("KLAXON !!!!!");
         }
         this.kartItem = "None";
     }
