@@ -31,8 +31,8 @@ public class Klaxon {
         //APPLY DES STUNS
         List<Entity> nearbyEntities = kart.getLevel().getEntities(kart, kart.getBoundingBox().inflate(RANGE));
         for (Entity entity : nearbyEntities) {
-            if (entity instanceof Kart) {
-                Kart.stunKart((Kart) entity);
+            if (entity instanceof Kart k) {
+                if(k.canMove) Kart.stunKart(kart);
             }
         }
     }

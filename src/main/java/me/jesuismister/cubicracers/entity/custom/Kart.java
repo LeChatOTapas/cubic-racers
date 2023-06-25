@@ -95,7 +95,7 @@ public class Kart extends Entity implements GeoEntity {
     public float lastYRot = 0;
 
     //KART ITEM
-    public String kartItem = "Klaxon"; //None, Banana, Green_shell, Bob_omb, Mushroom, Star, False_Cube, Thunder, Klaxon
+    public String kartItem = "Bob_omb"; //None, Banana, Green_shell, Bomb_omb, Mushroom, Star, False_Cube, Thunder, Klaxon
     private boolean isInvinsible = false;
     private float starBoost = 1f;
     private float timeStar = 0;
@@ -589,6 +589,9 @@ public class Kart extends Entity implements GeoEntity {
         } else if (this.kartItem.equals("Klaxon")) {
             Klaxon.applyKlaxonToOthersKarts(this);
             sendConductorMessage("KLAXON !!!!!");
+        } else if (this.kartItem.equals("Bob_omb")) {
+            BobOmb.spawnBombOmb(this);
+            sendConductorMessage("BOB_OMB !!!!!");
         }
         this.kartItem = "None";
     }

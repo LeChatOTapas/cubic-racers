@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers;
 
 import me.jesuismister.cubicracers.entity.client.renderer.BananaRenderer;
+import me.jesuismister.cubicracers.entity.client.renderer.BobOmbRenderer;
 import me.jesuismister.cubicracers.entity.client.renderer.ItemBoxRenderer;
 import me.jesuismister.cubicracers.entity.client.renderer.KartRenderer;
 import me.jesuismister.cubicracers.entity.custom.Kart;
@@ -77,6 +78,7 @@ public class CubicRacers {
             //REGISTER TOUS LES ITEMS DE KART
             EntityRenderers.register(KartItemsInit.ITEM_BOX.get(), ItemBoxRenderer::new);
             EntityRenderers.register(KartItemsInit.BANANA.get(), BananaRenderer::new);
+            EntityRenderers.register(KartItemsInit.BOMB_OMB.get(), BobOmbRenderer::new);
         }
 
         @SubscribeEvent

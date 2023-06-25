@@ -32,11 +32,12 @@ public class ItemBox extends Entity implements GeoEntity {
     public static final float HITBOX_X = 1f;
     public static final float HITBOX_Y = 2f;
 
-    private static final double BANANA_DROP_RATE = 20; //BORNE DE 0 à 20
-    private static final double MUSHROOM_DROP_RATE = 40; //BORNE DE 20 à 40
-    private static final double STAR_DROP_RATE = 60; //BORNE DE 40 à 60
-    private static final double THUNDER_DROP_RATE = 80; //BORNE DE 60 à 80
-    private static final double KLAXON_DROP_RATE = 100; //BORNE DE 80 à 100
+    private static final double BANANA_DROP_RATE = 35; //BORNE DE 0 à 35
+    private static final double MUSHROOM_DROP_RATE = 70; //BORNE DE 35 à 70
+    private static final double BOMB_OMB_DROP_RATE = 80; //BORNE DE 70 à 80
+    private static final double STAR_DROP_RATE = 90; //BORNE DE 80 à 90
+    private static final double THUNDER_DROP_RATE = 95; //BORNE DE 90 à 95
+    private static final double KLAXON_DROP_RATE = 100; //BORNE DE 95 à 100
 
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 6; //6s
     private int tickDisabled = 0;
@@ -154,13 +155,13 @@ public class ItemBox extends Entity implements GeoEntity {
             rand = ServerRandom.nextInt(100);
         }
 
-        //System.out.println(this.getLevel() + " : " + rand);
-
         if (0 <= rand && rand < BANANA_DROP_RATE) {
             kart.kartItem = "Banana";
         } else if (BANANA_DROP_RATE < rand && rand < MUSHROOM_DROP_RATE) {
             kart.kartItem = "Mushroom";
-        } else if (MUSHROOM_DROP_RATE < rand && rand < STAR_DROP_RATE) {
+        } else if (MUSHROOM_DROP_RATE < rand && rand < BOMB_OMB_DROP_RATE) {
+            kart.kartItem = "Bomb_omb";
+        } else if (BOMB_OMB_DROP_RATE < rand && rand < STAR_DROP_RATE) {
             kart.kartItem = "Star";
         } else if (STAR_DROP_RATE < rand && rand < THUNDER_DROP_RATE) {
             kart.kartItem = "Thunder";

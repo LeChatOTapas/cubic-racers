@@ -2,6 +2,7 @@ package me.jesuismister.cubicracers.init;
 
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.Banana;
+import me.jesuismister.cubicracers.entity.custom.BobOmb;
 import me.jesuismister.cubicracers.entity.custom.ItemBox;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -28,5 +29,10 @@ public class KartItemsInit {
                             .sized(Banana.HITBOX, Banana.HITBOX)
                             .build(new ResourceLocation(CubicRacers.MODID, "banana").toString()));
 
-
+    //BOMB OMB
+    public static final RegistryObject<EntityType<BobOmb>> BOMB_OMB =
+            ENTITY_TYPES.register("bob_omb",
+                    () -> EntityType.Builder.of(BobOmb::new, MobCategory.MISC)
+                            .sized(BobOmb.HITBOX, BobOmb.HITBOX)
+                            .build(new ResourceLocation(CubicRacers.MODID, "bob_omb").toString()));
 }
