@@ -52,7 +52,7 @@ public class ItemBoxSpawnItem extends Item {
 
             //SI LE TARGET DU CLIQUE DU JOUEUR EST UN BLOCK
             if (hitresult.getType() == HitResult.Type.BLOCK) {
-                ItemBox itemBox = new ItemBox(level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z);
+                ItemBox itemBox = new ItemBox(level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z, false);
                 itemBox.setYRot(player.getYRot());
                 //SI LE CUBE N'A PAS ASSEZ DE PLACE POUR SPAWN, ON ARRETE
                 if (!level.noCollision(itemBox, itemBox.getBoundingBox())) {

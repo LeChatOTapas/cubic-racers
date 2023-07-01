@@ -45,7 +45,6 @@ public class ItemHudOverlay {
             else if (kart.kartItem.equals("Thunder")) RenderSystem.setShaderTexture(0, THUNDER_ITEM_BOX);
             else if (kart.kartItem.equals("Klaxon")) RenderSystem.setShaderTexture(0, KLAXON_ITEM_BOX);
             else if (kart.kartItem.equals("Bob_omb")) RenderSystem.setShaderTexture(0, BOB_OMB_ITEM_BOX);
-
             else if (kart.kartItem.equals("Green_shell")) RenderSystem.setShaderTexture(0, GREEN_SHELL_ITEM_BOX);
             else if (kart.kartItem.equals("Fake_box")) RenderSystem.setShaderTexture(0, FAKE_BOX_ITEM_BOX);
             else RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);

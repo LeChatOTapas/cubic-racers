@@ -32,8 +32,9 @@ public class ItemBox extends Entity implements GeoEntity {
     public static final float HITBOX_X = 1f;
     public static final float HITBOX_Y = 2f;
 
-    private static final double BANANA_DROP_RATE = 35; //BORNE DE 0 à 35
-    private static final double MUSHROOM_DROP_RATE = 70; //BORNE DE 35 à 70
+    private static final double BANANA_DROP_RATE = 30; //BORNE DE 0 à 30
+    private static final double MUSHROOM_DROP_RATE = 60; //BORNE DE 30 à 60
+    private static final double FAKE_BOX_DROP_RATE = 70; //BORNE DE 60 à 70
     private static final double BOMB_OMB_DROP_RATE = 80; //BORNE DE 70 à 80
     private static final double STAR_DROP_RATE = 90; //BORNE DE 80 à 90
     private static final double THUNDER_DROP_RATE = 95; //BORNE DE 90 à 95
@@ -42,13 +43,16 @@ public class ItemBox extends Entity implements GeoEntity {
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 6; //6s
     private int tickDisabled = 0;
     private boolean hasItem = true;
+    private boolean isFalse = false;
 
     public ItemBox(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
     }
 
-    public ItemBox(Level level, double x, double y, double z) {
+    public ItemBox(Level level, double x, double y, double z, boolean isFalse) {
         this(KartItemsInit.ITEM_BOX.get(), level);
+
+        this.isFalse = isFalse;
 
         this.xo = Math.floor(x) + 0.5f;
         this.yo = y;
@@ -114,7 +118,7 @@ public class ItemBox extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
 
-        //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
+        //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
         List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
 
         //PARCOURIR LA LISTE DES ENTITES PROCHES
@@ -123,9 +127,14 @@ public class ItemBox extends Entity implements GeoEntity {
             if (entity instanceof Player) {
                 //ON CHECK QUE LES "PLAYER" DANS UN "KART"
                 if (hasItem && entity.getVehicle() != null && entity.getVehicle() instanceof Kart kart) {
-                    hasItem = false;
-                    tickDisabled = 0;
-                    giveRandomItem(kart);
+                    if(isFalse){
+                        Kart.stunKart(kart);
+                        this.remove(RemovalReason.KILLED);
+                    }else{
+                        hasItem = false;
+                        tickDisabled = 0;
+                        giveRandomItem(kart);
+                    }
 
                     //POUR EVITER DE DONNER UN OBJET A PLUSIEURS VEHICULES
                     return;
@@ -159,7 +168,9 @@ public class ItemBox extends Entity implements GeoEntity {
             kart.kartItem = "Banana";
         } else if (BANANA_DROP_RATE < rand && rand < MUSHROOM_DROP_RATE) {
             kart.kartItem = "Mushroom";
-        } else if (MUSHROOM_DROP_RATE < rand && rand < BOMB_OMB_DROP_RATE) {
+        } else if (MUSHROOM_DROP_RATE < rand && rand < FAKE_BOX_DROP_RATE) {
+            kart.kartItem = "Fake_box";
+        } else if (FAKE_BOX_DROP_RATE < rand && rand < BOMB_OMB_DROP_RATE) {
             kart.kartItem = "Bomb_omb";
         } else if (BOMB_OMB_DROP_RATE < rand && rand < STAR_DROP_RATE) {
             kart.kartItem = "Star";
@@ -182,5 +193,20 @@ public class ItemBox extends Entity implements GeoEntity {
             }
         }
         return false;
+    }
+
+    /**
+     * Spawn le cube derrière le kart
+     *
+     * @param kart
+     */
+    public static void spawnFakeBox(Kart kart) {
+        if (kart.getLevel() != null) {
+            ItemBox fake_cube = new ItemBox(KartItemsInit.ITEM_BOX.get(), kart.getLevel());
+            double angle = Math.toRadians(kart.getYRot());
+            fake_cube.setPos(kart.getX() + (Math.sin(angle) * 2f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2f));
+            fake_cube.isFalse = true;
+            kart.getLevel().addFreshEntity(fake_cube);
+        }
     }
 }
