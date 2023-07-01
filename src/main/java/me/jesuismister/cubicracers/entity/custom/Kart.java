@@ -95,7 +95,7 @@ public class Kart extends Entity implements GeoEntity {
     public float lastYRot = 0;
 
     //KART ITEM
-    public String kartItem = "Fake_box";
+    public String kartItem = "Green_shell";
     private boolean isInvinsible = false;
     private float starBoost = 1f;
     private float timeStar = 0;
@@ -592,9 +592,12 @@ public class Kart extends Entity implements GeoEntity {
         } else if (this.kartItem.equals("Bob_omb")) {
             BobOmb.spawnBombOmb(this);
             sendConductorMessage("BOB_OMB !!!!!");
-        }else if (this.kartItem.equals("Fake_box")) {
+        } else if (this.kartItem.equals("Fake_box")) {
             ItemBox.spawnFakeBox(this);
             sendConductorMessage("FAKE_BOX !!!!!");
+        } else if (this.kartItem.equals("Green_shell")) {
+            GreenShell.spawnGreenShell(this);
+            sendConductorMessage("GREEN_SHELL !!!!!");
         }
         this.kartItem = "None";
     }
@@ -763,12 +766,12 @@ public class Kart extends Entity implements GeoEntity {
             if (this.isInWater()) {
                 waterAnimationState = 2;
                 tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("arret_water", Animation.LoopType.HOLD_ON_LAST_FRAME));
+                        .then("propeller_stopped", Animation.LoopType.HOLD_ON_LAST_FRAME));
             }
             //ANIMATION : ARRET
             else {
                 tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("arret", Animation.LoopType.HOLD_ON_LAST_FRAME));
+                        .then("engine", Animation.LoopType.HOLD_ON_LAST_FRAME));
             }
             return PlayState.CONTINUE;
         }
@@ -781,27 +784,27 @@ public class Kart extends Entity implements GeoEntity {
                 if (waterAnimationState == 0 || waterAnimationState == 3) {
                     waterAnimationState = 1;
                     tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("water_on", Animation.LoopType.PLAY_ONCE)
-                            .then("marche_avant_water", Animation.LoopType.LOOP)
+                            .then("propeller_on", Animation.LoopType.PLAY_ONCE)
+                            .then("propeller_backwards", Animation.LoopType.LOOP)
                     );
                 }
                 //ANIMATION : MARCHE AVANT - SIMPLE
                 else if (waterAnimationState == 2) {
                     tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("marche_avant_water", Animation.LoopType.LOOP));
+                            .then("propeller_backwards", Animation.LoopType.LOOP));
                 }
             }
             //ANIMATION : MARCHE ARRIERE
             else if (this.getSpeed() < (-MIN_SPEED)) {
                 waterAnimationState = 2;
                 tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("marche_arriere_water", Animation.LoopType.LOOP));
+                        .then("propeller_forwards", Animation.LoopType.LOOP));
             }
             //ANIMATION : ARRET
             else {
                 waterAnimationState = 2;
                 tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("arret_water", Animation.LoopType.HOLD_ON_LAST_FRAME));
+                        .then("propeller_stopped", Animation.LoopType.HOLD_ON_LAST_FRAME));
             }
         }
         //ANIMATION : HORS DE L'EAU
@@ -810,7 +813,7 @@ public class Kart extends Entity implements GeoEntity {
             if (this.deltaOn) {
                 deltaAnimationState = 1;
                 tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("delta_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
+                        .then("glider_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
             }
             //ANIMATION : MARCHE AVANT
             else if (this.getSpeed() > MIN_SPEED) {
@@ -818,20 +821,20 @@ public class Kart extends Entity implements GeoEntity {
                 if (deltaAnimationState == 1) {
                     deltaAnimationState = 2;
                     tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("delta_off", Animation.LoopType.PLAY_ONCE)
-                            .then("marche_avant", Animation.LoopType.LOOP));
+                            .then("glider_off", Animation.LoopType.PLAY_ONCE)
+                            .then("engine", Animation.LoopType.LOOP));
                 }
                 //ANIMATION : MARCHE AVANT - SORTIE D'EAU
                 else if (waterAnimationState > 0) {
                     waterAnimationState = 3;
                     tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("water_off", Animation.LoopType.PLAY_ONCE)
-                            .then("marche_avant", Animation.LoopType.LOOP));
+                            .then("propeller_off", Animation.LoopType.PLAY_ONCE)
+                            .then("engine", Animation.LoopType.LOOP));
                 }
                 //ANIMATION : MARCHE AVANT
                 else if (deltaAnimationState == 0 && waterAnimationState == 0) {
                     tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("marche_avant", Animation.LoopType.LOOP));
+                            .then("engine", Animation.LoopType.LOOP));
                 }
             }
             //ANIMATION : MARCHE ARRIERE
@@ -839,14 +842,14 @@ public class Kart extends Entity implements GeoEntity {
                 deltaAnimationState = 0;
                 waterAnimationState = 0;
                 tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("marche_arriere", Animation.LoopType.LOOP));
+                        .then("engine", Animation.LoopType.LOOP));
             }
             //ANIMATION : ARRET
             else {
                 deltaAnimationState = 0;
                 waterAnimationState = 0;
                 tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("arret", Animation.LoopType.HOLD_ON_LAST_FRAME));
+                        .then("engine", Animation.LoopType.HOLD_ON_LAST_FRAME));
             }
         }
 

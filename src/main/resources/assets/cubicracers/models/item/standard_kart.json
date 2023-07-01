@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "cubicracers:item/trash_kart2"
+    "layer0": "cubicracers:item/standard_kart"
   }
 }

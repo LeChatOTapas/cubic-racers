@@ -47,10 +47,10 @@ public class KartModel extends GeoModel<Kart> {
             kart.pourcentage_inclinaison = 0;
 
             //ON RECUPERE LES BONES DES ROUES
-            Optional<GeoBone> bonesGaucheAvant = this.getBone("roue_avant_gauche");
-            Optional<GeoBone> bonesDroiteAvant = this.getBone("roue_avant_droite");
-            Optional<GeoBone> bonesGaucheArriere = this.getBone("roue_arriere_gauche");
-            Optional<GeoBone> bonesDroiteArriere = this.getBone("roue_arriere_droite");
+            Optional<GeoBone> bonesGaucheAvant = this.getBone("front_left");
+            Optional<GeoBone> bonesDroiteAvant = this.getBone("front_right");
+            Optional<GeoBone> bonesGaucheArriere = this.getBone("back_left");
+            Optional<GeoBone> bonesDroiteArriere = this.getBone("back_right");
 
             if (!bonesGaucheArriere.isPresent() || !bonesDroiteArriere.isPresent() || !bonesGaucheAvant.isPresent() || !bonesDroiteAvant.isPresent())
                 return;
@@ -117,9 +117,9 @@ public class KartModel extends GeoModel<Kart> {
 
             //UPDATE
             bonesGaucheAvant.get().updateRotation(-kart.actual_rotation_wheels, rotYGauche, 0);
-            bonesDroiteAvant.get().updateRotation(kart.actual_rotation_wheels, rotYDroit, 0);
+            bonesDroiteAvant.get().updateRotation(-kart.actual_rotation_wheels, rotYDroit, 0);
             bonesGaucheArriere.get().updateRotation(-kart.actual_rotation_wheels, 0, 0);
-            bonesDroiteArriere.get().updateRotation(kart.actual_rotation_wheels, bonesDroiteArriere.get().getRotY(), 0);
+            bonesDroiteArriere.get().updateRotation(-kart.actual_rotation_wheels, bonesDroiteArriere.get().getRotY(), 0);
         }
         //INCLINAISON DU VEHICULE (PAS BESOIN DE BOUGER LES ROUES CAR PAS DE ROUE EN DELTA PLANE)
         else {

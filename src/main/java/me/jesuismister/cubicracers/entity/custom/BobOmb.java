@@ -103,10 +103,18 @@ public class BobOmb extends Entity implements GeoEntity {
         //PARCOURIR LA LISTE DES ENTITES PROCHES
         for (Entity entity : nearbyEntities) {
             //ON CHECK QUE LES ENTITES "KART"
-            if (entity instanceof Kart kart) {
+            if (entity instanceof Kart) {
                 //ON ENCLENCHE LA PROCEDURE DE STUN
                 stun();
                 //SUPPRIMER LA BOMB OMB APRES LA COLLISION
+                this.remove(RemovalReason.DISCARDED);
+            }else if(entity instanceof GreenShell greenShell){
+                greenShell.remove(RemovalReason.KILLED);
+                stun();
+                this.remove(RemovalReason.DISCARDED);
+            }else if(entity instanceof GreenShell banana){
+                banana.remove(RemovalReason.KILLED);
+                stun();
                 this.remove(RemovalReason.DISCARDED);
             }
         }

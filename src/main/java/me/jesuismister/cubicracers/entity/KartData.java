@@ -12,14 +12,18 @@ public class KartData {
     public final float boost;
     public final float maniabiliteCoeff;
     public final float playerPosY;
+    public float hitboxX;
+    public float hitboxY;
 
-    public KartData(String name, float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY) {
+    public KartData(String name, float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY, float hitboxX, float hitboxY) {
         this.name = name;
         this.maxSpeed = maxSpeed;
         this.accelerationBoost = accelerationBoost;
         this.boost = boost;
         this.maniabiliteCoeff = maniabiliteCoeff;
         this.playerPosY = playerPosY;
+        this.hitboxX = hitboxX;
+        this.hitboxY = hitboxY;
 
         this.texture = "textures/entity/" + name + ".png";
         this.model = "geo/" + name + ".geo.json";

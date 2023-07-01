@@ -1,8 +1,10 @@
 package me.jesuismister.cubicracers.init;
 
+import io.netty.util.Attribute;
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.Banana;
 import me.jesuismister.cubicracers.entity.custom.BobOmb;
+import me.jesuismister.cubicracers.entity.custom.GreenShell;
 import me.jesuismister.cubicracers.entity.custom.ItemBox;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -35,4 +37,11 @@ public class KartItemsInit {
                     () -> EntityType.Builder.of(BobOmb::new, MobCategory.MISC)
                             .sized(BobOmb.HITBOX, BobOmb.HITBOX)
                             .build(new ResourceLocation(CubicRacers.MODID, "bob_omb").toString()));
+
+    //GREEN SHELL
+    public static final RegistryObject<EntityType<GreenShell>> GREEN_SHELL =
+            ENTITY_TYPES.register("green_shell",
+                    () -> EntityType.Builder.of(GreenShell::new, MobCategory.MISC)
+                            .sized(GreenShell.HITBOX, Banana.HITBOX)
+                            .build(new ResourceLocation(CubicRacers.MODID, "green_shell").toString()));
 }

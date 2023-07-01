@@ -23,11 +23,11 @@ public class KartInit {
     public static final Map<String, RegistryObject<EntityType<Kart>>> KARTS = new HashMap<>();
 
     public static void initAllKarts() {
-        KARTS_DATA.add(new KartData("trash_kart", 0.6f, 0.02f, 0.2f, 3.0f, -0.5f));
-        KARTS_DATA.add(new KartData("trash_kart2", 0.6f, 0.02f, 0.2f, 3.0f, -0.5f)); //PROVISOIRE - NE PAS OUBLIER D'ENLEVER LES TEXTURES INUTILES
+        KARTS_DATA.add(new KartData("trash_kart", 0.6f, 0.02f, 0.2f, 3.0f, -0.5f, 1.7f, 1.2f));
+        KARTS_DATA.add(new KartData("standard_kart", 0.6f, 0.02f, 0.2f, 3.0f, -0.8f, 2f, 1.2f));
 
         for (KartData d : KARTS_DATA) {
-            addNewKart(d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY);
+            addNewKart(d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY, d.hitboxX, d.hitboxY);
         }
     }
 
@@ -42,12 +42,12 @@ public class KartInit {
      * @param playerPosY        = position en Y du joueur dans le kart (0 = position initial en Y)
      */
     public static void addNewKart(String name, String texture, String model, String animation, float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff,
-                                  float playerPosY) {
+                                  float playerPosY, float hitboxX, float hitboxY) {
 
         KARTS.put(name, ENTITY_TYPES.register(name, () -> EntityType.Builder.<Kart>of((type, level) ->
                         new Kart(type, level, texture, model, animation, maxSpeed, accelerationBoost, boost,
                                 maniabiliteCoeff, playerPosY), MobCategory.MISC)
-                .sized(1.7f, 1.2f)
+                .sized(hitboxX, hitboxY)
                 .build(new ResourceLocation(CubicRacers.MODID, name).toString())));
     }
 }
