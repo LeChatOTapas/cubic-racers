@@ -21,8 +21,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 import java.util.Random;
 
-public class BombOmb extends Entity implements GeoEntity {
-    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(BombOmb.class, EntityDataSerializers.FLOAT);
+public class BobOmb extends Entity implements GeoEntity {
+    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(BobOmb.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public static final String TEXTURE = "textures/entity/bob_omb.png";
@@ -36,7 +36,7 @@ public class BombOmb extends Entity implements GeoEntity {
     private float tickAlive = 0;
 
 
-    public BombOmb(EntityType<?> p_19870_, Level p_19871_) {
+    public BobOmb(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
     }
 
@@ -126,7 +126,7 @@ public class BombOmb extends Entity implements GeoEntity {
      */
     public static void spawnBombOmb(Kart kart) {
         if (kart.getLevel() != null) {
-            BombOmb bombOmb = new BombOmb(KartItemsInit.BOMB_OMB.get(), kart.getLevel());
+            BobOmb bombOmb = new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.getLevel());
             double angle = Math.toRadians(kart.getYRot());
             bombOmb.setPos(kart.getX() + (Math.sin(angle) * 2f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2f));
             kart.getLevel().addFreshEntity(bombOmb);

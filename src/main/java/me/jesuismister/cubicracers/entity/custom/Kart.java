@@ -590,7 +590,7 @@ public class Kart extends Entity implements GeoEntity {
             Klaxon.applyKlaxonToOthersKarts(this);
             sendConductorMessage("KLAXON !!!!!");
         } else if (this.kartItem.equals("Bob_omb")) {
-            BombOmb.spawnBombOmb(this);
+            BobOmb.spawnBombOmb(this);
             sendConductorMessage("BOB_OMB !!!!!");
         }else if (this.kartItem.equals("Fake_box")) {
             ItemBox.spawnFakeBox(this);
