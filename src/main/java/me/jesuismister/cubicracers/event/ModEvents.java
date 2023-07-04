@@ -80,11 +80,11 @@ public class ModEvents {
                 kart.isPressingKeyDown = KeyBinds.KART_DOWN_KEY.isDown();
                 kart.isPressingKeyLeft = KeyBinds.KART_LEFT_KEY.isDown();
                 kart.isPressingKeyRight = KeyBinds.KART_RIGHT_KEY.isDown();
-                kart.isConsummingKeyDelta = KeyBinds.KART_DELTA_KEY.isDown();
+                kart.isPressingKeyDelta = KeyBinds.KART_DELTA_KEY.isDown();
                 kart.isPressingKeyDrift = KeyBinds.KART_DRIFT_KEY.isDown();
                 kart.isPressingKeyItem = KeyBinds.KART_ITEM_KEY.isDown();
 
-                Network.CHANNEL.sendToServer(new InputMessage(kart.isPressingKeyUp, kart.isPressingKeyDown, kart.isPressingKeyLeft, kart.isPressingKeyRight, kart.isConsummingKeyDelta, kart.isPressingKeyDrift, kart.isPressingKeyItem));
+                Network.CHANNEL.sendToServer(new InputMessage(kart.isPressingKeyUp, kart.isPressingKeyDown, kart.isPressingKeyLeft, kart.isPressingKeyRight, kart.isPressingKeyDelta, kart.isPressingKeyDrift, kart.isPressingKeyItem));
             }
         }
     }

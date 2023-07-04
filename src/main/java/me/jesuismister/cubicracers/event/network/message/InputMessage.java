@@ -52,7 +52,7 @@ public class InputMessage {
                 kart.isPressingKeyDown = message.keyDown;
                 kart.isPressingKeyLeft = message.keyLeft;
                 kart.isPressingKeyRight = message.keyRight;
-                kart.isConsummingKeyDelta = message.keyDelta;
+                kart.isPressingKeyDelta = message.keyDelta;
                 kart.isPressingKeyDrift = message.keyDrift;
                 kart.isPressingKeyItem = message.keyItem;
             }

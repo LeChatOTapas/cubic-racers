@@ -43,20 +43,14 @@ public class Kart extends Entity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     //KEYS POUR LE KART
-    //private final KeyMapping keyUp = KeyBinds.KART_UP_KEY;
     public boolean isPressingKeyUp = false;
-    //private final KeyMapping keyDown = KeyBinds.KART_DOWN_KEY;
     public boolean isPressingKeyDown = false;
-    //public final KeyMapping keyLeft = KeyBinds.KART_LEFT_KEY;
     public boolean isPressingKeyLeft = false;
-    //public final KeyMapping keyRight = KeyBinds.KART_RIGHT_KEY;
     public boolean isPressingKeyRight = false;
-    //private final KeyMapping keyDelta = KeyBinds.KART_DELTA_KEY;
-    public boolean isConsummingKeyDelta = false;
-    //private final KeyMapping keyDrift = KeyBinds.KART_DRIFT_KEY;
     public boolean isPressingKeyDrift = false;
-    //private final KeyMapping keyItem = KeyBinds.KART_ITEM_KEY;
     public boolean isPressingKeyItem = false;
+    public boolean isPressingKeyDelta = false;
+    public boolean previousPressingKeyDelta = false;
 
     //ATTRIBUTS GENERAUX DES KARTS
     private static final float MIN_SPEED = 0.075f;
@@ -331,9 +325,9 @@ public class Kart extends Entity implements GeoEntity {
      */
     public void sendConductorMessage(String msg) {
         try {
-            if (this.getFirstPassenger() == null || !(this.getFirstPassenger() instanceof Kart))
-                return;
-            this.getFirstPassenger().sendSystemMessage(Component.literal(msg));
+            if (this.getLevel().isClientSide() && this.getFirstPassenger() != null && this.getFirstPassenger() instanceof Kart) {
+                this.getFirstPassenger().sendSystemMessage(Component.literal(msg));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -375,7 +369,7 @@ public class Kart extends Entity implements GeoEntity {
      * @param particle
      */
     public void spawnBoostParticules(SimpleParticleType particle) {
-        if(!this.getLevel().isClientSide()) return;
+        if (!this.getLevel().isClientSide()) return;
 
         float yaw = this.getYRot();
         double motionX = -Math.sin(Math.toRadians(yaw));
@@ -390,7 +384,7 @@ public class Kart extends Entity implements GeoEntity {
      * @param particle
      */
     public void spawnDriftParticules(SimpleParticleType particle) {
-        if(!this.getLevel().isClientSide()) return;
+        if (!this.getLevel().isClientSide()) return;
 
         float yaw = this.getYRot();
         spawnParticules(particle, 1 * Math.cos(Math.toRadians(yaw)), 0, 1 * Math.sin(Math.toRadians(yaw)),
@@ -409,7 +403,7 @@ public class Kart extends Entity implements GeoEntity {
      * @param z2       = vecteur de direction des particules en z
      */
     public void spawnParticules(SimpleParticleType particle, double x1, double y1, double z1, double x2, double y2, double z2) {
-        if(!this.getLevel().isClientSide()) return;
+        if (!this.getLevel().isClientSide()) return;
 
         Minecraft minecraft = Minecraft.getInstance();
         double x = this.getX();
@@ -461,7 +455,7 @@ public class Kart extends Entity implements GeoEntity {
         super.tick();
         Player player = (Player) this.getFirstPassenger();
         if (player == null) {
-            isPressingKeyUp = isPressingKeyDown = isPressingKeyLeft = isPressingKeyRight = isConsummingKeyDelta = isPressingKeyDrift = isPressingKeyItem = false;
+            isPressingKeyUp = isPressingKeyDown = isPressingKeyLeft = isPressingKeyRight = isPressingKeyDelta = isPressingKeyDrift = isPressingKeyItem = false;
         }
 
         collision(); // GERE LES COLLISIONS DU KART
@@ -553,7 +547,7 @@ public class Kart extends Entity implements GeoEntity {
         this.driftTimeBoost = 0;
         this.timeBoost = 0;
         this.setKartMovement();
-        this.stunRotation = this.stunRotation - 720/(3*20);
+        this.stunRotation = this.stunRotation - 720 / (3 * 20);
     }
 
     /**
@@ -572,7 +566,7 @@ public class Kart extends Entity implements GeoEntity {
             this.timeStar += 20f;
             this.starBoost = 1.5f;
             this.isInvinsible = true;
-            setSpeed(MAX_SPEED*starBoost);
+            setSpeed(MAX_SPEED * starBoost);
             sendConductorMessage("STAR !!!!!");
         } else if (this.kartItem.equals("Thunder")) {
             Thunder.applyThunderToOthersKarts(this);
@@ -690,10 +684,12 @@ public class Kart extends Entity implements GeoEntity {
         if (player == null) return;
 
         //ACTIVATION DU DELTA PLANE
-        if (!this.deltaOn && !this.isOnGround() && isConsummingKeyDelta)
+        if (!this.deltaOn && !this.isOnGround() && (isPressingKeyDelta && !previousPressingKeyDelta))
             deltaOn = true;
-        else if (this.deltaOn && (isConsummingKeyDelta || this.isOnGround()))
+        else if (this.deltaOn && ((isPressingKeyDelta && !previousPressingKeyDelta) || this.isOnGround()))
             deltaOn = false;
+
+        previousPressingKeyDelta = isPressingKeyDelta;
     }
 
     /**
