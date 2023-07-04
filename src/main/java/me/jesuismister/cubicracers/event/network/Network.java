@@ -1,0 +1,19 @@
+package me.jesuismister.cubicracers.event.network;
+
+import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.event.network.message.InputMessage;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
+
+public class Network {
+    public static final String NETWORK_VERSION = "0.1.0";
+    public static final SimpleChannel CHANNEL = NetworkRegistry
+            .newSimpleChannel(new ResourceLocation(CubicRacers.MODID, "network"), () -> NETWORK_VERSION,
+                    version -> version.equals(NETWORK_VERSION), version -> version.equals(NETWORK_VERSION));
+
+    public static void init(){
+        CHANNEL.registerMessage(0, InputMessage.class, InputMessage::encode, InputMessage::decode, InputMessage::handle);
+    }
+
+}

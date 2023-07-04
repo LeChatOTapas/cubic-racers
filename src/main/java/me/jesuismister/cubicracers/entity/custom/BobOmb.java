@@ -14,7 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.*;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -32,7 +34,7 @@ public class BobOmb extends Entity implements GeoEntity {
     public static final float HITBOX = 1f;
     private static final float RANGE = 4;
 
-    private static final float TICK_TO_DESPAWN = 20 * 10; //10s
+    private static final float TICK_TO_DESPAWN = 20f * 5f; //5s
     private float tickAlive = 0;
 
 
@@ -46,13 +48,6 @@ public class BobOmb extends Entity implements GeoEntity {
     }
 
     private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
-        if(tickAlive<(0.75*TICK_TO_DESPAWN)){
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("off", Animation.LoopType.HOLD_ON_LAST_FRAME));
-        }else{
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("on", Animation.LoopType.HOLD_ON_LAST_FRAME));
-        }
         return PlayState.CONTINUE;
     }
 
@@ -137,6 +132,7 @@ public class BobOmb extends Entity implements GeoEntity {
             BobOmb bombOmb = new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.getLevel());
             double angle = Math.toRadians(kart.getYRot());
             bombOmb.setPos(kart.getX() + (Math.sin(angle) * 2f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2f));
+            bombOmb.setYRot(kart.getYRot());
             kart.getLevel().addFreshEntity(bombOmb);
         }
     }
@@ -145,7 +141,7 @@ public class BobOmb extends Entity implements GeoEntity {
      * Stun tous les karts proches
      */
     private void stun(){
-        spawnExplosionParticles(this.getX(), this.getY(), this.getZ(), RANGE);
+        spawnExplosionParticles(this, this.getX(), this.getY(), this.getZ(), RANGE);
 
         List<Entity> nearbyEntities = this.getLevel().getEntities(this, this.getBoundingBox().inflate(RANGE));
         for (Entity entity : nearbyEntities) {
@@ -155,7 +151,9 @@ public class BobOmb extends Entity implements GeoEntity {
         }
     }
 
-    public static void spawnExplosionParticles(double x, double y, double z, float size) {
+    public static void spawnExplosionParticles(BobOmb bobOmb, double x, double y, double z, float size) {
+        if(!bobOmb.getLevel().isClientSide()) return;
+
         Random random = new Random();
 
         for (int i = 0; i < 10; i++) {

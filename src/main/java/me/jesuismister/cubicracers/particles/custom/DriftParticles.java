@@ -1,11 +1,14 @@
 package me.jesuismister.cubicracers.particles.custom;
 
+import me.jesuismister.cubicracers.CubicRacers;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.common.Mod;
 
+@Mod.EventBusSubscriber(modid = CubicRacers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class DriftParticles extends TextureSheetParticle {
 
     protected DriftParticles(ClientLevel level, double xCoord, double yCoord, double zCoord,

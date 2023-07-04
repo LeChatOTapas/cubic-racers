@@ -1,11 +1,15 @@
 package me.jesuismister.cubicracers.util;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import me.jesuismister.cubicracers.CubicRacers;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 
+@Mod.EventBusSubscriber(modid = CubicRacers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class KeyBinds {
 
     public static final String KEY_KART_CATEOGRY = "key.cubicracers.kart_category";

@@ -2,6 +2,7 @@ package me.jesuismister.cubicracers.entity.client.model;
 
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -62,12 +63,12 @@ public class KartModel extends GeoModel<Kart> {
             //DRIFT A GAUCHE
             if (kart.isDrifting && kart.driftingSens.equals("Left")) {
                 //PLUS MAINTIENT GAUCHE
-                if (Kart.isKeyDown(player, kart.keyLeft) && !Kart.isKeyDown(player, kart.keyRight)) {
+                if (kart.isPressingKeyLeft && !kart.isPressingKeyRight) {
                     rotYGauche = 3 * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (3 * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
                 }
                 //PLUS MAINTIENT DROITE
-                else if (Kart.isKeyDown(player, kart.keyRight) && !Kart.isKeyDown(player, kart.keyLeft)) {
+                else if (kart.isPressingKeyRight && !kart.isPressingKeyLeft) {
                     rotYGauche = 1.5f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (1.5f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
                 }
@@ -80,12 +81,12 @@ public class KartModel extends GeoModel<Kart> {
             //DRIFT A DROITE
             else if (kart.isDrifting && kart.driftingSens.equals("Right")) {
                 //PLUS MAINTIENT DROITE
-                if (Kart.isKeyDown(player, kart.keyRight) && !Kart.isKeyDown(player, kart.keyLeft)) {
+                if (kart.isPressingKeyRight && !kart.isPressingKeyLeft) {
                     rotYGauche = -3 * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (-3 * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
                 }
                 //PLUS MAINTIENT GAUCHE
-                else if (Kart.isKeyDown(player, kart.keyLeft) && !Kart.isKeyDown(player, kart.keyRight)) {
+                else if (kart.isPressingKeyLeft && !kart.isPressingKeyRight) {
                     rotYGauche = -1.5f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                     rotYDroit = (-1.5f * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
                 }
@@ -98,15 +99,15 @@ public class KartModel extends GeoModel<Kart> {
             //LE KART NE DRIFT PAS
             else {
                 //ROUES A GAUCHES
-                if (Kart.isKeyDown(player, kart.keyLeft) && !Kart.isKeyDown(player, kart.keyRight)) {
+                if (kart.isPressingKeyLeft && !kart.isPressingKeyRight) {
                     rotYGauche = WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                } else if (Kart.isKeyDown(player, kart.keyRight) && !Kart.isKeyDown(player, kart.keyLeft)) {
+                } else if (kart.isPressingKeyRight && !kart.isPressingKeyLeft) {
                     rotYGauche = -1 * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
                 }
                 //ROUES A DROITES
-                if (Kart.isKeyDown(player, kart.keyLeft) && !Kart.isKeyDown(player, kart.keyRight)) {
+                if (kart.isPressingKeyLeft && !kart.isPressingKeyRight) {
                     rotYDroit = (WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
-                } else if (Kart.isKeyDown(player, kart.keyRight) && !Kart.isKeyDown(player, kart.keyLeft)) {
+                } else if (kart.isPressingKeyRight && !kart.isPressingKeyLeft) {
                     rotYDroit = (-WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
                 }
             }
@@ -124,11 +125,11 @@ public class KartModel extends GeoModel<Kart> {
         //INCLINAISON DU VEHICULE (PAS BESOIN DE BOUGER LES ROUES CAR PAS DE ROUE EN DELTA PLANE)
         else {
             //INCLINAISON DU VEHICULE A GAUCHE
-            if (Kart.isKeyDown(player, kart.keyLeft) && !Kart.isKeyDown(player, kart.keyRight)) {
+            if (kart.isPressingKeyLeft && !kart.isPressingKeyRight) {
                 if (kart.pourcentage_inclinaison < 1.0f) kart.pourcentage_inclinaison += 0.02f;
             }
             //INCLINAISON DU VEHICULE A DROITE
-            else if (Kart.isKeyDown(player, kart.keyRight) && !Kart.isKeyDown(player, kart.keyLeft)) {
+            else if (kart.isPressingKeyRight && !kart.isPressingKeyLeft) {
                 if (kart.pourcentage_inclinaison > -1.0f) kart.pourcentage_inclinaison -= 0.02f;
             }
             //ON RECENTRE LE VEHICULE

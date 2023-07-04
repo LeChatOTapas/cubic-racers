@@ -35,8 +35,8 @@ Vidéo de présentation : lien
 	- Objet bombe-omb : une bombe qui explose tous les véhicules dans un certain rayon. L'explosion se produit en cas de collision avec la bombe ou après un certain laps de temps.
 	- Objet klaxon : immobilise tous les véhicules dans un rayon autour du kart qui l'utilise.
 	- Objet éclair : immobilise tous les karts sauf celui qui l'utilise.
-	- [TO DO] Objet carapace verte : Une carapace qui fonce tout droit et peut rebondir trois fois sur les murs avant de se détruire. Si elle heurte un kart, elle l'immobilise avant de se détruire.
-	- [TO DO] Objet Faux cube : Un faux cube à objet qui immobilise celui qui le heurte au lieu de lui donner un objet.
+	- Objet carapace verte : Une carapace qui fonce tout droit et peut rebondir trois fois sur les murs avant de se détruire. Si elle heurte un kart, elle l'immobilise avant de se détruire.
+	- Objet Faux cube : Un faux cube à objet qui immobilise celui qui le heurte au lieu de lui donner un objet.
 
 À l'avenir, mon objectif est d'intégrer un système de création de circuits dans le mod. Cela permettrait d'introduire une notion de classement (1er, 2ème, 3ème, etc.) et d'ajouter des objets spéciaux qui utilisent ces informations, tels que les carapaces rouges.
 

@@ -1,11 +1,10 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.itemKart.Klaxon;
 import me.jesuismister.cubicracers.itemKart.Thunder;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
-import me.jesuismister.cubicracers.util.KeyBinds;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -18,16 +17,19 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.*;
-import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -35,19 +37,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Mod.EventBusSubscriber(modid = CubicRacers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class Kart extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     //KEYS POUR LE KART
-    private final KeyMapping keyUp = KeyBinds.KART_UP_KEY;
-    private final KeyMapping keyDown = KeyBinds.KART_DOWN_KEY;
-    public final KeyMapping keyLeft = KeyBinds.KART_LEFT_KEY;
-    public final KeyMapping keyRight = KeyBinds.KART_RIGHT_KEY;
-    private final KeyMapping keyDelta = KeyBinds.KART_DELTA_KEY;
-    private final KeyMapping keyDrift = KeyBinds.KART_DRIFT_KEY;
-    private boolean previousKeyJump = false;
-    private final KeyMapping keyItem = KeyBinds.KART_ITEM_KEY;
+    //private final KeyMapping keyUp = KeyBinds.KART_UP_KEY;
+    public boolean isPressingKeyUp = false;
+    //private final KeyMapping keyDown = KeyBinds.KART_DOWN_KEY;
+    public boolean isPressingKeyDown = false;
+    //public final KeyMapping keyLeft = KeyBinds.KART_LEFT_KEY;
+    public boolean isPressingKeyLeft = false;
+    //public final KeyMapping keyRight = KeyBinds.KART_RIGHT_KEY;
+    public boolean isPressingKeyRight = false;
+    //private final KeyMapping keyDelta = KeyBinds.KART_DELTA_KEY;
+    public boolean isConsummingKeyDelta = false;
+    //private final KeyMapping keyDrift = KeyBinds.KART_DRIFT_KEY;
+    public boolean isPressingKeyDrift = false;
+    //private final KeyMapping keyItem = KeyBinds.KART_ITEM_KEY;
+    public boolean isPressingKeyItem = false;
 
     //ATTRIBUTS GENERAUX DES KARTS
     public static List<UUID> listeStunKart = new ArrayList<>();
@@ -95,7 +104,7 @@ public class Kart extends Entity implements GeoEntity {
     public float lastYRot = 0;
 
     //KART ITEM
-    public String kartItem = "Green_shell";
+    public String kartItem = "Bob_omb";
     private boolean isInvinsible = false;
     private float starBoost = 1f;
     private float timeStar = 0;
@@ -318,15 +327,6 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     /**
-     * On détecte si le joueur vient de relacher la touche du deltaplane
-     *
-     * @return
-     */
-    public boolean keyJumpOk(Player player) {
-        return player != null && !isKeyDown(player, keyDelta) && previousKeyJump;
-    }
-
-    /**
      * FONCTION POUR DEBUG : ENVOIE UN MESSAGE AU CONDUCTEUR DU VEHICULE
      *
      * @param msg
@@ -378,6 +378,8 @@ public class Kart extends Entity implements GeoEntity {
      * @param particle
      */
     public void spawnBoostParticules(SimpleParticleType particle) {
+        if(!this.getLevel().isClientSide()) return;
+
         float yaw = this.getYRot();
         double motionX = -Math.sin(Math.toRadians(yaw));
         double motionZ = Math.cos(Math.toRadians(yaw));
@@ -391,6 +393,8 @@ public class Kart extends Entity implements GeoEntity {
      * @param particle
      */
     public void spawnDriftParticules(SimpleParticleType particle) {
+        if(!this.getLevel().isClientSide()) return;
+
         float yaw = this.getYRot();
         spawnParticules(particle, 1 * Math.cos(Math.toRadians(yaw)), 0, 1 * Math.sin(Math.toRadians(yaw)),
                 0, 0, 0);
@@ -408,6 +412,8 @@ public class Kart extends Entity implements GeoEntity {
      * @param z2       = vecteur de direction des particules en z
      */
     public void spawnParticules(SimpleParticleType particle, double x1, double y1, double z1, double x2, double y2, double z2) {
+        if(!this.getLevel().isClientSide()) return;
+
         Minecraft minecraft = Minecraft.getInstance();
         double x = this.getX();
         double y = this.getY();
@@ -417,17 +423,6 @@ public class Kart extends Entity implements GeoEntity {
         minecraft.particleEngine.createParticle(particle, x - x1, y - y1, z - z1, x2, y2, z2);
         //SPAWN PARTICULES DROITES
         minecraft.particleEngine.createParticle(particle, x + x1, y + y1, z + z1, x2, y2, z2);
-    }
-
-    /**
-     * On vérifie que l'input provient bien du joueur qui est dans le kart
-     *
-     * @param conducteur
-     * @param key
-     * @return
-     */
-    public static boolean isKeyDown(Player conducteur, KeyMapping key) {
-        return conducteur != null && key.isDown() && conducteur.getVehicle() instanceof Kart;
     }
 
     @Override
@@ -471,7 +466,7 @@ public class Kart extends Entity implements GeoEntity {
 
         collision(); // GERE LES COLLISIONS DU KART
 
-        if (canMove && isKeyDown(player, keyItem)) useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
+        if (canMove && isPressingKeyItem) useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
 
         deltaplane(player); // ACTIVE LE DELTA PLANE
         rotateOrDrift(player); // CALCUL LA ROTATION DU VEHCIULE
@@ -531,7 +526,7 @@ public class Kart extends Entity implements GeoEntity {
             this.setSpeed(DELTA_SPEED);
         }
         //VECTEUR DE MOUVEMENT : MARCHE AVANT !!!
-        else if (isKeyDown(player, keyUp) || this.timeBoost > 0) {
+        else if (isPressingKeyUp || this.timeBoost > 0) {
             //SI ON AVANCE
             if (this.timeBoost <= 0) {
                 this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
@@ -542,7 +537,7 @@ public class Kart extends Entity implements GeoEntity {
             }
         }
         //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
-        else if (isKeyDown(player, keyDown)) {
+        else if (isPressingKeyDown) {
             this.setSpeed(this.getSpeed() - ACCELERATION_BOOST);
             this.resetDriftWithNoBoost();
         }
@@ -611,18 +606,18 @@ public class Kart extends Entity implements GeoEntity {
         //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
         if (this.getSpeed() != 0 && this.canMove) {
             //SI LE JOUEUR APPUIE SUR LA TOUCHE DE DRIFT, QUE LE KART AVANCE ASSEZ VITE ET AUTRES CONDITIONS
-            if (isKeyDown(player, keyDrift) && !this.horizontalCollision && !this.deltaOn && this.getSpeed() > MAX_SPEED * 0.25) {
+            if (isPressingKeyDrift && !this.horizontalCollision && !this.deltaOn && this.getSpeed() > MAX_SPEED * 0.25) {
                 //INIT DU DRIFT SI PAS ENCORE FAIT
                 if (this.driftingTime == 0) {
-                    if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
+                    if (isPressingKeyLeft && !isPressingKeyRight) {
                         this.setDrifting("Left");
-                    } else if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
+                    } else if (isPressingKeyRight && !isPressingKeyLeft) {
                         this.setDrifting("Right");
                     }
                 }
 
                 //SI LE DRIFT EST INITIALISE
-                if (this.isDrifting) {
+                if (this.getLevel().isClientSide() && this.isDrifting) {
                     //SPAWN DES PARTICULES VIOLETTES
                     if (this.driftingTime >= 3) spawnDriftParticules(ParticlesInit.DRIFT_PURPLE_PARTICLES.get());
                         //SPAWN DES PARTICULES ROUGES
@@ -634,34 +629,34 @@ public class Kart extends Entity implements GeoEntity {
                 //DRIFT INITIAL : DRIFT A GAUCHE
                 if (this.isDrifting && this.driftingSens.equals("Left")) {
                     //LE JOUEUR MAINTIENT LA TOUCHE GAUCHE
-                    if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
-                        if (isKeyDown(player, keyUp) && this.driftingTime < 3.0f) driftingTime += 0.06f;
+                    if (isPressingKeyLeft && !isPressingKeyRight) {
+                        if (isPressingKeyUp && this.driftingTime < 3.0f) driftingTime += 0.06f;
                         this.setYRot(this.getYRot() - MANIABILITE_COEEF * DRIFT_ANGLE);
                     }
                     //LE JOUEUR MAINTIENT LA TOUCHE DROITE
-                    else if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
+                    else if (isPressingKeyRight && !isPressingKeyLeft) {
                         this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE * 0.3f));
                     }
                     //LE JOUEUR NE MAINTIENT RIEN
                     else {
-                        if (isKeyDown(player, keyUp) && this.driftingTime < 3.0f) driftingTime += 0.02f;
+                        if (isPressingKeyUp && this.driftingTime < 3.0f) driftingTime += 0.02f;
                         this.setYRot(this.getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE * 0.75f));
                     }
                 }
                 //DRIFT INITIAL : DRIFT A DROITE
                 else if (this.isDrifting && this.driftingSens.equals("Right")) {
                     //LE JOUEUR MAINTIENT LA TOUCHE GAUCHE
-                    if (isKeyDown(player, keyUp) && isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
+                    if (isPressingKeyUp && isPressingKeyRight && !isPressingKeyLeft) {
                         if (this.driftingTime < 3.0f) driftingTime += 0.06f;
                         this.setYRot(this.getYRot() + MANIABILITE_COEEF * DRIFT_ANGLE);
                     }
                     //LE JOUEUR MAINTIENT LA TOUCHE DROITE
-                    else if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
+                    else if (isPressingKeyLeft && !isPressingKeyRight) {
                         this.setYRot(this.getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE * 0.5f));
                     }
                     //LE JOUEUR NE MAINTIENT RIEN
                     else {
-                        if (isKeyDown(player, keyUp) && this.driftingTime < 3.0f) driftingTime += 0.02f;
+                        if (isPressingKeyUp && this.driftingTime < 3.0f) driftingTime += 0.02f;
                         this.setYRot(this.getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE * 0.75f));
                     }
                 }
@@ -672,12 +667,12 @@ public class Kart extends Entity implements GeoEntity {
                 this.resetDrift();
 
                 //SI LE JOUEUR MAINTIENT LE BOUTON GAUCHE : ROTATION GAUCHE
-                if (isKeyDown(player, keyLeft) && !isKeyDown(player, keyRight)) {
+                if (isPressingKeyLeft && !isPressingKeyRight) {
                     if (this.getSpeed() > 0) this.setYRot(this.getYRot() - MANIABILITE_COEEF);
                     else this.setYRot(this.getYRot() + MANIABILITE_COEEF);
                 }
                 //SI LE JOUEUR MAINTIENT LE BOUTON DROIT : ROTATION DROITE
-                else if (isKeyDown(player, keyRight) && !isKeyDown(player, keyLeft)) {
+                else if (isPressingKeyRight && !isPressingKeyLeft) {
                     if (this.getSpeed() > 0) this.setYRot(this.getYRot() + MANIABILITE_COEEF);
                     else this.setYRot(this.getYRot() - MANIABILITE_COEEF);
                 }
@@ -699,11 +694,10 @@ public class Kart extends Entity implements GeoEntity {
         if (player == null) return;
 
         //ACTIVATION DU DELTA PLANE
-        if (!this.deltaOn && !this.isOnGround() && keyJumpOk(player))
+        if (!this.deltaOn && !this.isOnGround() && isConsummingKeyDelta)
             deltaOn = true;
-        else if (this.deltaOn && (keyJumpOk(player) || this.isOnGround()))
+        else if (this.deltaOn && (isConsummingKeyDelta || this.isOnGround()))
             deltaOn = false;
-        this.previousKeyJump = isKeyDown(player, keyDelta);
     }
 
     /**

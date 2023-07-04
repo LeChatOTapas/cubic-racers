@@ -3,10 +3,7 @@ package me.jesuismister.cubicracers.itemKart;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -24,7 +21,7 @@ public class Klaxon {
             for (float j = 0; j < RANGE; j += 0.5f) {
                 x = kart.getX() + j * Math.cos(angle);
                 z = kart.getZ() + j * Math.sin(angle);
-                Minecraft.getInstance().particleEngine.createParticle(ParticleTypes.ITEM_SNOWBALL, x, kart.getY(), z, 0, 0, 0);
+                if(kart.getLevel().isClientSide()) Minecraft.getInstance().particleEngine.createParticle(ParticleTypes.ITEM_SNOWBALL, x, kart.getY(), z, 0, 0, 0);
             }
         }
 
