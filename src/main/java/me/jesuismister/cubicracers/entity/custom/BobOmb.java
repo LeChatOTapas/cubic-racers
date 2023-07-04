@@ -99,27 +99,22 @@ public class BobOmb extends Entity implements GeoEntity {
         for (Entity entity : nearbyEntities) {
             //ON CHECK QUE LES ENTITES "KART"
             if (entity instanceof Kart) {
-                //ON ENCLENCHE LA PROCEDURE DE STUN
                 stun();
-                //SUPPRIMER LA BOMB OMB APRES LA COLLISION
-                this.remove(RemovalReason.DISCARDED);
             }else if(entity instanceof GreenShell greenShell){
                 greenShell.remove(RemovalReason.KILLED);
                 stun();
-                this.remove(RemovalReason.DISCARDED);
             }else if(entity instanceof GreenShell banana){
                 banana.remove(RemovalReason.KILLED);
                 stun();
-                this.remove(RemovalReason.DISCARDED);
             }
         }
 
         //LA BOMB OMB EXPLOSE TOUTE SEULE AU BOUT D'UN MOMENT
+        tickAlive++;
         if (tickAlive > TICK_TO_DESPAWN) {
             stun();
             this.remove(RemovalReason.DISCARDED);
         }
-        tickAlive++;
     }
 
     /**
@@ -149,6 +144,8 @@ public class BobOmb extends Entity implements GeoEntity {
                 if(kart.canMove) Kart.stunKart(kart);
             }
         }
+
+        this.remove(RemovalReason.DISCARDED);
     }
 
     public static void spawnExplosionParticles(BobOmb bobOmb, double x, double y, double z, float size) {

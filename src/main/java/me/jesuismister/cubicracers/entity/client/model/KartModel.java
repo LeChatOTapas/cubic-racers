@@ -41,8 +41,6 @@ public class KartModel extends GeoModel<Kart> {
             return;
         }
 
-        Player player = (Player) kart.getFirstPassenger();
-
         //INCLINAISON DES ROUES
         if (!kart.deltaOn) {
             kart.pourcentage_inclinaison = 0;

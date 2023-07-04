@@ -59,7 +59,6 @@ public class Kart extends Entity implements GeoEntity {
     public boolean isPressingKeyItem = false;
 
     //ATTRIBUTS GENERAUX DES KARTS
-    public static List<UUID> listeStunKart = new ArrayList<>();
     private static final float MIN_SPEED = 0.075f;
     private static final float FREINAGE_SPEED = 1.05f;
     private static final float BASE_FALL_SPEED = -0.5f;
@@ -99,9 +98,8 @@ public class Kart extends Entity implements GeoEntity {
 
     //ANIMATION DEGATS
     public static final float SPINNING_ANIMATION_TIME = 20.0f * 2.0f;
-    public float animationTime = 0;
     public boolean canMove = true;
-    public float lastYRot = 0;
+    public float stunRotation = 0;
 
     //KART ITEM
     public String kartItem = "Bob_omb";
@@ -333,10 +331,9 @@ public class Kart extends Entity implements GeoEntity {
      */
     public void sendConductorMessage(String msg) {
         try {
-            Minecraft minecraft = Minecraft.getInstance();
-            if (minecraft.player == null || minecraft.player.getVehicle() == null || !(minecraft.player.getVehicle() instanceof Kart))
+            if (this.getFirstPassenger() == null || !(this.getFirstPassenger() instanceof Kart))
                 return;
-            minecraft.player.sendSystemMessage(Component.literal(msg));
+            this.getFirstPassenger().sendSystemMessage(Component.literal(msg));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -447,8 +444,8 @@ public class Kart extends Entity implements GeoEntity {
     public static void stunKart(Kart kart) {
         if (kart.isInvinsible) return;
 
-        Kart.listeStunKart.add(kart.getUUID());
-        kart.animationTime = Kart.SPINNING_ANIMATION_TIME;
+        kart.canMove = false;
+        kart.stunRotation = 720;
 
         kart.deltaOn = false;
         kart.driftTimeBoost = 0;
@@ -463,6 +460,9 @@ public class Kart extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
         Player player = (Player) this.getFirstPassenger();
+        if (player == null) {
+            isPressingKeyUp = isPressingKeyDown = isPressingKeyLeft = isPressingKeyRight = isConsummingKeyDelta = isPressingKeyDrift = isPressingKeyItem = false;
+        }
 
         collision(); // GERE LES COLLISIONS DU KART
 
@@ -507,11 +507,8 @@ public class Kart extends Entity implements GeoEntity {
     private void moveCamera(Player player) {
         //ON BOUGE LA CAMERA DU CONDUCTEUR
         if (player != null) {
-            if (this.canMove) {
-                this.lastYRot = this.getYRot();
-            }
-            player.setYRot(this.lastYRot);
-            player.setYBodyRot(this.lastYRot);
+            player.setYRot(this.getYRot());
+            player.setYBodyRot(this.getYRot());
         }
     }
 
@@ -552,12 +549,11 @@ public class Kart extends Entity implements GeoEntity {
      * Applique le stun au kart
      */
     private void applyStun() {
-        this.setYRot(this.getYRot() + (1 / Kart.SPINNING_ANIMATION_TIME) * 720);
         this.setSpeed(0);
         this.driftTimeBoost = 0;
         this.timeBoost = 0;
         this.setKartMovement();
-        this.animationTime--;
+        this.stunRotation = this.stunRotation - 720/(3*20);
     }
 
     /**
@@ -705,10 +701,10 @@ public class Kart extends Entity implements GeoEntity {
      */
     private void isStun() {
         //DETECTE SI LE KART EST EN SITUATION DE "STUN"
-        if (!this.getLevel().isClientSide() && this.animationTime <= 0) {
-            Kart.listeStunKart.remove(this.getUUID());
+        if (this.stunRotation <= 0) {
+            canMove = true;
+            this.stunRotation = 0;
         }
-        this.canMove = !Kart.listeStunKart.contains(this.getUUID());
     }
 
     /**

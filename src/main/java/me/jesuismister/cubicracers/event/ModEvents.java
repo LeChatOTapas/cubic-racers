@@ -75,7 +75,7 @@ public class ModEvents {
     public class ClientForgeEvent {
         @SubscribeEvent
         public static void onKeyInput(InputEvent.Key event) {
-            if (Minecraft.getInstance().player.getVehicle() != null && Minecraft.getInstance().player.getVehicle() instanceof Kart kart) {
+            if (Minecraft.getInstance()!=null && Minecraft.getInstance().player!=null && Minecraft.getInstance().player.getVehicle() != null && Minecraft.getInstance().player.getVehicle() instanceof Kart kart) {
                 kart.isPressingKeyUp = KeyBinds.KART_UP_KEY.isDown();
                 kart.isPressingKeyDown = KeyBinds.KART_DOWN_KEY.isDown();
                 kart.isPressingKeyLeft = KeyBinds.KART_LEFT_KEY.isDown();
