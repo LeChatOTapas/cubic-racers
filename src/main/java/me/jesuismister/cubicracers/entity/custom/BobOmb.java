@@ -92,20 +92,24 @@ public class BobOmb extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
+        if(!this.getLevel().isClientSide()) return;
+
         //RECUPERER TOUTES LES ENTITES PROCHES DE LA BOMB OMB
-        List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0)); // Ajustez la valeur de l'inflation selon vos besoins
+        List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0));
 
         //PARCOURIR LA LISTE DES ENTITES PROCHES
         for (Entity entity : nearbyEntities) {
-            //ON CHECK QUE LES ENTITES "KART"
             if (entity instanceof Kart) {
                 stun();
+                return;
             }else if(entity instanceof GreenShell greenShell){
                 greenShell.remove(RemovalReason.KILLED);
                 stun();
+                return;
             }else if(entity instanceof GreenShell banana){
                 banana.remove(RemovalReason.KILLED);
                 stun();
+                return;
             }
         }
 

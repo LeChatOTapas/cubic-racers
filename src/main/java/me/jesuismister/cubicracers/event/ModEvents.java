@@ -76,15 +76,21 @@ public class ModEvents {
         @SubscribeEvent
         public static void onKeyInput(InputEvent.Key event) {
             if (Minecraft.getInstance()!=null && Minecraft.getInstance().player!=null && Minecraft.getInstance().player.getVehicle() != null && Minecraft.getInstance().player.getVehicle() instanceof Kart kart) {
-                kart.isPressingKeyUp = KeyBinds.KART_UP_KEY.isDown();
-                kart.isPressingKeyDown = KeyBinds.KART_DOWN_KEY.isDown();
-                kart.isPressingKeyLeft = KeyBinds.KART_LEFT_KEY.isDown();
-                kart.isPressingKeyRight = KeyBinds.KART_RIGHT_KEY.isDown();
-                kart.isPressingKeyDelta = KeyBinds.KART_DELTA_KEY.isDown();
-                kart.isPressingKeyDrift = KeyBinds.KART_DRIFT_KEY.isDown();
-                kart.isPressingKeyItem = KeyBinds.KART_ITEM_KEY.isDown();
+                if(kart.canMove){
+                    kart.isPressingKeyUp = KeyBinds.KART_UP_KEY.isDown();
+                    kart.isPressingKeyDown = KeyBinds.KART_DOWN_KEY.isDown();
+                    kart.isPressingKeyLeft = KeyBinds.KART_LEFT_KEY.isDown();
+                    kart.isPressingKeyRight = KeyBinds.KART_RIGHT_KEY.isDown();
+                    kart.isPressingKeyDelta = KeyBinds.KART_DELTA_KEY.isDown();
+                    kart.isPressingKeyDrift = KeyBinds.KART_DRIFT_KEY.isDown();
+                    kart.isPressingKeyItem = KeyBinds.KART_ITEM_KEY.isDown();
 
-                Network.CHANNEL.sendToServer(new InputMessage(kart.isPressingKeyUp, kart.isPressingKeyDown, kart.isPressingKeyLeft, kart.isPressingKeyRight, kart.isPressingKeyDelta, kart.isPressingKeyDrift, kart.isPressingKeyItem));
+                    Network.CHANNEL.sendToServer(new InputMessage(kart.isPressingKeyUp,
+                            kart.isPressingKeyDown, kart.isPressingKeyLeft, kart.isPressingKeyRight,
+                            kart.isPressingKeyDelta, kart.isPressingKeyDrift, kart.isPressingKeyItem));
+                }else{
+                    Network.CHANNEL.sendToServer(new InputMessage(false, false, false, false, false, false, false));
+                }
             }
         }
     }
