@@ -89,6 +89,7 @@ public class BobOmb extends Entity implements GeoEntity {
         return false;
     }
 
+    /*
     @Override
     public void tick() {
         super.tick();
@@ -119,7 +120,7 @@ public class BobOmb extends Entity implements GeoEntity {
             stun();
             this.remove(RemovalReason.DISCARDED);
         }
-    }
+    }*/
 
     /**
      * Spawn la bomb omb derrière le kart

@@ -90,10 +90,11 @@ public class GreenShell extends Entity implements GeoEntity {
     protected boolean canRide(@NotNull Entity rider) {
         return false;
     }
-
+/*
     @Override
     public void tick() {
         super.tick();
+        if(!this.getLevel().isClientSide()) return;
 
         if(this.horizontalCollision){
             this.setPos(this.getX(), this.getY() + 1f, this.getZ());
@@ -138,6 +139,7 @@ public class GreenShell extends Entity implements GeoEntity {
         }
         this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
     }
+*/
 
     /**
      * Spawn la carapace verte derrière le kart

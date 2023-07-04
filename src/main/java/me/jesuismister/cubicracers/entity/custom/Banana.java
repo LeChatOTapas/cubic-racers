@@ -1,5 +1,8 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.event.network.Network;
+import me.jesuismister.cubicracers.event.network.message.BananaRemoveMessage;
+import me.jesuismister.cubicracers.event.network.message.InputMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -89,41 +92,72 @@ public class Banana extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
-        List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0)); // Ajustez la valeur de l'inflation selon vos besoins
+        //COTE CLIENT
+        if(this.getLevel().isClientSide()){
+            //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
+            List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0));
 
-        //PARCOURIR LA LISTE DES ENTITES PROCHES
-        for (Entity entity : nearbyEntities) {
-            //ON CHECK QUE LES ENTITES "KART"
-            if (entity instanceof Kart kart) {
-                //ON ENCLENCHE LA PROCEDURE DE STUN
-                if (kart.canMove) {
-                    Kart.stunKart(kart);
-                    return; //POUR EVITER DE STUN PLUSIEURS VEHICULES SUR UNE MEME BANANE
+            for (Entity entity : nearbyEntities) {
+                if (entity instanceof Kart kart) {
+                    Network.CHANNEL.sendToServer(new BananaRemoveMessage());
+                    if(kart.canMove){
+                        Kart.stunKart(kart);
+                    }
+                    System.out.println("=> " + kart.canMove);
+                    this.remove(RemovalReason.KILLED);
+                    return;
                 }
-                //SUPPRIMER LA BANANE APRES LA COLLISION
-                this.remove(RemovalReason.DISCARDED);
-            }else if(entity instanceof Banana banana){
-                this.remove(RemovalReason.KILLED);
-                banana.remove(RemovalReason.KILLED);
-            }else if(entity instanceof GreenShell greenShell){
-                this.remove(RemovalReason.KILLED);
-                greenShell.remove(RemovalReason.KILLED);
             }
         }
 
         //DETRUIRE LA BANANE AU BOUT D'UN MOMENT
+        tickAlive++;
         if (tickAlive > TICK_TO_DESPAWN) {
             this.remove(RemovalReason.DISCARDED);
         }
-        tickAlive++;
     }
 
-    /**
-     * Spawn la banane derrière le kart
-     *
-     * @param kart
-     */
+    /*
+        @Override
+        public void tick() {
+            super.tick();
+            if(!this.getLevel().isClientSide()) return;
+
+            //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
+            List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0)); // Ajustez la valeur de l'inflation selon vos besoins
+
+            //PARCOURIR LA LISTE DES ENTITES PROCHES
+            for (Entity entity : nearbyEntities) {
+                //ON CHECK QUE LES ENTITES "KART"
+                if (entity instanceof Kart kart) {
+                    //ON ENCLENCHE LA PROCEDURE DE STUN
+                    if (kart.canMove) {
+                        Kart.stunKart(kart);
+                        return; //POUR EVITER DE STUN PLUSIEURS VEHICULES SUR UNE MEME BANANE
+                    }
+                    //SUPPRIMER LA BANANE APRES LA COLLISION
+                    this.remove(RemovalReason.DISCARDED);
+                }else if(entity instanceof Banana banana){
+                    this.remove(RemovalReason.KILLED);
+                    banana.remove(RemovalReason.KILLED);
+                }else if(entity instanceof GreenShell greenShell){
+                    this.remove(RemovalReason.KILLED);
+                    greenShell.remove(RemovalReason.KILLED);
+                }
+            }
+
+            //DETRUIRE LA BANANE AU BOUT D'UN MOMENT
+            if (tickAlive > TICK_TO_DESPAWN) {
+                this.remove(RemovalReason.DISCARDED);
+            }
+            tickAlive++;
+        }
+
+        /**
+         * Spawn la banane derrière le kart
+         *
+         * @param kart
+         */
     public static void spawnBanana(Kart kart) {
         if (kart.getLevel() != null) {
             Banana banana = new Banana(KartItemsInit.BANANA.get(), kart.getLevel());

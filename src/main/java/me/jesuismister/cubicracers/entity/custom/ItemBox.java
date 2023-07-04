@@ -114,10 +114,11 @@ public class ItemBox extends Entity implements GeoEntity {
     protected boolean canRide(@NotNull Entity rider) {
         return false;
     }
-
+/*
     @Override
     public void tick() {
         super.tick();
+        if(!this.getLevel().isClientSide()) return;
 
         //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
         List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
@@ -149,6 +150,7 @@ public class ItemBox extends Entity implements GeoEntity {
             tickDisabled++;
         }
     }
+ */
 
     /**
      * Méthode qui donne un item au kart donné en paramètre

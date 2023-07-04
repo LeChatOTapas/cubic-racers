@@ -544,6 +544,7 @@ public class Kart extends Entity implements GeoEntity {
      */
     private void applyStun() {
         this.setSpeed(0);
+        isPressingKeyUp = isPressingKeyDown = isPressingKeyLeft = isPressingKeyRight = isPressingKeyDelta = isPressingKeyDrift = isPressingKeyItem = false;
         this.driftTimeBoost = 0;
         this.timeBoost = 0;
         this.setKartMovement();
