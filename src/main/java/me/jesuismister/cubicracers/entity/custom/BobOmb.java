@@ -1,6 +1,12 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.event.network.Network;
+import me.jesuismister.cubicracers.event.network.message.BananaRemoveMessage;
+import me.jesuismister.cubicracers.event.network.message.BobOmbRemoveMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
+import me.jesuismister.cubicracers.util.ClientRandom;
+import me.jesuismister.cubicracers.util.ServerRandom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +28,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class BobOmb extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(BobOmb.class, EntityDataSerializers.FLOAT);
@@ -37,9 +44,12 @@ public class BobOmb extends Entity implements GeoEntity {
     private static final float TICK_TO_DESPAWN = 20f * 5f; //5s
     private float tickAlive = 0;
 
+    //public UUID uuid_bobOmb;
 
     public BobOmb(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
+        //if(p_19871_.isClientSide) uuid_bobOmb = ClientRandom.generateUUIDFromSeed(CubicRacers.SEED);
+        //else uuid_bobOmb = ServerRandom.generateUUIDFromSeed(CubicRacers.SEED);
     }
 
     @Override
@@ -87,6 +97,34 @@ public class BobOmb extends Entity implements GeoEntity {
     @Override
     protected boolean canRide(@NotNull Entity rider) {
         return false;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        //COTE CLIENT
+        if(this.getLevel().isClientSide()){
+            //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
+            List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0));
+
+            for (Entity entity : nearbyEntities) {
+                if (entity instanceof Kart kart) {
+                    if(kart.getFirstPassenger()!=null){
+                        Network.CHANNEL.sendToServer(new BobOmbRemoveMessage());
+                        stun();
+                        this.remove(RemovalReason.KILLED);
+                        return;
+                    }
+                }
+            }
+        }
+
+        //LA BOMB OMB EXPLOSE
+        tickAlive++;
+        if (tickAlive > TICK_TO_DESPAWN) {
+            stun();
+            this.remove(RemovalReason.DISCARDED);
+        }
     }
 
     /*
@@ -149,8 +187,6 @@ public class BobOmb extends Entity implements GeoEntity {
                 if(kart.canMove) Kart.stunKart(kart);
             }
         }
-
-        this.remove(RemovalReason.DISCARDED);
     }
 
     public static void spawnExplosionParticles(BobOmb bobOmb, double x, double y, double z, float size) {

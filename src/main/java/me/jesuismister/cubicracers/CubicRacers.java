@@ -1,5 +1,6 @@
 package me.jesuismister.cubicracers;
 
+import me.jesuismister.cubicracers.entity.custom.BobOmb;
 import me.jesuismister.cubicracers.event.network.Network;
 import me.jesuismister.cubicracers.init.*;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
@@ -16,6 +17,7 @@ import net.minecraftforge.registries.RegistryObject;
 @Mod(CubicRacers.MODID)
 public class CubicRacers {
     public static final String MODID = "cubicracers";
+    public static final long SEED = System.currentTimeMillis();
 
     public CubicRacers() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -36,9 +38,8 @@ public class CubicRacers {
 
         bus.addListener(this::addCreativeTab);
 
-        long seed = System.currentTimeMillis();
-        ClientRandom.initialize(seed);
-        ServerRandom.initialize(seed);
+        ClientRandom.initialize(SEED);
+        ServerRandom.initialize(SEED);
     }
 
     /**
