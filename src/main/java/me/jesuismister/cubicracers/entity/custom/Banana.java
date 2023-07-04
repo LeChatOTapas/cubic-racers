@@ -99,13 +99,14 @@ public class Banana extends Entity implements GeoEntity {
 
             for (Entity entity : nearbyEntities) {
                 if (entity instanceof Kart kart) {
-                    Network.CHANNEL.sendToServer(new BananaRemoveMessage());
-                    if(kart.canMove){
-                        Kart.stunKart(kart);
+                    if(kart.getFirstPassenger()!=null){
+                        Network.CHANNEL.sendToServer(new BananaRemoveMessage());
+                        if(kart.canMove){
+                            Kart.stunKart(kart);
+                        }
+                        this.remove(RemovalReason.KILLED);
+                        return;
                     }
-                    System.out.println("=> " + kart.canMove);
-                    this.remove(RemovalReason.KILLED);
-                    return;
                 }
             }
         }

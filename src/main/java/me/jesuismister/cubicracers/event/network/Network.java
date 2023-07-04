@@ -2,6 +2,7 @@ package me.jesuismister.cubicracers.event.network;
 
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.event.network.message.BananaRemoveMessage;
+import me.jesuismister.cubicracers.event.network.message.GreenShellRemoveMessage;
 import me.jesuismister.cubicracers.event.network.message.InputMessage;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
@@ -16,6 +17,7 @@ public class Network {
     public static void init(){
         CHANNEL.registerMessage(0, InputMessage.class, InputMessage::encode, InputMessage::decode, InputMessage::handle);
         CHANNEL.registerMessage(1, BananaRemoveMessage.class, BananaRemoveMessage::encode, BananaRemoveMessage::decode, BananaRemoveMessage::handle);
+        CHANNEL.registerMessage(2, GreenShellRemoveMessage.class, GreenShellRemoveMessage::encode, GreenShellRemoveMessage::decode, GreenShellRemoveMessage::handle);
     }
 
 }

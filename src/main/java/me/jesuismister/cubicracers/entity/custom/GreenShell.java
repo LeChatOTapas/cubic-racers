@@ -1,5 +1,8 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.event.network.Network;
+import me.jesuismister.cubicracers.event.network.message.BananaRemoveMessage;
+import me.jesuismister.cubicracers.event.network.message.GreenShellRemoveMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -90,7 +93,54 @@ public class GreenShell extends Entity implements GeoEntity {
     protected boolean canRide(@NotNull Entity rider) {
         return false;
     }
-/*
+
+    @Override
+    public void tick() {
+        super.tick();
+        //COTE CLIENT
+        if(this.getLevel().isClientSide()){
+            //RECUPERER TOUTES LES ENTITES PROCHES DE LA CARAPACE
+            List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0));
+
+            for (Entity entity : nearbyEntities) {
+                if (entity instanceof Kart kart) {
+                    if(kart.getFirstPassenger()!=null){
+                        Network.CHANNEL.sendToServer(new GreenShellRemoveMessage());
+                        if(kart.canMove){
+                            Kart.stunKart(kart);
+                        }
+                        this.remove(RemovalReason.KILLED);
+                        return;
+                    }
+                }
+            }
+        }
+
+        //DEPLACEMENT DE LA CARAPACE
+        if(this.horizontalCollision){
+            this.setPos(this.getX(), this.getY() + 1f, this.getZ());
+            nbUp++;
+            if(nbUp>=2){
+                this.remove(RemovalReason.KILLED);
+            }
+        }else{
+            nbUp = 0;
+        }
+        setMovement(this);
+        float fallSpeed = 0;
+        if(!this.isOnGround()){
+            fallSpeed = -1;
+        }
+        this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z));
+
+        //DETRUIRE LA BANANE AU BOUT D'UN MOMENT
+        tickAlive++;
+        if (tickAlive > TICK_TO_DESPAWN) {
+            this.remove(RemovalReason.DISCARDED);
+        }
+    }
+
+    /*
     @Override
     public void tick() {
         super.tick();
