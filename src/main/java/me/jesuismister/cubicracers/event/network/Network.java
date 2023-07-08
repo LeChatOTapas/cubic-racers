@@ -18,6 +18,7 @@ public class Network {
         CHANNEL.registerMessage(2, GreenShellRemoveMessage.class, GreenShellRemoveMessage::encode, GreenShellRemoveMessage::decode, GreenShellRemoveMessage::handle);
         CHANNEL.registerMessage(3, BobOmbRemoveMessage.class, BobOmbRemoveMessage::encode, BobOmbRemoveMessage::decode, BobOmbRemoveMessage::handle);
         CHANNEL.registerMessage(4, ItemBoxMessage.class, ItemBoxMessage::encode, ItemBoxMessage::decode, ItemBoxMessage::handle);
+        CHANNEL.registerMessage(5, KartMessage.class, KartMessage::encode, KartMessage::decode, KartMessage::handle);
     }
 
 }

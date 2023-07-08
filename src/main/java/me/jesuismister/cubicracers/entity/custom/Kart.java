@@ -3,6 +3,7 @@ package me.jesuismister.cubicracers.entity.custom;
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.event.network.Network;
 import me.jesuismister.cubicracers.event.network.message.InputMessage;
+import me.jesuismister.cubicracers.event.network.message.KartMessage;
 import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.itemKart.Klaxon;
 import me.jesuismister.cubicracers.itemKart.Thunder;
@@ -455,21 +456,25 @@ public class Kart extends Entity implements GeoEntity {
             isPressingKeyUp = isPressingKeyDown = isPressingKeyLeft = isPressingKeyRight = isPressingKeyDelta = isPressingKeyDrift = isPressingKeyItem = false;
         }
 
-        collision(); // GERE LES COLLISIONS DU KART
+        if(this.level().isClientSide()){
+            collision(); // GERE LES COLLISIONS DU KART
 
-        if (canMove && isPressingKeyItem) useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
+            if (canMove && isPressingKeyItem) useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
 
-        deltaplane(player); // ACTIVE LE DELTA PLANE
-        rotateOrDrift(player); // CALCUL LA ROTATION DU VEHCIULE
+            deltaplane(player); // ACTIVE LE DELTA PLANE
+            rotateOrDrift(player); // CALCUL LA ROTATION DU VEHCIULE
 
-        isStun(); // ON VOIT SI LE KART EST STUN
-        if (!this.canMove) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
-        else setVectorMovment(); // SINON ON CALCUL LE VECTEUR DE VITESSE
+            isStun(); // ON VOIT SI LE KART EST STUN
+            if (!this.canMove) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
+            else setVectorMovment(); // SINON ON CALCUL LE VECTEUR DE VITESSE
 
-        this.fallSpeed = calculateFallSpeed(); // CALCUL LA VITESSE DE CHUTE
+            this.fallSpeed = calculateFallSpeed(); // CALCUL LA VITESSE DE CHUTE
 
-        this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
-        moveCamera(player); // BOUGE LA CAMERA EN CONSEQUENCE DU MOUVEMENT
+            this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
+            moveCamera(player); // BOUGE LA CAMERA EN CONSEQUENCE DU MOUVEMENT
+
+            Network.CHANNEL.sendToServer(new KartMessage(this.getX(), this.getY(), this.getZ(), this.getYRot()));
+        }
     }
 
     /**

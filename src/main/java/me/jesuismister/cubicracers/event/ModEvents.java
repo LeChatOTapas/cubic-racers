@@ -77,6 +77,7 @@ public class ModEvents {
         @SubscribeEvent
         public static void onKeyInput(InputEvent.Key event) {
             if (Minecraft.getInstance()!=null && Minecraft.getInstance().player!=null && Minecraft.getInstance().player.getVehicle() != null && Minecraft.getInstance().player.getVehicle() instanceof Kart kart) {
+
                 if(kart.canMove){
                     kart.isPressingKeyUp = KeyBinds.KART_UP_KEY.isDown();
                     kart.isPressingKeyDown = KeyBinds.KART_DOWN_KEY.isDown();
