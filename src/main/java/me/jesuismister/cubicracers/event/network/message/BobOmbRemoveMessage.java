@@ -39,6 +39,7 @@ public class BobOmbRemoveMessage {
                 List<Entity> nearbyEntities = kart.level().getEntities(kart, kart.getBoundingBox().inflate(0));
                 for (Entity entity : nearbyEntities) {
                     if(entity instanceof BobOmb bobOmb){
+                        bobOmb.stun();
                         bobOmb.remove(Entity.RemovalReason.KILLED);
                     }
                 }

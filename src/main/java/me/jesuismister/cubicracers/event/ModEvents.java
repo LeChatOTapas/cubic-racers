@@ -47,6 +47,7 @@ public class ModEvents {
             EntityRenderers.register(KartItemsInit.BANANA.get(), BananaRenderer::new);
             EntityRenderers.register(KartItemsInit.BOMB_OMB.get(), BobOmbRenderer::new);
             EntityRenderers.register(KartItemsInit.GREEN_SHELL.get(), GreenShellRenderer::new);
+            EntityRenderers.register(KartItemsInit.FAKE_BOX.get(), FakeBoxRenderer::new);
         }
 
         @SubscribeEvent

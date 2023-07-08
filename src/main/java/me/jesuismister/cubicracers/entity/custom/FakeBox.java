@@ -3,16 +3,15 @@ package me.jesuismister.cubicracers.entity.custom;
 import me.jesuismister.cubicracers.event.network.Network;
 import me.jesuismister.cubicracers.event.network.message.ItemBoxMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
-import me.jesuismister.cubicracers.util.ClientRandom;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -23,8 +22,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class ItemBox extends Entity implements GeoEntity {
-    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(ItemBox.class, EntityDataSerializers.FLOAT);
+public class FakeBox extends Entity implements GeoEntity {
+    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(FakeBox.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public static final String TEXTURE = "textures/entity/item_box.png";
@@ -32,6 +31,9 @@ public class ItemBox extends Entity implements GeoEntity {
     public static final String ANIMATION = "animations/item_box.animation.json";
     public static final float HITBOX_X = 1f;
     public static final float HITBOX_Y = 2f;
+
+    private static final float TICK_TO_DESPAWN = 20f * 5f; //5s
+    private float tickAlive = 0;
 
     private static final double BANANA_DROP_RATE = 25; //BORNE DE 0 à 30
     private static final double GREEN_SHELL_DROP_RATE = 50; //BORNE DE 0 à 30
@@ -44,13 +46,13 @@ public class ItemBox extends Entity implements GeoEntity {
 
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 6; //6s
     private int tickDisabled = 0;
-    public boolean hasItem = true;
 
-    public ItemBox(EntityType<?> p_19870_, Level p_19871_) {
+    public FakeBox(EntityType<?> p_19870_, Level p_19871_) {
+
         super(p_19870_, p_19871_);
     }
 
-    public ItemBox(Level level, double x, double y, double z) {
+    public FakeBox(Level level, double x, double y, double z) {
         this(KartItemsInit.ITEM_BOX.get(), level);
 
         this.xo = Math.floor(x) + 0.5f;
@@ -65,13 +67,8 @@ public class ItemBox extends Entity implements GeoEntity {
     }
 
     private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
-        if (hasItem) {
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("box_on", Animation.LoopType.LOOP));
-        } else {
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("box_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
-        }
+        tAnimationState.getController().setAnimation(RawAnimation.begin()
+                .then("box_on", Animation.LoopType.LOOP));
         return PlayState.CONTINUE;
     }
 
@@ -124,62 +121,33 @@ public class ItemBox extends Entity implements GeoEntity {
             for (Entity entity : nearbyEntities) {
                 //ON CHECK QUE LES ENTITES "KART"
                 if (entity instanceof Kart kart) {
-                    hasItem = false;
-                    tickDisabled = 0;
-                    giveRandomItem(kart);
-                    Network.CHANNEL.sendToServer(new ItemBoxMessage(false, kart.kartItem));
+                    Network.CHANNEL.sendToServer(new ItemBoxMessage(true, ""));
+                    Kart.stunKart(kart);
+                    this.remove(RemovalReason.KILLED);
                 }
             }
         }
 
-        //REAPPROVISIONNER LE CUBE AU BOUT DE X SECONDES
-        if (!hasItem) {
-            if (tickDisabled > TICK_TO_GET_BACK_ITEM) hasItem = true;
-            tickDisabled++;
+        //LE CUBE DESPAWN AU BOUT DE X SECS
+        tickAlive++;
+        if (tickAlive > TICK_TO_DESPAWN) {
+            this.remove(RemovalReason.KILLED);
         }
-
+        this.move(MoverType.SELF, new Vec3(0, -1, 0));
     }
 
     /**
-     * Méthode qui donne un item au kart donné en paramètre
+     * Spawn le cube derrière le kart
      *
      * @param kart
      */
-    public void giveRandomItem(Kart kart) {
-        if (!kart.kartItem.equals("None")) return;
+    public static void spawnFakeBox(Kart kart) {
+        System.out.println(kart.level());
 
-        double rand = ClientRandom.nextInt(100);
+        FakeBox fake_cube = new FakeBox(KartItemsInit.FAKE_BOX.get(), kart.level());
 
-        if (0 <= rand && rand < BANANA_DROP_RATE) {
-            kart.kartItem = "Banana";
-        } else if (BANANA_DROP_RATE < rand && rand < GREEN_SHELL_DROP_RATE) {
-            kart.kartItem = "Green_shell";
-        } else if (GREEN_SHELL_DROP_RATE < rand && rand < MUSHROOM_DROP_RATE) {
-            kart.kartItem = "Mushroom";
-        } else if (MUSHROOM_DROP_RATE < rand && rand < FAKE_BOX_DROP_RATE) {
-            kart.kartItem = "Fake_box";
-        } else if (FAKE_BOX_DROP_RATE < rand && rand < BOMB_OMB_DROP_RATE) {
-            kart.kartItem = "Bomb_omb";
-        } else if (BOMB_OMB_DROP_RATE < rand && rand < STAR_DROP_RATE) {
-            kart.kartItem = "Star";
-        } else if (STAR_DROP_RATE < rand && rand < THUNDER_DROP_RATE) {
-            kart.kartItem = "Thunder";
-        } else if (THUNDER_DROP_RATE < rand && rand <= KLAXON_DROP_RATE) {
-            kart.kartItem = "Klaxon";
-        }
-    }
-
-    @Override
-    /**
-     * Méthode qui fait en sorte de détruire la box quand elle prend des dégats
-     */
-    public boolean hurt(DamageSource damage, float p_19947_) {
-        if (damage.getEntity() instanceof Player player) {
-            if (player.getVehicle() == null) {
-                this.remove(RemovalReason.KILLED);
-                return true;
-            }
-        }
-        return false;
+        double angle = Math.toRadians(kart.getYRot());
+        fake_cube.setPos(kart.getX() + (Math.sin(angle) * 3f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 3f));
+        kart.level().addFreshEntity(fake_cube);
     }
 }

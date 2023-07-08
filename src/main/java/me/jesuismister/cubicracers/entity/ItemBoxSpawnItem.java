@@ -1,7 +1,6 @@
 package me.jesuismister.cubicracers.entity;
 
 import me.jesuismister.cubicracers.entity.custom.ItemBox;
-import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -52,7 +51,7 @@ public class ItemBoxSpawnItem extends Item {
 
             //SI LE TARGET DU CLIQUE DU JOUEUR EST UN BLOCK
             if (hitresult.getType() == HitResult.Type.BLOCK) {
-                ItemBox itemBox = new ItemBox(level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z, false);
+                ItemBox itemBox = new ItemBox(level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z);
                 itemBox.setYRot(player.getYRot());
                 //SI LE CUBE N'A PAS ASSEZ DE PLACE POUR SPAWN, ON ARRETE
                 if (!level.noCollision(itemBox, itemBox.getBoundingBox())) {

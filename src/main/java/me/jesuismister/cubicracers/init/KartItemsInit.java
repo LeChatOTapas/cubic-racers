@@ -1,11 +1,9 @@
 package me.jesuismister.cubicracers.init;
 
+import ca.weblite.objc.Proxy;
 import io.netty.util.Attribute;
 import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.entity.custom.Banana;
-import me.jesuismister.cubicracers.entity.custom.BobOmb;
-import me.jesuismister.cubicracers.entity.custom.GreenShell;
-import me.jesuismister.cubicracers.entity.custom.ItemBox;
+import me.jesuismister.cubicracers.entity.custom.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -20,7 +18,7 @@ public class KartItemsInit {
     //ITEM BOX
     public static final RegistryObject<EntityType<ItemBox>> ITEM_BOX =
             ENTITY_TYPES.register("item_box",
-                    () -> EntityType.Builder.<ItemBox>of((type, level) -> new ItemBox(type, level, false), MobCategory.MISC)
+                    () -> EntityType.Builder.<ItemBox>of((type, level) -> new ItemBox(type, level), MobCategory.MISC)
                             .sized(ItemBox.HITBOX_X, ItemBox.HITBOX_Y)
                             .build(new ResourceLocation(CubicRacers.MODID, "item_box").toString()));
 
@@ -44,4 +42,11 @@ public class KartItemsInit {
                     () -> EntityType.Builder.of(GreenShell::new, MobCategory.MISC)
                             .sized(GreenShell.HITBOX, Banana.HITBOX)
                             .build(new ResourceLocation(CubicRacers.MODID, "green_shell").toString()));
+
+    //ITEM BOX
+    public static final RegistryObject<EntityType<FakeBox>> FAKE_BOX =
+            ENTITY_TYPES.register("fake_box",
+                    () -> EntityType.Builder.<FakeBox>of((type, level) -> new FakeBox(type, level), MobCategory.MISC)
+                            .sized(ItemBox.HITBOX_X, ItemBox.HITBOX_Y)
+                            .build(new ResourceLocation(CubicRacers.MODID, "item_box").toString()));
 }

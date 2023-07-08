@@ -96,7 +96,7 @@ public class Kart extends Entity implements GeoEntity {
     public float stunRotation = 0;
 
     //KART ITEM
-    public String kartItem = "Green_shell";
+    public String kartItem = "Fake_box";
     private boolean isInvinsible = false;
     private float starBoost = 1f;
     private float timeStar = 0;
@@ -573,10 +573,10 @@ public class Kart extends Entity implements GeoEntity {
             Klaxon.applyKlaxonToOthersKarts(this);
             sendConductorMessage("KLAXON !!!!!");
         } else if (this.kartItem.equals("Bob_omb")) {
-            BobOmb.spawnBombOmb(this);
+            BobOmb.spawnBobOmb(this);
             sendConductorMessage("BOB_OMB !!!!!");
         } else if (this.kartItem.equals("Fake_box")) {
-            ItemBox.spawnFakeBox(this);
+            FakeBox.spawnFakeBox(this);
             sendConductorMessage("FAKE_BOX !!!!!");
         } else if (this.kartItem.equals("Green_shell")) {
             GreenShell.spawnGreenShell(this);

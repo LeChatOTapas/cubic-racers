@@ -41,12 +41,8 @@ public class BobOmb extends Entity implements GeoEntity {
     private static final float TICK_TO_DESPAWN = 20f * 5f; //5s
     private float tickAlive = 0;
 
-    //public UUID uuid_bobOmb;
-
     public BobOmb(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
-        //if(p_19871_.isClientSide) uuid_bobOmb = ClientRandom.generateUUIDFromSeed(CubicRacers.SEED);
-        //else uuid_bobOmb = ServerRandom.generateUUIDFromSeed(CubicRacers.SEED);
     }
 
     @Override
@@ -116,11 +112,11 @@ public class BobOmb extends Entity implements GeoEntity {
             }
         }
 
-        //LA BOMB OMB EXPLOSE
+        //LA BOMB OMB EXPLOSE AU BOUT DE X SECS
         tickAlive++;
         if (tickAlive > TICK_TO_DESPAWN) {
             stun();
-            this.remove(RemovalReason.DISCARDED);
+            this.remove(RemovalReason.KILLED);
         }
         this.move(MoverType.SELF, new Vec3(0, -1, 0));
     }
@@ -130,7 +126,7 @@ public class BobOmb extends Entity implements GeoEntity {
      *
      * @param kart
      */
-    public static void spawnBombOmb(Kart kart) {
+    public static void spawnBobOmb(Kart kart) {
         if (kart.level() != null) {
             BobOmb bombOmb = new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.level());
             double angle = Math.toRadians(kart.getYRot());
@@ -143,7 +139,7 @@ public class BobOmb extends Entity implements GeoEntity {
     /**
      * Stun tous les karts proches
      */
-    private void stun() {
+    public void stun() {
         spawnExplosionParticles(this, this.getX(), this.getY(), this.getZ(), RANGE);
 
         List<Entity> nearbyEntities = this.level().getEntities(this, this.getBoundingBox().inflate(RANGE));
