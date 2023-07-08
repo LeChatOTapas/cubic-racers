@@ -96,7 +96,7 @@ public class Kart extends Entity implements GeoEntity {
     public float stunRotation = 0;
 
     //KART ITEM
-    public String kartItem = "Star";
+    public String kartItem = "Klaxon";
     private boolean isInvinsible = false;
     private float starSpeedBoost = 1f; //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
     private float timeStar = 0;
@@ -466,7 +466,11 @@ public class Kart extends Entity implements GeoEntity {
                 collision(); // GERE LES COLLISIONS DU KART
 
                 if (canMove && isPressingKeyItem) useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
-                if (isKlaxoning) Klaxon.applyKlaxonToOthersKarts(this);
+                if (isKlaxoning){
+                    System.out.println("weshhhhhhhhhhhhhhhh");
+                    Klaxon.applyKlaxonToOthersKarts(this);
+                    isKlaxoning = false;
+                }
 
                 deltaplane(player); // ACTIVE LE DELTA PLANE
                 rotateOrDrift(player); // CALCUL LA ROTATION DU VEHCIULE
@@ -580,6 +584,7 @@ public class Kart extends Entity implements GeoEntity {
             sendConductorMessage("THUNDER !!!!!");
         } else if (this.kartItem.equals("Klaxon")) {
             Network.CHANNEL.sendToServer(new KlaxonUseMessage());
+            this.isKlaxoning = true;
             sendConductorMessage("KLAXON !!!!!");
         } else if (this.kartItem.equals("Bob_omb")) {
             Network.CHANNEL.sendToServer(new BobOmbUseMessage());
