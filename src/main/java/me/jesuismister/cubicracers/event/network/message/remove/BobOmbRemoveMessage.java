@@ -5,28 +5,29 @@ import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.List;
 import java.util.function.Supplier;
 
 public class BobOmbRemoveMessage {
-    public int test;
+    public boolean shouldExplode;
 
     public BobOmbRemoveMessage(){
     }
 
-    public BobOmbRemoveMessage(int test){
-        this.test = test;
+    public BobOmbRemoveMessage(boolean shouldExplode){
+        this.shouldExplode = shouldExplode;
     }
 
 
     public static void encode(BobOmbRemoveMessage message, FriendlyByteBuf buffer){
-        buffer.writeInt(message.test);
+        buffer.writeBoolean(message.shouldExplode);
     }
 
     public static BobOmbRemoveMessage decode(FriendlyByteBuf buffer){
-        return new BobOmbRemoveMessage(buffer.readInt());
+        return new BobOmbRemoveMessage(buffer.readBoolean());
     }
 
     public static void handle(BobOmbRemoveMessage message, Supplier<NetworkEvent.Context> contextSupplier){
@@ -38,8 +39,7 @@ public class BobOmbRemoveMessage {
                 List<Entity> nearbyEntities = kart.level().getEntities(kart, kart.getBoundingBox().inflate(0));
                 for (Entity entity : nearbyEntities) {
                     if(entity instanceof BobOmb bobOmb){
-                        bobOmb.stun();
-                        bobOmb.remove(Entity.RemovalReason.KILLED);
+                        bobOmb.shouldExplode = message.shouldExplode;
                     }
                 }
             }

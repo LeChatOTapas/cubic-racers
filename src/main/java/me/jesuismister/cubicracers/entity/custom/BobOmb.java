@@ -40,6 +40,7 @@ public class BobOmb extends Entity implements GeoEntity {
 
     private static final float TICK_TO_DESPAWN = 20f * 5f; //5s
     private float tickAlive = 0;
+    public boolean shouldExplode = false;
 
     public BobOmb(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
@@ -95,8 +96,15 @@ public class BobOmb extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
+
         //COTE CLIENT
         if (this.level().isClientSide()) {
+            if(shouldExplode){
+                stun();
+                this.remove(RemovalReason.KILLED);
+                return;
+            }
+
             //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
             List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
 
@@ -110,14 +118,11 @@ public class BobOmb extends Entity implements GeoEntity {
                     }
                 }
             }
+            if (tickAlive > TICK_TO_DESPAWN) stun();
+        }else{
+            if (tickAlive > TICK_TO_DESPAWN+2) this.remove(RemovalReason.KILLED);
         }
-
-        //LA BOMB OMB EXPLOSE AU BOUT DE X SECS
         tickAlive++;
-        if (tickAlive > TICK_TO_DESPAWN) {
-            stun();
-            this.remove(RemovalReason.KILLED);
-        }
         this.move(MoverType.SELF, new Vec3(0, -1, 0));
     }
 
@@ -130,7 +135,7 @@ public class BobOmb extends Entity implements GeoEntity {
         if (kart.level() != null) {
             BobOmb bombOmb = new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.level());
             double angle = Math.toRadians(kart.getYRot());
-            bombOmb.setPos(kart.getX() + (Math.sin(angle) * 2f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2f));
+            bombOmb.setPos(kart.getX() + (Math.sin(angle) * 3f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 3f));
             bombOmb.setYRot(kart.getYRot());
             kart.level().addFreshEntity(bombOmb);
         }

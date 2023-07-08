@@ -135,7 +135,7 @@ public class GreenShell extends Entity implements GeoEntity {
         if (kart.level() != null) {
             GreenShell green_shell = new GreenShell(KartItemsInit.GREEN_SHELL.get(), kart.level());
             float angle = (float) Math.toRadians(kart.getYRot());
-            green_shell.setPos(kart.getX() + (-Math.sin(angle) * (2.5f + 1.5f * kart.getSpeed()/kart.MAX_SPEED)), kart.getY(), kart.getZ() + (Math.cos(angle) * (2.5f + 1.5f * kart.getSpeed()/kart.MAX_SPEED)));
+            green_shell.setPos(kart.getX() + (-Math.sin(angle) * (3f + 1f * kart.getSpeed()/kart.MAX_SPEED)), kart.getY(), kart.getZ() + (Math.cos(angle) * (3f + 1f * kart.getSpeed()/kart.MAX_SPEED)));
             green_shell.setYRot(kart.getYRot());
             kart.level().addFreshEntity(green_shell);
         }

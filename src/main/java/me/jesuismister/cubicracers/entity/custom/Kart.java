@@ -5,6 +5,7 @@ import me.jesuismister.cubicracers.event.network.Network;
 import me.jesuismister.cubicracers.event.network.message.*;
 import me.jesuismister.cubicracers.event.network.message.use.*;
 import me.jesuismister.cubicracers.init.KartInit;
+import me.jesuismister.cubicracers.itemKart.Klaxon;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
@@ -99,6 +100,7 @@ public class Kart extends Entity implements GeoEntity {
     private boolean isInvinsible = false;
     private float starSpeedBoost = 1f; //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
     private float timeStar = 0;
+    public boolean isKlaxoning = false;
 
     /**
      * Constructeur de base
@@ -447,24 +449,29 @@ public class Kart extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
+
+        isStun(); // ON VOIT SI LE KART EST STUN
+        if (!this.canMove) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
+
         Player player = (Player) this.getFirstPassenger();
         if (player == null) {
             isPressingKeyUp = isPressingKeyDown = isPressingKeyLeft = isPressingKeyRight = isPressingKeyDelta = isPressingKeyDrift = isPressingKeyItem = false;
-            this.slowDownKart();
-            this.setKartMovement();
-            this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
-        }else{
+            if (this.getSpeed() > 0) {
+                this.slowDownKart();
+                this.setKartMovement();
+                this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z));
+            }
+        } else {
             if (this.level().isClientSide()) {
                 collision(); // GERE LES COLLISIONS DU KART
 
                 if (canMove && isPressingKeyItem) useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
+                if (isKlaxoning) Klaxon.applyKlaxonToOthersKarts(this);
 
                 deltaplane(player); // ACTIVE LE DELTA PLANE
                 rotateOrDrift(player); // CALCUL LA ROTATION DU VEHCIULE
 
-                isStun(); // ON VOIT SI LE KART EST STUN
-                if (!this.canMove) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
-                else setVectorMovment(); // SINON ON CALCUL LE VECTEUR DE VITESSE
+                if (this.canMove) setVectorMovment(); // SINON ON CALCUL LE VECTEUR DE VITESSE
 
                 this.fallSpeed = calculateFallSpeed(); // CALCUL LA VITESSE DE CHUTE
 

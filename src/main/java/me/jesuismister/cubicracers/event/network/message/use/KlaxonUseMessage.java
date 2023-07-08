@@ -26,7 +26,8 @@ public class KlaxonUseMessage {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
-                Klaxon.applyKlaxonToOthersKarts(kart);
+                kart.isKlaxoning = true;
+                //Klaxon.applyKlaxonToOthersKarts(kart);
             }
         });
         context.setPacketHandled(true);
