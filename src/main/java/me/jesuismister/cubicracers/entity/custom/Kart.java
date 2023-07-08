@@ -96,7 +96,7 @@ public class Kart extends Entity implements GeoEntity {
     public float stunRotation = 0;
 
     //KART ITEM
-    public String kartItem = "Fake_box";
+    public String kartItem = "Green_shell";
     private boolean isInvinsible = false;
     private float starBoost = 1f;
     private float timeStar = 0;
@@ -167,7 +167,7 @@ public class Kart extends Entity implements GeoEntity {
 
     @Override
     public float getStepHeight() {
-        return 1.0f;
+        return 1.2f;
     }
 
     @Override

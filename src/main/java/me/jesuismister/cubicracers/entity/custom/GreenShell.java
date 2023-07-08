@@ -32,7 +32,6 @@ public class GreenShell extends Entity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private static final float MAX_SPEED = 1.2f;
-    private int nbUp = 0;
 
     public static final String TEXTURE = "textures/entity/green_shell.png";
     public static final String MODEL = "geo/green_shell.geo.json";
@@ -118,20 +117,10 @@ public class GreenShell extends Entity implements GeoEntity {
 
         //DEPLACEMENT DE LA CARAPACE
         if(this.horizontalCollision){
-            this.setPos(this.getX(), this.getY() + 1f, this.getZ());
-            nbUp++;
-            if(nbUp>=2){
-                this.remove(RemovalReason.KILLED);
-            }
-        }else{
-            nbUp = 0;
+            this.remove(RemovalReason.KILLED);
         }
         setMovement(this);
-        float fallSpeed = 0;
-        if(!this.onGround()){
-            fallSpeed = -1;
-        }
-        this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z));
+        this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, -1, this.getDeltaMovement().z));
 
         //DETRUIRE LA BANANE AU BOUT D'UN MOMENT
         tickAlive++;
@@ -139,57 +128,6 @@ public class GreenShell extends Entity implements GeoEntity {
             this.remove(RemovalReason.DISCARDED);
         }
     }
-
-    /*
-    @Override
-    public void tick() {
-        super.tick();
-        if(!this.level().isClientSide()) return;
-
-        if(this.horizontalCollision){
-            this.setPos(this.getX(), this.getY() + 1f, this.getZ());
-            nbUp++;
-            if(nbUp>=2){
-                this.remove(RemovalReason.KILLED);
-            }
-        }else{
-            nbUp = 0;
-        }
-
-        //RECUPERER TOUTES LES ENTITES PROCHES DE LA CARAPACE VERTE
-        List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0)); // Ajustez la valeur de l'inflation selon vos besoins
-
-        //PARCOURIR LA LISTE DES ENTITES PROCHES
-        for (Entity entity : nearbyEntities) {
-            //ON CHECK QUE LES ENTITES "KART"
-            if (entity instanceof Kart kart) {
-                //ON ENCLENCHE LA PROCEDURE DE STUN
-                if (kart.canMove) {
-                    Kart.stunKart(kart);
-                    return; //POUR EVITER DE STUN PLUSIEURS VEHICULES SUR UNE MEME CARAPACE VERTE
-                }
-                //SUPPRIMER LA CARAPACE VERTE APRES LA COLLISION
-                this.remove(RemovalReason.DISCARDED);
-            }else if(entity instanceof GreenShell greenShell){
-                this.remove(RemovalReason.KILLED);
-                greenShell.remove(RemovalReason.KILLED);
-            }
-        }
-
-        //DETRUIRE LA CARAPACE VERTE AU BOUT D'UN MOMENT
-        if (tickAlive > TICK_TO_DESPAWN) {
-            this.remove(RemovalReason.DISCARDED);
-        }
-        tickAlive++;
-
-        setMovement(this);
-        float fallSpeed = 0;
-        if(!this.isOnGround()){
-            fallSpeed = -1;
-        }
-        this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
-    }
-*/
 
     /**
      * Spawn la carapace verte derrière le kart
@@ -200,7 +138,7 @@ public class GreenShell extends Entity implements GeoEntity {
         if (kart.level() != null) {
             GreenShell green_shell = new GreenShell(KartItemsInit.GREEN_SHELL.get(), kart.level());
             float angle = (float) Math.toRadians(kart.getYRot());
-            green_shell.setPos(kart.getX() + (-Math.sin(angle) * (2f + 2f * kart.getSpeed()/kart.MAX_SPEED)), kart.getY(), kart.getZ() + (Math.cos(angle) * (2f + 2f * kart.getSpeed()/kart.MAX_SPEED)));
+            green_shell.setPos(kart.getX() + (-Math.sin(angle) * (2.5f + 1.5f * kart.getSpeed()/kart.MAX_SPEED)), kart.getY(), kart.getZ() + (Math.cos(angle) * (2.5f + 1.5f * kart.getSpeed()/kart.MAX_SPEED)));
             green_shell.setYRot(kart.getYRot());
             kart.level().addFreshEntity(green_shell);
         }
@@ -208,8 +146,6 @@ public class GreenShell extends Entity implements GeoEntity {
 
     public static void setMovement(GreenShell green_shell) {
         green_shell.setSpeed(MAX_SPEED);
-
-        System.out.println(green_shell.level() + " / " + green_shell.getYRot());
 
         double x = Math.sin(Math.toRadians(-green_shell.getYRot())) * MAX_SPEED;
         double z = Math.cos(Math.toRadians(-green_shell.getYRot())) * MAX_SPEED;
@@ -222,7 +158,10 @@ public class GreenShell extends Entity implements GeoEntity {
     }
 
     @Override
+    /**
+     * La carapace peut comme le kart, monter au dessus des blocs de 1 de haut
+     */
     public float getStepHeight() {
-        return 10.0f;
+        return 1.2f;
     }
 }
