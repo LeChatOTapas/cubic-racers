@@ -1,7 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.ItemBoxMessage;
+import me.jesuismister.cubicracers.event.network.message.remove.ItemBoxMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import me.jesuismister.cubicracers.util.ClientRandom;
 import net.minecraft.nbt.CompoundTag;

@@ -1,6 +1,5 @@
-package me.jesuismister.cubicracers.event.network.message;
+package me.jesuismister.cubicracers.event.network.message.remove;
 
-import me.jesuismister.cubicracers.entity.custom.GreenShell;
 import me.jesuismister.cubicracers.entity.custom.ItemBox;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.network.FriendlyByteBuf;

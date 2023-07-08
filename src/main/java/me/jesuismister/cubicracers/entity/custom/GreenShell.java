@@ -1,15 +1,12 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.BananaRemoveMessage;
-import me.jesuismister.cubicracers.event.network.message.GreenShellRemoveMessage;
+import me.jesuismister.cubicracers.event.network.message.remove.GreenShellRemoveMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;

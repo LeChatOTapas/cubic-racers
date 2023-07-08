@@ -1,7 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.BobOmbRemoveMessage;
+import me.jesuismister.cubicracers.event.network.message.remove.BobOmbRemoveMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;

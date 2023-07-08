@@ -1,7 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.ItemBoxMessage;
+import me.jesuismister.cubicracers.event.network.message.remove.ItemBoxMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -32,17 +32,8 @@ public class FakeBox extends Entity implements GeoEntity {
     public static final float HITBOX_X = 1f;
     public static final float HITBOX_Y = 2f;
 
-    private static final float TICK_TO_DESPAWN = 20f * 5f; //5s
+    private static final float TICK_TO_DESPAWN = 20f * 90f; //5s
     private float tickAlive = 0;
-
-    private static final double BANANA_DROP_RATE = 25; //BORNE DE 0 à 30
-    private static final double GREEN_SHELL_DROP_RATE = 50; //BORNE DE 0 à 30
-    private static final double MUSHROOM_DROP_RATE = 65; //BORNE DE 30 à 60
-    private static final double FAKE_BOX_DROP_RATE = 70; //BORNE DE 60 à 70
-    private static final double BOMB_OMB_DROP_RATE = 80; //BORNE DE 70 à 80
-    private static final double STAR_DROP_RATE = 90; //BORNE DE 80 à 90
-    private static final double THUNDER_DROP_RATE = 95; //BORNE DE 90 à 95
-    private static final double KLAXON_DROP_RATE = 100; //BORNE DE 95 à 100
 
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 6; //6s
     private int tickDisabled = 0;
@@ -142,8 +133,6 @@ public class FakeBox extends Entity implements GeoEntity {
      * @param kart
      */
     public static void spawnFakeBox(Kart kart) {
-        System.out.println(kart.level());
-
         FakeBox fake_cube = new FakeBox(KartItemsInit.FAKE_BOX.get(), kart.level());
 
         double angle = Math.toRadians(kart.getYRot());

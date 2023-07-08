@@ -2,11 +2,9 @@ package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.InputMessage;
-import me.jesuismister.cubicracers.event.network.message.KartMessage;
+import me.jesuismister.cubicracers.event.network.message.*;
+import me.jesuismister.cubicracers.event.network.message.use.*;
 import me.jesuismister.cubicracers.init.KartInit;
-import me.jesuismister.cubicracers.itemKart.Klaxon;
-import me.jesuismister.cubicracers.itemKart.Thunder;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
@@ -36,9 +34,7 @@ import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = CubicRacers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class Kart extends Entity implements GeoEntity {
@@ -273,7 +269,7 @@ public class Kart extends Entity implements GeoEntity {
             else if (this.timeBoost > 0) timeBoost -= 0.1f;
         }
         //ACCELERE LE TOUT SI SOUS ETOILE
-        if(isInvinsible && !isPressingKeyDown) clamped_speed = clamped_speed * starSpeedBoost;
+        if (isInvinsible && !isPressingKeyDown) clamped_speed = clamped_speed * starSpeedBoost;
         if (this.timeStar > 0) timeStar -= 0.1f;
 
         this.setSpeed(clamped_speed);
@@ -323,7 +319,7 @@ public class Kart extends Entity implements GeoEntity {
      */
     public void sendConductorMessage(String msg) {
         try {
-            if (this!=null && this.getFirstPassenger() != null && this.getFirstPassenger() instanceof Player) {
+            if (this != null && this.getFirstPassenger() != null && this.getFirstPassenger() instanceof Player) {
                 this.getFirstPassenger().sendSystemMessage(Component.literal(msg));
             }
         } catch (Exception e) {
@@ -454,26 +450,28 @@ public class Kart extends Entity implements GeoEntity {
         Player player = (Player) this.getFirstPassenger();
         if (player == null) {
             isPressingKeyUp = isPressingKeyDown = isPressingKeyLeft = isPressingKeyRight = isPressingKeyDelta = isPressingKeyDrift = isPressingKeyItem = false;
-        }
+            this.slowDownKart();
+            this.setKartMovement();
+        } else {
+            if (this.level().isClientSide()) {
+                collision(); // GERE LES COLLISIONS DU KART
 
-        if(this.level().isClientSide()){
-            collision(); // GERE LES COLLISIONS DU KART
+                if (canMove && isPressingKeyItem) useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
 
-            if (canMove && isPressingKeyItem) useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
+                deltaplane(player); // ACTIVE LE DELTA PLANE
+                rotateOrDrift(player); // CALCUL LA ROTATION DU VEHCIULE
 
-            deltaplane(player); // ACTIVE LE DELTA PLANE
-            rotateOrDrift(player); // CALCUL LA ROTATION DU VEHCIULE
+                isStun(); // ON VOIT SI LE KART EST STUN
+                if (!this.canMove) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
+                else setVectorMovment(); // SINON ON CALCUL LE VECTEUR DE VITESSE
 
-            isStun(); // ON VOIT SI LE KART EST STUN
-            if (!this.canMove) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
-            else setVectorMovment(); // SINON ON CALCUL LE VECTEUR DE VITESSE
+                this.fallSpeed = calculateFallSpeed(); // CALCUL LA VITESSE DE CHUTE
 
-            this.fallSpeed = calculateFallSpeed(); // CALCUL LA VITESSE DE CHUTE
+                this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
+                moveCamera(player); // BOUGE LA CAMERA EN CONSEQUENCE DU MOUVEMENT
 
-            this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
-            moveCamera(player); // BOUGE LA CAMERA EN CONSEQUENCE DU MOUVEMENT
-
-            Network.CHANNEL.sendToServer(new KartMessage(this.getX(), this.getY(), this.getZ(), this.getYRot()));
+                Network.CHANNEL.sendToServer(new KartMessage(this.getX(), this.getY(), this.getZ(), this.getYRot()));
+            }
         }
     }
 
@@ -510,11 +508,10 @@ public class Kart extends Entity implements GeoEntity {
 
     /**
      * Calcul est applique le vecteur de mouvement du kart
-     *
      */
     private void setVectorMovment() {
         //VECTEUR DE MOUVEMENT : BOOST
-        if(this.timeBoost > 0 || (isInvinsible && !isPressingKeyDown)){
+        if (this.timeBoost > 0 || (isInvinsible && !isPressingKeyDown)) {
             this.setSpeed(MAX_SPEED);
         }
         //VECTEUR DE MOUVEMENT : DELTA PLANE
@@ -523,11 +520,11 @@ public class Kart extends Entity implements GeoEntity {
         }
         //VECTEUR DE MOUVEMENT : MARCHE AVANT !!!
         else if (isPressingKeyUp) {
-            this.setSpeed(Mth.clamp(this.getSpeed() + ACCELERATION_BOOST, -MAX_SPEED/2, MAX_SPEED));
+            this.setSpeed(Mth.clamp(this.getSpeed() + ACCELERATION_BOOST, -MAX_SPEED / 2, MAX_SPEED));
         }
         //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
         else if (isPressingKeyDown) {
-            this.setSpeed(Mth.clamp(this.getSpeed() - ACCELERATION_BOOST, -MAX_SPEED/2, MAX_SPEED));
+            this.setSpeed(Mth.clamp(this.getSpeed() - ACCELERATION_BOOST, -MAX_SPEED / 2, MAX_SPEED));
             this.resetDriftWithNoBoost();
         }
         //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
@@ -546,7 +543,7 @@ public class Kart extends Entity implements GeoEntity {
         this.driftTimeBoost = 0;
         this.timeBoost = 0;
 
-        this.setSpeed(0);
+        this.setSpeed(Mth.clamp(this.getSpeed() - ACCELERATION_BOOST * 1.5f, 0, MAX_SPEED));
         this.setKartMovement();
 
         this.stunRotation = this.stunRotation - 720 / (3 * 20);
@@ -558,7 +555,7 @@ public class Kart extends Entity implements GeoEntity {
     private void useItem() {
         //SI L'OBJET DANS LE KART EST UNE BANANE
         if (this.kartItem.equals("Banana")) {
-            Banana.spawnBanana(this);
+            Network.CHANNEL.sendToServer(new BananaUseMessage());
             sendConductorMessage("BANANE !!!!!");
         } else if (this.kartItem.equals("Mushroom")) {
             this.timeBoost += 5.0f;
@@ -571,19 +568,19 @@ public class Kart extends Entity implements GeoEntity {
             setSpeed(MAX_SPEED * starSpeedBoost);
             sendConductorMessage("STAR !!!!!");
         } else if (this.kartItem.equals("Thunder")) {
-            Thunder.applyThunderToOthersKarts(this);
+            Network.CHANNEL.sendToServer(new ThunderUseMessage());
             sendConductorMessage("THUNDER !!!!!");
         } else if (this.kartItem.equals("Klaxon")) {
-            Klaxon.applyKlaxonToOthersKarts(this);
+            Network.CHANNEL.sendToServer(new KlaxonUseMessage());
             sendConductorMessage("KLAXON !!!!!");
         } else if (this.kartItem.equals("Bob_omb")) {
-            BobOmb.spawnBobOmb(this);
+            Network.CHANNEL.sendToServer(new BobOmbUseMessage());
             sendConductorMessage("BOB_OMB !!!!!");
         } else if (this.kartItem.equals("Fake_box")) {
-            FakeBox.spawnFakeBox(this);
+            Network.CHANNEL.sendToServer(new FakeBoxUseMessage());
             sendConductorMessage("FAKE_BOX !!!!!");
         } else if (this.kartItem.equals("Green_shell")) {
-            GreenShell.spawnGreenShell(this);
+            Network.CHANNEL.sendToServer(new GreenShellUseMessage());
             sendConductorMessage("GREEN_SHELL !!!!!");
         }
         this.kartItem = "None";

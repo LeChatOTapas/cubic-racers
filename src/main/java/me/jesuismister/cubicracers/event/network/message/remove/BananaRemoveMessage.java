@@ -1,4 +1,4 @@
-package me.jesuismister.cubicracers.event.network.message;
+package me.jesuismister.cubicracers.event.network.message.remove;
 
 import me.jesuismister.cubicracers.entity.custom.Banana;
 import me.jesuismister.cubicracers.entity.custom.Kart;
