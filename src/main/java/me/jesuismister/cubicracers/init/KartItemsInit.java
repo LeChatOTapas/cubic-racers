@@ -20,7 +20,7 @@ public class KartItemsInit {
     //ITEM BOX
     public static final RegistryObject<EntityType<ItemBox>> ITEM_BOX =
             ENTITY_TYPES.register("item_box",
-                    () -> EntityType.Builder.<ItemBox>of((type, level) -> new ItemBox(type, level), MobCategory.MISC)
+                    () -> EntityType.Builder.<ItemBox>of((type, level) -> new ItemBox(type, level, false), MobCategory.MISC)
                             .sized(ItemBox.HITBOX_X, ItemBox.HITBOX_Y)
                             .build(new ResourceLocation(CubicRacers.MODID, "item_box").toString()));
 

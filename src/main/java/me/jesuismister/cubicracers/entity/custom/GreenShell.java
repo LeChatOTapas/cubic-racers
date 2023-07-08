@@ -98,9 +98,9 @@ public class GreenShell extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
         //COTE CLIENT
-        if(this.getLevel().isClientSide()){
+        if(this.level().isClientSide()){
             //RECUPERER TOUTES LES ENTITES PROCHES DE LA CARAPACE
-            List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0));
+            List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
 
             for (Entity entity : nearbyEntities) {
                 if (entity instanceof Kart kart) {
@@ -128,7 +128,7 @@ public class GreenShell extends Entity implements GeoEntity {
         }
         setMovement(this);
         float fallSpeed = 0;
-        if(!this.isOnGround()){
+        if(!this.onGround()){
             fallSpeed = -1;
         }
         this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z));
@@ -144,7 +144,7 @@ public class GreenShell extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        if(!this.getLevel().isClientSide()) return;
+        if(!this.level().isClientSide()) return;
 
         if(this.horizontalCollision){
             this.setPos(this.getX(), this.getY() + 1f, this.getZ());
@@ -197,19 +197,19 @@ public class GreenShell extends Entity implements GeoEntity {
      * @param kart
      */
     public static void spawnGreenShell(Kart kart) {
-        if (kart.getLevel() != null) {
-            GreenShell green_shell = new GreenShell(KartItemsInit.GREEN_SHELL.get(), kart.getLevel());
+        if (kart.level() != null) {
+            GreenShell green_shell = new GreenShell(KartItemsInit.GREEN_SHELL.get(), kart.level());
             float angle = (float) Math.toRadians(kart.getYRot());
             green_shell.setPos(kart.getX() + (-Math.sin(angle) * (2f + 2f * kart.getSpeed()/kart.MAX_SPEED)), kart.getY(), kart.getZ() + (Math.cos(angle) * (2f + 2f * kart.getSpeed()/kart.MAX_SPEED)));
             green_shell.setYRot(kart.getYRot());
-            kart.getLevel().addFreshEntity(green_shell);
+            kart.level().addFreshEntity(green_shell);
         }
     }
 
     public static void setMovement(GreenShell green_shell) {
         green_shell.setSpeed(MAX_SPEED);
 
-        System.out.println(green_shell.getLevel() + " / " + green_shell.getYRot());
+        System.out.println(green_shell.level() + " / " + green_shell.getYRot());
 
         double x = Math.sin(Math.toRadians(-green_shell.getYRot())) * MAX_SPEED;
         double z = Math.cos(Math.toRadians(-green_shell.getYRot())) * MAX_SPEED;

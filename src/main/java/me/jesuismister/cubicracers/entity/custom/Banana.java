@@ -93,9 +93,9 @@ public class Banana extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
         //COTE CLIENT
-        if(this.getLevel().isClientSide()){
+        if(this.level().isClientSide()){
             //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
-            List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0));
+            List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
 
             for (Entity entity : nearbyEntities) {
                 if (entity instanceof Kart kart) {
@@ -122,7 +122,7 @@ public class Banana extends Entity implements GeoEntity {
         @Override
         public void tick() {
             super.tick();
-            if(!this.getLevel().isClientSide()) return;
+            if(!this.level().isClientSide()) return;
 
             //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
             List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0)); // Ajustez la valeur de l'inflation selon vos besoins
@@ -160,11 +160,11 @@ public class Banana extends Entity implements GeoEntity {
          * @param kart
          */
     public static void spawnBanana(Kart kart) {
-        if (kart.getLevel() != null) {
-            Banana banana = new Banana(KartItemsInit.BANANA.get(), kart.getLevel());
+        if (kart.level() != null) {
+            Banana banana = new Banana(KartItemsInit.BANANA.get(), kart.level());
             double angle = Math.toRadians(kart.getYRot());
             banana.setPos(kart.getX() + (Math.sin(angle) * 2f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2f));
-            kart.getLevel().addFreshEntity(banana);
+            kart.level().addFreshEntity(banana);
         }
     }
 }

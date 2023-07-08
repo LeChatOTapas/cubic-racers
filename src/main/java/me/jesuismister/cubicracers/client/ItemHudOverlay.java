@@ -3,7 +3,6 @@ package me.jesuismister.cubicracers.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.Kart;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -39,17 +38,19 @@ public class ItemHudOverlay {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             //CHOIX DE LA TEXTURE EN FONCTION DE L'OBJET EN STOCK
-            if (kart.kartItem.equals("Banana")) RenderSystem.setShaderTexture(0, BANANA_ITEM_BOX);
-            else if (kart.kartItem.equals("Mushroom")) RenderSystem.setShaderTexture(0, MUSHROOM_ITEM_BOX);
-            else if (kart.kartItem.equals("Star")) RenderSystem.setShaderTexture(0, STAR_ITEM_BOX);
-            else if (kart.kartItem.equals("Thunder")) RenderSystem.setShaderTexture(0, THUNDER_ITEM_BOX);
-            else if (kart.kartItem.equals("Klaxon")) RenderSystem.setShaderTexture(0, KLAXON_ITEM_BOX);
-            else if (kart.kartItem.equals("Bob_omb")) RenderSystem.setShaderTexture(0, BOB_OMB_ITEM_BOX);
-            else if (kart.kartItem.equals("Green_shell")) RenderSystem.setShaderTexture(0, GREEN_SHELL_ITEM_BOX);
-            else if (kart.kartItem.equals("Fake_box")) RenderSystem.setShaderTexture(0, FAKE_BOX_ITEM_BOX);
-            else RenderSystem.setShaderTexture(0, EMPTY_ITEM_BOX);
+            ResourceLocation resource;
+            if (kart.kartItem.equals("Banana")) resource = BANANA_ITEM_BOX;
+            else if (kart.kartItem.equals("Mushroom")) resource = MUSHROOM_ITEM_BOX;
+            else if (kart.kartItem.equals("Star")) resource = STAR_ITEM_BOX;
+            else if (kart.kartItem.equals("Thunder")) resource = THUNDER_ITEM_BOX;
+            else if (kart.kartItem.equals("Klaxon")) resource = KLAXON_ITEM_BOX;
+            else if (kart.kartItem.equals("Bob_omb")) resource = BOB_OMB_ITEM_BOX;
+            else if (kart.kartItem.equals("Green_shell")) resource = GREEN_SHELL_ITEM_BOX;
+            else if (kart.kartItem.equals("Fake_box")) resource = FAKE_BOX_ITEM_BOX;
+            else resource = EMPTY_ITEM_BOX;
 
-            GuiComponent.blit(poseStack, 5, 5, 0, 0, imageSize, imageSize, imageSize, imageSize);
+            RenderSystem.setShaderTexture(0, resource);
+            poseStack.blit(resource, 5, 5, 0, 0, imageSize, imageSize, imageSize, imageSize);
         }
     }));
 

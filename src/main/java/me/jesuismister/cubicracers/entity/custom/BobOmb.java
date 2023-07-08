@@ -1,12 +1,8 @@
 package me.jesuismister.cubicracers.entity.custom;
 
-import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.BananaRemoveMessage;
 import me.jesuismister.cubicracers.event.network.message.BobOmbRemoveMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
-import me.jesuismister.cubicracers.util.ClientRandom;
-import me.jesuismister.cubicracers.util.ServerRandom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -28,7 +24,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 public class BobOmb extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(BobOmb.class, EntityDataSerializers.FLOAT);
@@ -103,9 +98,9 @@ public class BobOmb extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
         //COTE CLIENT
-        if(this.getLevel().isClientSide()){
+        if(this.level().isClientSide()){
             //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
-            List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0));
+            List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
 
             for (Entity entity : nearbyEntities) {
                 if (entity instanceof Kart kart) {
@@ -131,7 +126,7 @@ public class BobOmb extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        if(!this.getLevel().isClientSide()) return;
+        if(!this.level().isClientSide()) return;
 
         //RECUPERER TOUTES LES ENTITES PROCHES DE LA BOMB OMB
         List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0));
@@ -166,12 +161,12 @@ public class BobOmb extends Entity implements GeoEntity {
      * @param kart
      */
     public static void spawnBombOmb(Kart kart) {
-        if (kart.getLevel() != null) {
-            BobOmb bombOmb = new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.getLevel());
+        if (kart.level() != null) {
+            BobOmb bombOmb = new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.level());
             double angle = Math.toRadians(kart.getYRot());
             bombOmb.setPos(kart.getX() + (Math.sin(angle) * 2f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2f));
             bombOmb.setYRot(kart.getYRot());
-            kart.getLevel().addFreshEntity(bombOmb);
+            kart.level().addFreshEntity(bombOmb);
         }
     }
 
@@ -181,7 +176,7 @@ public class BobOmb extends Entity implements GeoEntity {
     private void stun(){
         spawnExplosionParticles(this, this.getX(), this.getY(), this.getZ(), RANGE);
 
-        List<Entity> nearbyEntities = this.getLevel().getEntities(this, this.getBoundingBox().inflate(RANGE));
+        List<Entity> nearbyEntities = this.level().getEntities(this, this.getBoundingBox().inflate(RANGE));
         for (Entity entity : nearbyEntities) {
             if (entity instanceof Kart kart) {
                 if(kart.canMove) Kart.stunKart(kart);
@@ -190,7 +185,7 @@ public class BobOmb extends Entity implements GeoEntity {
     }
 
     public static void spawnExplosionParticles(BobOmb bobOmb, double x, double y, double z, float size) {
-        if(!bobOmb.getLevel().isClientSide()) return;
+        if(!bobOmb.level().isClientSide()) return;
 
         Random random = new Random();
 

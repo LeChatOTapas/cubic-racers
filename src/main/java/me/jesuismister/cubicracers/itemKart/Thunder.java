@@ -14,19 +14,19 @@ public class Thunder {
     public static void applyThunderToOthersKarts(Kart kart){
         if(!(kart.getFirstPassenger() instanceof Player)) return;
 
-        List<Entity> nearbyEntities = kart.getLevel().getEntities(kart, kart.getBoundingBox().inflate(RANGE));
+        List<Entity> nearbyEntities = kart.level().getEntities(kart, kart.getBoundingBox().inflate(RANGE));
 
         for (Entity entity : nearbyEntities) {
             if(entity instanceof Kart){
                 LightningBolt lightningBolt = createThunderBolt(entity);
-                kart.getLevel().addFreshEntity(lightningBolt);
+                kart.level().addFreshEntity(lightningBolt);
                 Kart.stunKart((Kart) entity);
             }
         }
     }
 
     private static LightningBolt createThunderBolt(Entity entity){
-        LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, entity.getLevel());
+        LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, entity.level());
         lightningBolt.setPos(entity.getX(), entity.getY(), entity.getZ());
         lightningBolt.setVisualOnly(true);
         lightningBolt.setSilent(true);

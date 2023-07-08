@@ -96,7 +96,7 @@ public class Kart extends Entity implements GeoEntity {
     public float stunRotation = 0;
 
     //KART ITEM
-    public String kartItem = "Bob_omb";
+    public String kartItem = "Fake_box";
     private boolean isInvinsible = false;
     private float starBoost = 1f;
     private float timeStar = 0;
@@ -181,11 +181,8 @@ public class Kart extends Entity implements GeoEntity {
     }
 
     @Override
-    /**
-     * Position du joueur dans le kart
-     */
-    public void positionRider(@NotNull Entity player) {
-        super.positionRider(player);
+    protected void positionRider(Entity player, MoveFunction p_19958_) {
+        super.positionRider(player, p_19958_);
         double x = player.getX();
         double y = player.getY() + PLAYER_POS_Y;
         double z = player.getZ();
@@ -325,7 +322,7 @@ public class Kart extends Entity implements GeoEntity {
      */
     public void sendConductorMessage(String msg) {
         try {
-            if (this.getLevel().isClientSide() && this.getFirstPassenger() != null && this.getFirstPassenger() instanceof Kart) {
+            if (this!=null && this.getFirstPassenger() != null && this.getFirstPassenger() instanceof Player) {
                 this.getFirstPassenger().sendSystemMessage(Component.literal(msg));
             }
         } catch (Exception e) {
@@ -369,7 +366,7 @@ public class Kart extends Entity implements GeoEntity {
      * @param particle
      */
     public void spawnBoostParticules(SimpleParticleType particle) {
-        if (!this.getLevel().isClientSide()) return;
+        if (!this.level().isClientSide()) return;
 
         float yaw = this.getYRot();
         double motionX = -Math.sin(Math.toRadians(yaw));
@@ -384,7 +381,7 @@ public class Kart extends Entity implements GeoEntity {
      * @param particle
      */
     public void spawnDriftParticules(SimpleParticleType particle) {
-        if (!this.getLevel().isClientSide()) return;
+        if (!this.level().isClientSide()) return;
 
         float yaw = this.getYRot();
         spawnParticules(particle, 1 * Math.cos(Math.toRadians(yaw)), 0, 1 * Math.sin(Math.toRadians(yaw)),
@@ -403,7 +400,7 @@ public class Kart extends Entity implements GeoEntity {
      * @param z2       = vecteur de direction des particules en z
      */
     public void spawnParticules(SimpleParticleType particle, double x1, double y1, double z1, double x2, double y2, double z2) {
-        if (!this.getLevel().isClientSide()) return;
+        if (!this.level().isClientSide()) return;
 
         Minecraft minecraft = Minecraft.getInstance();
         double x = this.getX();
@@ -486,7 +483,7 @@ public class Kart extends Entity implements GeoEntity {
             return REDUCED_FALL_SPEED;
         }
         //VITESSE DE CHUTE : EN CHUTE LIBRE
-        else if (!this.isOnGround() && !this.deltaOn && fallSpeed >= FALL_SPEED_LIMIT) {
+        else if (!this.onGround() && !this.deltaOn && fallSpeed >= FALL_SPEED_LIMIT) {
             return fallSpeed * FALL_SPEED_MULTIPLIER;
         }
         //VITESSE DE CHUTE : SUR TERRE
@@ -608,7 +605,7 @@ public class Kart extends Entity implements GeoEntity {
                 }
 
                 //SI LE DRIFT EST INITIALISE
-                if (this.getLevel().isClientSide() && this.isDrifting) {
+                if (this.level().isClientSide() && this.isDrifting) {
                     //SPAWN DES PARTICULES VIOLETTES
                     if (this.driftingTime >= 3) spawnDriftParticules(ParticlesInit.DRIFT_PURPLE_PARTICLES.get());
                         //SPAWN DES PARTICULES ROUGES
@@ -685,9 +682,9 @@ public class Kart extends Entity implements GeoEntity {
         if (player == null) return;
 
         //ACTIVATION DU DELTA PLANE
-        if (!this.deltaOn && !this.isOnGround() && (isPressingKeyDelta && !previousPressingKeyDelta))
+        if (!this.deltaOn && !this.onGround() && (isPressingKeyDelta && !previousPressingKeyDelta))
             deltaOn = true;
-        else if (this.deltaOn && ((isPressingKeyDelta && !previousPressingKeyDelta) || this.isOnGround()))
+        else if (this.deltaOn && ((isPressingKeyDelta && !previousPressingKeyDelta) || this.onGround()))
             deltaOn = false;
 
         previousPressingKeyDelta = isPressingKeyDelta;
@@ -715,7 +712,7 @@ public class Kart extends Entity implements GeoEntity {
 
         //SI EN ETOILE, ALORS ON STUN LES GENS QU'ON PERCUTE
         if (this.isInvinsible) {
-            List<Entity> nearbyEntities = level.getEntities(this, this.getBoundingBox().inflate(0.5f));
+            List<Entity> nearbyEntities = level().getEntities(this, this.getBoundingBox().inflate(0.5f));
             for (Entity entity : nearbyEntities) {
                 if (entity instanceof Kart kart) {
                     if (kart.canMove) {

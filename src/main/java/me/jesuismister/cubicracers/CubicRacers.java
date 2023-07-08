@@ -1,13 +1,11 @@
 package me.jesuismister.cubicracers;
 
-import me.jesuismister.cubicracers.entity.custom.BobOmb;
 import me.jesuismister.cubicracers.event.network.Network;
 import me.jesuismister.cubicracers.init.*;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.ClientRandom;
-import me.jesuismister.cubicracers.util.ServerRandom;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -22,8 +20,6 @@ public class CubicRacers {
     public CubicRacers() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        bus.addListener(this::commonSetup);
-
         KartInit.initAllKarts(); //IMPORTANT DE LE METTRE AVANT LE "KartInit.ENTITY_TYPES.register(bus)"
         KartInit.ENTITY_TYPES.register(bus);
 
@@ -36,10 +32,11 @@ public class CubicRacers {
 
         ParticlesInit.PARTICLE_TYPES.register(bus);
 
-        bus.addListener(this::addCreativeTab);
+        ModCreativeModeTabs.CREATIVE_MODE_TABS.register(bus);
 
         ClientRandom.initialize(SEED);
-        ServerRandom.initialize(SEED);
+        bus.addListener(this::addCreativeTab);
+        bus.addListener(this::commonSetup);
     }
 
     /**
@@ -47,8 +44,8 @@ public class CubicRacers {
      *
      * @param event
      */
-    private void addCreativeTab(CreativeModeTabEvent.BuildContents event) {
-        if (event.getTab() == ModCreativeModeTabs.CUBIC_RACERS_TAB) {
+    private void addCreativeTab(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTab() == ModCreativeModeTabs.CUBIC_RACERS_TAB.get()) {
             event.accept(ItemInit.ITEM_BOX_SPAWN_ITEM);
             for (RegistryObject<Item> r : ItemInit.KARTS_SPAWN_ITEM) {
                 event.accept(r);

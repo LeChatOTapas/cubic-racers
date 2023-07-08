@@ -2,21 +2,23 @@ package me.jesuismister.cubicracers.client;
 
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 public class SpeedHudOverlay {
 
     public static final IGuiOverlay HUD_SPEED = (((gui, poseStack, partialTick, screenWidth, screenHeight) -> {
+
         if (shouldPrint(gui.getMinecraft().player)) {
             Kart kart = (Kart) gui.getMinecraft().player.getVehicle();
-            if (kart != null && kart.getLevel().toString().contains("Server")) return;
+            if (kart == null || !kart.level().isClientSide()) return;
 
-            String text = "Speed: " + kart.getSpeed();
+            String text = "Speed: " + (((float)Math.round(kart.getSpeed()*100))/100f);
             int textWidth = Minecraft.getInstance().font.width(text);
             int textX = (screenWidth - textWidth) / 2;
 
-            Minecraft.getInstance().font.draw(poseStack, text, textX, 20, 0xFFFFFF);
+            poseStack.drawCenteredString(Minecraft.getInstance().font, text, textX, 20, 0xFFFFFF);
         }
     }));
 

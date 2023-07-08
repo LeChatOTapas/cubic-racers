@@ -36,7 +36,7 @@ public class BobOmbRemoveMessage {
             ServerPlayer player = context.getSender();
             if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
                 //DETRUIT TOUTES LES BOB OMBS PROCHES DU KART
-                List<Entity> nearbyEntities = kart.getLevel().getEntities(kart, kart.getBoundingBox().inflate(0));
+                List<Entity> nearbyEntities = kart.level().getEntities(kart, kart.getBoundingBox().inflate(0));
                 for (Entity entity : nearbyEntities) {
                     if(entity instanceof BobOmb bobOmb){
                         bobOmb.remove(Entity.RemovalReason.KILLED);

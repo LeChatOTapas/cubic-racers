@@ -1,8 +1,9 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.event.network.Network;
+import me.jesuismister.cubicracers.event.network.message.ItemBoxMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import me.jesuismister.cubicracers.util.ClientRandom;
-import me.jesuismister.cubicracers.util.ServerRandom;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -43,17 +44,17 @@ public class ItemBox extends Entity implements GeoEntity {
 
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 6; //6s
     private int tickDisabled = 0;
-    private boolean hasItem = true;
-    private boolean isFalse = false;
+    public boolean hasItem = true;
+    private boolean isFalse;
 
-    public ItemBox(EntityType<?> p_19870_, Level p_19871_) {
+    public ItemBox(EntityType<?> p_19870_, Level p_19871_, boolean isFalse) {
+
         super(p_19870_, p_19871_);
+        this.isFalse = isFalse;
     }
 
     public ItemBox(Level level, double x, double y, double z, boolean isFalse) {
-        this(KartItemsInit.ITEM_BOX.get(), level);
-
-        this.isFalse = isFalse;
+        this(KartItemsInit.ITEM_BOX.get(), level, isFalse);
 
         this.xo = Math.floor(x) + 0.5f;
         this.yo = y;
@@ -114,33 +115,32 @@ public class ItemBox extends Entity implements GeoEntity {
     protected boolean canRide(@NotNull Entity rider) {
         return false;
     }
-/*
+
     @Override
     public void tick() {
         super.tick();
-        if(!this.getLevel().isClientSide()) return;
+        if(!this.level().isClientSide()) return;
 
         //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
-        List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
+        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
 
         //PARCOURIR LA LISTE DES ENTITES PROCHES
         for (Entity entity : nearbyEntities) {
-            //ON CHECK QUE LES ENTITES "PLAYER"
-            if (entity instanceof Player) {
-                //ON CHECK QUE LES "PLAYER" DANS UN "KART"
-                if (hasItem && entity.getVehicle() != null && entity.getVehicle() instanceof Kart kart) {
-                    if(isFalse){
-                        Kart.stunKart(kart);
-                        this.remove(RemovalReason.KILLED);
-                    }else{
-                        hasItem = false;
-                        tickDisabled = 0;
-                        giveRandomItem(kart);
-                    }
-
-                    //POUR EVITER DE DONNER UN OBJET A PLUSIEURS VEHICULES
-                    return;
+            //ON CHECK QUE LES ENTITES "KART"
+            if (entity instanceof Kart kart) {
+                System.out.println(this.isFalse);
+                if (isFalse) {
+                    Network.CHANNEL.sendToServer(new ItemBoxMessage(true, ""));
+                    Kart.stunKart(kart);
+                    this.remove(RemovalReason.KILLED);
+                } else if(hasItem){
+                    hasItem = false;
+                    tickDisabled = 0;
+                    giveRandomItem(kart);
                 }
+
+                //POUR EVITER DE DONNER UN OBJET A PLUSIEURS VEHICULES
+                return;
             }
         }
 
@@ -150,7 +150,6 @@ public class ItemBox extends Entity implements GeoEntity {
             tickDisabled++;
         }
     }
- */
 
     /**
      * Méthode qui donne un item au kart donné en paramètre
@@ -158,14 +157,9 @@ public class ItemBox extends Entity implements GeoEntity {
      * @param kart
      */
     public void giveRandomItem(Kart kart) {
-        if(!kart.kartItem.equals("None")) return;
+        if (!kart.kartItem.equals("None")) return;
 
-        double rand;
-        if(this.getLevel().isClientSide()){
-            rand = ClientRandom.nextInt(100);
-        }else{
-            rand = ServerRandom.nextInt(100);
-        }
+        double rand = ClientRandom.nextInt(100);
 
         if (0 <= rand && rand < BANANA_DROP_RATE) {
             kart.kartItem = "Banana";
@@ -184,6 +178,8 @@ public class ItemBox extends Entity implements GeoEntity {
         } else if (THUNDER_DROP_RATE < rand && rand <= KLAXON_DROP_RATE) {
             kart.kartItem = "Klaxon";
         }
+
+        Network.CHANNEL.sendToServer(new ItemBoxMessage(false, kart.kartItem));
     }
 
     @Override
@@ -206,12 +202,13 @@ public class ItemBox extends Entity implements GeoEntity {
      * @param kart
      */
     public static void spawnFakeBox(Kart kart) {
-        if (kart.getLevel() != null) {
-            ItemBox fake_cube = new ItemBox(KartItemsInit.ITEM_BOX.get(), kart.getLevel());
+        if (kart.level() != null) {
+            ItemBox fake_cube = new ItemBox(KartItemsInit.ITEM_BOX.get(), kart.level(), true);
             double angle = Math.toRadians(kart.getYRot());
-            fake_cube.setPos(kart.getX() + (Math.sin(angle) * 2f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2f));
-            fake_cube.isFalse = true;
-            kart.getLevel().addFreshEntity(fake_cube);
+            fake_cube.setPos(kart.getX() + (Math.sin(angle) * 3f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 3f));
+            kart.level().addFreshEntity(fake_cube);
+
+            System.out.println("=> " + fake_cube.isFalse);
         }
     }
 }

@@ -15,18 +15,20 @@ public class Klaxon {
         if (!(kart.getFirstPassenger() instanceof Player)) return;
 
         // SPAWN DES PARTICULES
-        double angle, x, z;
-        for (int i = 0; i < 360; i += 10) {
-            angle = Math.toRadians(i);
-            for (float j = 0; j < RANGE; j += 0.5f) {
-                x = kart.getX() + j * Math.cos(angle);
-                z = kart.getZ() + j * Math.sin(angle);
-                if(kart.getLevel().isClientSide()) Minecraft.getInstance().particleEngine.createParticle(ParticleTypes.ITEM_SNOWBALL, x, kart.getY(), z, 0, 0, 0);
+        if(kart.level().isClientSide()){
+            double angle, x, z;
+            for (int i = 0; i < 360; i += 10) {
+                angle = Math.toRadians(i);
+                for (float j = 0; j < RANGE; j += 0.5f) {
+                    x = kart.getX() + j * Math.cos(angle);
+                    z = kart.getZ() + j * Math.sin(angle);
+                    Minecraft.getInstance().particleEngine.createParticle(ParticleTypes.ITEM_SNOWBALL, x, kart.getY(), z, 0, 0, 0);
+                }
             }
         }
 
         //APPLY DES STUNS
-        List<Entity> nearbyEntities = kart.getLevel().getEntities(kart, kart.getBoundingBox().inflate(RANGE));
+        List<Entity> nearbyEntities = kart.level().getEntities(kart, kart.getBoundingBox().inflate(RANGE));
         for (Entity entity : nearbyEntities) {
             if (entity instanceof Kart k) {
                 if(k.canMove) Kart.stunKart(kart);

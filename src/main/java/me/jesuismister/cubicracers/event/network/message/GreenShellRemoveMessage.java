@@ -36,7 +36,7 @@ public class GreenShellRemoveMessage {
             ServerPlayer player = context.getSender();
             if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
                 //DETRUIT TOUTES LES GREEN SHELL PROCHES DU KART
-                List<Entity> nearbyEntities = kart.getLevel().getEntities(kart, kart.getBoundingBox().inflate(2));
+                List<Entity> nearbyEntities = kart.level().getEntities(kart, kart.getBoundingBox().inflate(2));
                 for (Entity entity : nearbyEntities) {
                     if(entity instanceof GreenShell greenShell){
                         greenShell.remove(Entity.RemovalReason.KILLED);
