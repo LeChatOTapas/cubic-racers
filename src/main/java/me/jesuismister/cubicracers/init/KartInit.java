@@ -25,6 +25,7 @@ public class KartInit {
     public static void initAllKarts() {
         KARTS_DATA.add(new KartData("trash_kart", 0.6f, 0.02f, 0.2f, 3.0f, -0.5f, 1.7f, 1.2f));
         KARTS_DATA.add(new KartData("standard_kart", 0.6f, 0.02f, 0.2f, 3.0f, -0.8f, 2f, 1.2f));
+        KARTS_DATA.add(new KartData("flame_flyer", 0.6f, 0.02f, 0.2f, 3.0f, -0.8f, 2f, 1.2f));
 
         for (KartData d : KARTS_DATA) {
             addNewKart(d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY, d.hitboxX, d.hitboxY);

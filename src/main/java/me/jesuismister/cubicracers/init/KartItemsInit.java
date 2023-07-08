@@ -47,6 +47,6 @@ public class KartItemsInit {
     public static final RegistryObject<EntityType<FakeBox>> FAKE_BOX =
             ENTITY_TYPES.register("fake_box",
                     () -> EntityType.Builder.<FakeBox>of((type, level) -> new FakeBox(type, level), MobCategory.MISC)
-                            .sized(ItemBox.HITBOX_X, ItemBox.HITBOX_Y)
+                            .sized(FakeBox.HITBOX_X, FakeBox.HITBOX_Y)
                             .build(new ResourceLocation(CubicRacers.MODID, "item_box").toString()));
 }
