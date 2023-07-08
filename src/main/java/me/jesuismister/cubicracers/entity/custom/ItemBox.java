@@ -42,7 +42,7 @@ public class ItemBox extends Entity implements GeoEntity {
     private static final double THUNDER_DROP_RATE = 95; //BORNE DE 90 à 95
     private static final double KLAXON_DROP_RATE = 100; //BORNE DE 95 à 100
 
-    private static final int TICK_TO_GET_BACK_ITEM = 20 * 6; //6s
+    private static final int TICK_TO_GET_BACK_ITEM = 20 * 4; //4s
     private int tickDisabled = 0;
     public boolean hasItem = true;
 
@@ -117,17 +117,20 @@ public class ItemBox extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
         if (this.level().isClientSide()) {
-            //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
-            List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
+            //SI IL Y A UN ITEM DE DISPO DANS LE CUBE
+            if(hasItem){
+                //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
+                List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
 
-            //PARCOURIR LA LISTE DES ENTITES PROCHES
-            for (Entity entity : nearbyEntities) {
-                //ON CHECK QUE LES ENTITES "KART"
-                if (entity instanceof Kart kart) {
-                    hasItem = false;
-                    tickDisabled = 0;
-                    giveRandomItem(kart);
-                    Network.CHANNEL.sendToServer(new ItemBoxMessage(false, kart.kartItem));
+                //PARCOURIR LA LISTE DES ENTITES PROCHES
+                for (Entity entity : nearbyEntities) {
+                    //ON CHECK QUE LES ENTITES "KART"
+                    if (entity instanceof Kart kart) {
+                        hasItem = false;
+                        tickDisabled = 0;
+                        giveRandomItem(kart);
+                        Network.CHANNEL.sendToServer(new ItemBoxMessage(false, kart.kartItem));
+                    }
                 }
             }
         }

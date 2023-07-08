@@ -1,6 +1,8 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.event.network.Network;
+import me.jesuismister.cubicracers.event.network.message.InputMessage;
 import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.itemKart.Klaxon;
 import me.jesuismister.cubicracers.itemKart.Thunder;
@@ -96,9 +98,9 @@ public class Kart extends Entity implements GeoEntity {
     public float stunRotation = 0;
 
     //KART ITEM
-    public String kartItem = "Fake_box";
+    public String kartItem = "Star";
     private boolean isInvinsible = false;
-    private float starBoost = 1f;
+    private float starSpeedBoost = 1f; //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
     private float timeStar = 0;
 
     /**
@@ -262,19 +264,17 @@ public class Kart extends Entity implements GeoEntity {
             this.spawnBoostParticules(ParticleTypes.FLAME);
         }
 
-        float clamped_speed;
-        //BOOST LE JOUEUR S'IL A FINI DE DRIFT ET QU'IL EST PAS EN ETOILE
-        if (!this.isInvinsible && (this.driftTimeBoost > 0 || this.timeBoost > 0)) {
-            //CALCUL DE LA VITESSE AVEC BOOST
+        float clamped_speed = this.getSpeed();
+        //BOOST LE JOUEUR S'IL EST SOUS BOOST DE DRIFT OU CHAMPIGNON
+        if (this.driftTimeBoost > 0 || this.timeBoost > 0) {
             clamped_speed = Mth.clamp(this.getSpeed() + BOOST, 0, MAX_SPEED + BOOST);
             if (this.driftTimeBoost > 0) driftTimeBoost -= 0.1f;
             else if (this.timeBoost > 0) timeBoost -= 0.1f;
         }
-        //SINON LE KART AVANCE NORMALEMENT (AVEC UN BOOST POTENTIELLE D'ETOILE)
-        else {
-            clamped_speed = Mth.clamp(this.getSpeed(), -MAX_SPEED * starBoost / 2, MAX_SPEED * starBoost);
-            if (this.timeStar > 0) timeStar -= 0.1f;
-        }
+        //ACCELERE LE TOUT SI SOUS ETOILE
+        if(isInvinsible && !isPressingKeyDown) clamped_speed = clamped_speed * starSpeedBoost;
+        if (this.timeStar > 0) timeStar -= 0.1f;
+
         this.setSpeed(clamped_speed);
 
         //CALCUL ET APPLICATION DU VECTEUR DE DEPLACEMENT
@@ -463,8 +463,8 @@ public class Kart extends Entity implements GeoEntity {
         rotateOrDrift(player); // CALCUL LA ROTATION DU VEHCIULE
 
         isStun(); // ON VOIT SI LE KART EST STUN
-        if (!this.canMove) applyStun(); // SI LE KART EST STUN, ON LE STOP
-        else setVectorMovment(player); // SINON ON CALCUL LE VECTEUR DE VITESSE
+        if (!this.canMove) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
+        else setVectorMovment(); // SINON ON CALCUL LE VECTEUR DE VITESSE
 
         this.fallSpeed = calculateFallSpeed(); // CALCUL LA VITESSE DE CHUTE
 
@@ -506,27 +506,23 @@ public class Kart extends Entity implements GeoEntity {
     /**
      * Calcul est applique le vecteur de mouvement du kart
      *
-     * @param player
      */
-    private void setVectorMovment(Player player) {
+    private void setVectorMovment() {
+        //VECTEUR DE MOUVEMENT : BOOST
+        if(this.timeBoost > 0 || (isInvinsible && !isPressingKeyDown)){
+            this.setSpeed(MAX_SPEED);
+        }
         //VECTEUR DE MOUVEMENT : DELTA PLANE
-        if (deltaOn) {
+        else if (deltaOn) {
             this.setSpeed(DELTA_SPEED);
         }
         //VECTEUR DE MOUVEMENT : MARCHE AVANT !!!
-        else if (isPressingKeyUp || this.timeBoost > 0) {
-            //SI ON AVANCE
-            if (this.timeBoost <= 0) {
-                this.setSpeed(this.getSpeed() + ACCELERATION_BOOST);
-            }
-            //SI BOOST
-            else {
-                this.setSpeed(MAX_SPEED);
-            }
+        else if (isPressingKeyUp) {
+            this.setSpeed(Mth.clamp(this.getSpeed() + ACCELERATION_BOOST, -MAX_SPEED/2, MAX_SPEED));
         }
         //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
         else if (isPressingKeyDown) {
-            this.setSpeed(this.getSpeed() - ACCELERATION_BOOST);
+            this.setSpeed(Mth.clamp(this.getSpeed() - ACCELERATION_BOOST, -MAX_SPEED/2, MAX_SPEED));
             this.resetDriftWithNoBoost();
         }
         //VECTEUR DE MOUVEMENT : RALENTISSEMENT AUTOMATIQUE
@@ -540,11 +536,14 @@ public class Kart extends Entity implements GeoEntity {
      * Applique le stun au kart
      */
     private void applyStun() {
-        this.setSpeed(0);
         isPressingKeyUp = isPressingKeyDown = isPressingKeyLeft = isPressingKeyRight = isPressingKeyDelta = isPressingKeyDrift = isPressingKeyItem = false;
+
         this.driftTimeBoost = 0;
         this.timeBoost = 0;
+
+        this.setSpeed(0);
         this.setKartMovement();
+
         this.stunRotation = this.stunRotation - 720 / (3 * 20);
     }
 
@@ -562,9 +561,9 @@ public class Kart extends Entity implements GeoEntity {
             sendConductorMessage("MUSHROOM !!!!!");
         } else if (this.kartItem.equals("Star")) {
             this.timeStar += 20f;
-            this.starBoost = 1.5f;
+            this.starSpeedBoost = 1.5f;
             this.isInvinsible = true;
-            setSpeed(MAX_SPEED * starBoost);
+            setSpeed(MAX_SPEED * starSpeedBoost);
             sendConductorMessage("STAR !!!!!");
         } else if (this.kartItem.equals("Thunder")) {
             Thunder.applyThunderToOthersKarts(this);
@@ -725,7 +724,7 @@ public class Kart extends Entity implements GeoEntity {
         //ON VERIFIE QUE LE JOUEUR EST ENCORE EN ETOILE
         if (this.isInvinsible && this.timeStar <= 0) {
             this.isInvinsible = false;
-            this.starBoost = 1f;
+            this.starSpeedBoost = 1f;
         }
     }
 

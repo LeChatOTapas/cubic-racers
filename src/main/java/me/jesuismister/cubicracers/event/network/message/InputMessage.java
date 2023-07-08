@@ -47,7 +47,7 @@ public class InputMessage {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
-            if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
+            if (player!=null && player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
                 kart.isPressingKeyUp = message.keyUp;
                 kart.isPressingKeyDown = message.keyDown;
                 kart.isPressingKeyLeft = message.keyLeft;
