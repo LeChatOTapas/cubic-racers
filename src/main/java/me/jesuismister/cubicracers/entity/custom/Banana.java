@@ -10,8 +10,10 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -93,15 +95,15 @@ public class Banana extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
         //COTE CLIENT
-        if(this.level().isClientSide()){
+        if (this.level().isClientSide()) {
             //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
             List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
 
             for (Entity entity : nearbyEntities) {
                 if (entity instanceof Kart kart) {
-                    if(kart.getFirstPassenger()!=null){
+                    if (kart.getFirstPassenger() != null) {
                         Network.CHANNEL.sendToServer(new BananaRemoveMessage());
-                        if(kart.canMove){
+                        if (kart.canMove) {
                             Kart.stunKart(kart);
                         }
                         this.remove(RemovalReason.KILLED);
@@ -116,49 +118,14 @@ public class Banana extends Entity implements GeoEntity {
         if (tickAlive > TICK_TO_DESPAWN) {
             this.remove(RemovalReason.DISCARDED);
         }
+        this.move(MoverType.SELF, new Vec3(0, -1, 0));
     }
 
-    /*
-        @Override
-        public void tick() {
-            super.tick();
-            if(!this.level().isClientSide()) return;
-
-            //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
-            List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0)); // Ajustez la valeur de l'inflation selon vos besoins
-
-            //PARCOURIR LA LISTE DES ENTITES PROCHES
-            for (Entity entity : nearbyEntities) {
-                //ON CHECK QUE LES ENTITES "KART"
-                if (entity instanceof Kart kart) {
-                    //ON ENCLENCHE LA PROCEDURE DE STUN
-                    if (kart.canMove) {
-                        Kart.stunKart(kart);
-                        return; //POUR EVITER DE STUN PLUSIEURS VEHICULES SUR UNE MEME BANANE
-                    }
-                    //SUPPRIMER LA BANANE APRES LA COLLISION
-                    this.remove(RemovalReason.DISCARDED);
-                }else if(entity instanceof Banana banana){
-                    this.remove(RemovalReason.KILLED);
-                    banana.remove(RemovalReason.KILLED);
-                }else if(entity instanceof GreenShell greenShell){
-                    this.remove(RemovalReason.KILLED);
-                    greenShell.remove(RemovalReason.KILLED);
-                }
-            }
-
-            //DETRUIRE LA BANANE AU BOUT D'UN MOMENT
-            if (tickAlive > TICK_TO_DESPAWN) {
-                this.remove(RemovalReason.DISCARDED);
-            }
-            tickAlive++;
-        }
-
-        /**
-         * Spawn la banane derrière le kart
-         *
-         * @param kart
-         */
+    /**
+     * Spawn la banane derrière le kart
+     *
+     * @param kart
+     */
     public static void spawnBanana(Kart kart) {
         if (kart.level() != null) {
             Banana banana = new Banana(KartItemsInit.BANANA.get(), kart.level());

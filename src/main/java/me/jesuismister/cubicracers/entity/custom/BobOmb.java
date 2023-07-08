@@ -11,7 +11,9 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -98,13 +100,13 @@ public class BobOmb extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
         //COTE CLIENT
-        if(this.level().isClientSide()){
+        if (this.level().isClientSide()) {
             //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
             List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
 
             for (Entity entity : nearbyEntities) {
                 if (entity instanceof Kart kart) {
-                    if(kart.getFirstPassenger()!=null){
+                    if (kart.getFirstPassenger() != null) {
                         Network.CHANNEL.sendToServer(new BobOmbRemoveMessage());
                         stun();
                         this.remove(RemovalReason.KILLED);
@@ -120,40 +122,8 @@ public class BobOmb extends Entity implements GeoEntity {
             stun();
             this.remove(RemovalReason.DISCARDED);
         }
+        this.move(MoverType.SELF, new Vec3(0, -1, 0));
     }
-
-    /*
-    @Override
-    public void tick() {
-        super.tick();
-        if(!this.level().isClientSide()) return;
-
-        //RECUPERER TOUTES LES ENTITES PROCHES DE LA BOMB OMB
-        List<Entity> nearbyEntities = level.getEntities(this, getBoundingBox().inflate(0));
-
-        //PARCOURIR LA LISTE DES ENTITES PROCHES
-        for (Entity entity : nearbyEntities) {
-            if (entity instanceof Kart) {
-                stun();
-                return;
-            }else if(entity instanceof GreenShell greenShell){
-                greenShell.remove(RemovalReason.KILLED);
-                stun();
-                return;
-            }else if(entity instanceof GreenShell banana){
-                banana.remove(RemovalReason.KILLED);
-                stun();
-                return;
-            }
-        }
-
-        //LA BOMB OMB EXPLOSE TOUTE SEULE AU BOUT D'UN MOMENT
-        tickAlive++;
-        if (tickAlive > TICK_TO_DESPAWN) {
-            stun();
-            this.remove(RemovalReason.DISCARDED);
-        }
-    }*/
 
     /**
      * Spawn la bomb omb derrière le kart
@@ -173,19 +143,19 @@ public class BobOmb extends Entity implements GeoEntity {
     /**
      * Stun tous les karts proches
      */
-    private void stun(){
+    private void stun() {
         spawnExplosionParticles(this, this.getX(), this.getY(), this.getZ(), RANGE);
 
         List<Entity> nearbyEntities = this.level().getEntities(this, this.getBoundingBox().inflate(RANGE));
         for (Entity entity : nearbyEntities) {
             if (entity instanceof Kart kart) {
-                if(kart.canMove) Kart.stunKart(kart);
+                if (kart.canMove) Kart.stunKart(kart);
             }
         }
     }
 
     public static void spawnExplosionParticles(BobOmb bobOmb, double x, double y, double z, float size) {
-        if(!bobOmb.level().isClientSide()) return;
+        if (!bobOmb.level().isClientSide()) return;
 
         Random random = new Random();
 
