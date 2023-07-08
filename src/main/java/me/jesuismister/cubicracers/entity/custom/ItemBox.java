@@ -1,7 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.remove.ItemBoxMessage;
+import me.jesuismister.cubicracers.event.network.message.remove.ItemBoxConsumeMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import me.jesuismister.cubicracers.util.ClientRandom;
 import net.minecraft.nbt.CompoundTag;
@@ -129,7 +129,7 @@ public class ItemBox extends Entity implements GeoEntity {
                         hasItem = false;
                         tickDisabled = 0;
                         giveRandomItem(kart);
-                        Network.CHANNEL.sendToServer(new ItemBoxMessage(false, kart.kartItem));
+                        Network.CHANNEL.sendToServer(new ItemBoxConsumeMessage(kart.kartItem));
                     }
                 }
             }

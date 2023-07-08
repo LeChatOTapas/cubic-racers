@@ -5,7 +5,7 @@ import me.jesuismister.cubicracers.event.network.message.*;
 import me.jesuismister.cubicracers.event.network.message.remove.BananaRemoveMessage;
 import me.jesuismister.cubicracers.event.network.message.remove.BobOmbRemoveMessage;
 import me.jesuismister.cubicracers.event.network.message.remove.GreenShellRemoveMessage;
-import me.jesuismister.cubicracers.event.network.message.remove.ItemBoxMessage;
+import me.jesuismister.cubicracers.event.network.message.remove.ItemBoxConsumeMessage;
 import me.jesuismister.cubicracers.event.network.message.use.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
@@ -23,7 +23,7 @@ public class Network {
         CHANNEL.registerMessage(1, BananaRemoveMessage.class, BananaRemoveMessage::encode, BananaRemoveMessage::decode, BananaRemoveMessage::handle);
         CHANNEL.registerMessage(2, GreenShellRemoveMessage.class, GreenShellRemoveMessage::encode, GreenShellRemoveMessage::decode, GreenShellRemoveMessage::handle);
         CHANNEL.registerMessage(3, BobOmbRemoveMessage.class, BobOmbRemoveMessage::encode, BobOmbRemoveMessage::decode, BobOmbRemoveMessage::handle);
-        CHANNEL.registerMessage(4, ItemBoxMessage.class, ItemBoxMessage::encode, ItemBoxMessage::decode, ItemBoxMessage::handle);
+        CHANNEL.registerMessage(4, ItemBoxConsumeMessage.class, ItemBoxConsumeMessage::encode, ItemBoxConsumeMessage::decode, ItemBoxConsumeMessage::handle);
 
         CHANNEL.registerMessage(5, KartMessage.class, KartMessage::encode, KartMessage::decode, KartMessage::handle);
 

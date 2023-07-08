@@ -452,7 +452,8 @@ public class Kart extends Entity implements GeoEntity {
             isPressingKeyUp = isPressingKeyDown = isPressingKeyLeft = isPressingKeyRight = isPressingKeyDelta = isPressingKeyDrift = isPressingKeyItem = false;
             this.slowDownKart();
             this.setKartMovement();
-        } else {
+            this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
+        }else{
             if (this.level().isClientSide()) {
                 collision(); // GERE LES COLLISIONS DU KART
 
@@ -470,7 +471,7 @@ public class Kart extends Entity implements GeoEntity {
                 this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, fallSpeed, this.getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
                 moveCamera(player); // BOUGE LA CAMERA EN CONSEQUENCE DU MOUVEMENT
 
-                Network.CHANNEL.sendToServer(new KartMessage(this.getX(), this.getY(), this.getZ(), this.getYRot()));
+                Network.CHANNEL.sendToServer(new KartMessage(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getSpeed(), this.deltaOn, this.isDrifting));
             }
         }
     }

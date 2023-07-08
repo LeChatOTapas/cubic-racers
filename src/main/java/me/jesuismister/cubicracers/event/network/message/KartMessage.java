@@ -13,14 +13,22 @@ public class KartMessage {
     public double posZ;
     public float rotY;
 
+    public float speed;
+    public boolean deltaOn;
+    public boolean isDrifting;
+
     public KartMessage(){
     }
 
-    public KartMessage(double posX, double posY, double posZ, float rotY) {
+    public KartMessage(double posX, double posY, double posZ, float rotY, float speed, boolean deltaOn, boolean isDrifting) {
         this.posX = posX;
         this.posY = posY;
         this.posZ = posZ;
         this.rotY = rotY;
+
+        this.speed = speed;
+        this.deltaOn = deltaOn;
+        this.isDrifting = isDrifting;
     }
 
     public static void encode(KartMessage message, FriendlyByteBuf buffer){
@@ -28,10 +36,13 @@ public class KartMessage {
         buffer.writeDouble(message.posY);
         buffer.writeDouble(message.posZ);
         buffer.writeFloat(message.rotY);
+        buffer.writeFloat(message.speed);
+        buffer.writeBoolean(message.deltaOn);
+        buffer.writeBoolean(message.isDrifting);
     }
 
     public static KartMessage decode(FriendlyByteBuf buffer){
-        return new KartMessage(buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readFloat());
+        return new KartMessage(buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readFloat(), buffer.readFloat(), buffer.readBoolean(), buffer.readBoolean());
     }
 
     public static void handle(KartMessage message, Supplier<NetworkEvent.Context> contextSupplier){
@@ -41,6 +52,10 @@ public class KartMessage {
             if (player!=null && player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
                 kart.setPos(message.posX, message.posY, message.posZ);
                 kart.setYRot(message.rotY);
+
+                kart.setSpeed(message.speed);
+                kart.deltaOn = message.deltaOn;
+                kart.isDrifting = message.isDrifting;
             }
         });
         context.setPacketHandled(true);

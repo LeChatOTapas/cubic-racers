@@ -11,44 +11,36 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ItemBoxMessage {
-    public boolean isFalse;
+public class ItemBoxConsumeMessage {
     public String item;
 
-    public ItemBoxMessage(){
+    public ItemBoxConsumeMessage(){
     }
 
-    public ItemBoxMessage(boolean isTrue,String item){
-        this.isFalse = isTrue;
+    public ItemBoxConsumeMessage(String item){
         this.item = item;
     }
 
 
-    public static void encode(ItemBoxMessage message, FriendlyByteBuf buffer){
-        buffer.writeBoolean(message.isFalse);
+    public static void encode(ItemBoxConsumeMessage message, FriendlyByteBuf buffer){
         buffer.writeCharSequence(message.item.subSequence(0, message.item.length()), Charset.defaultCharset());
     }
 
-    public static ItemBoxMessage decode(FriendlyByteBuf buffer){
-        return new ItemBoxMessage(buffer.readBoolean(),
-                buffer.readCharSequence(buffer.readableBytes(), Charset.defaultCharset()).toString());
+    public static ItemBoxConsumeMessage decode(FriendlyByteBuf buffer){
+        return new ItemBoxConsumeMessage(buffer.readCharSequence(buffer.readableBytes(), Charset.defaultCharset()).toString());
     }
 
-    public static void handle(ItemBoxMessage message, Supplier<NetworkEvent.Context> contextSupplier){
+    public static void handle(ItemBoxConsumeMessage message, Supplier<NetworkEvent.Context> contextSupplier){
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
-                //DETRUIT TOUTES LES GREEN SHELL PROCHES DU KART
-                List<Entity> nearbyEntities = kart.level().getEntities(kart, kart.getBoundingBox().inflate(2));
+                List<Entity> nearbyEntities = kart.level().getEntities(kart, kart.getBoundingBox().inflate(0));
                 for (Entity entity : nearbyEntities) {
                     if(entity instanceof ItemBox itemBox){
-                        if(message.isFalse){
-                            itemBox.remove(Entity.RemovalReason.KILLED);
-                        }else{
-                            itemBox.hasItem = false;
-                            kart.kartItem = message.item;
-                        }
+                        itemBox.hasItem = false;
+                        kart.kartItem = message.item;
+                        return;
                     }
                 }
             }

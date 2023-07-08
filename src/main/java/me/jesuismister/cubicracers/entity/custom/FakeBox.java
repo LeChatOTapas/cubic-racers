@@ -1,7 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.remove.ItemBoxMessage;
+import me.jesuismister.cubicracers.event.network.message.remove.ItemBoxConsumeMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -112,7 +112,7 @@ public class FakeBox extends Entity implements GeoEntity {
             for (Entity entity : nearbyEntities) {
                 //ON CHECK QUE LES ENTITES "KART"
                 if (entity instanceof Kart kart) {
-                    Network.CHANNEL.sendToServer(new ItemBoxMessage(true, ""));
+                    Network.CHANNEL.sendToServer(new ItemBoxConsumeMessage(""));
                     Kart.stunKart(kart);
                     this.remove(RemovalReason.KILLED);
                 }
