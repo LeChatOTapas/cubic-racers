@@ -96,7 +96,7 @@ public class Kart extends Entity implements GeoEntity {
     public float stunRotation = 0;
 
     //KART ITEM
-    public String kartItem = "Klaxon";
+    public String kartItem = "Green_shell";
     private boolean isInvinsible = false;
     private float starSpeedBoost = 1f; //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
     private float timeStar = 0;
@@ -467,7 +467,6 @@ public class Kart extends Entity implements GeoEntity {
 
                 if (canMove && isPressingKeyItem) useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
                 if (isKlaxoning){
-                    System.out.println("weshhhhhhhhhhhhhhhh");
                     Klaxon.applyKlaxonToOthersKarts(this);
                     isKlaxoning = false;
                 }
