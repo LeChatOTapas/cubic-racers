@@ -129,7 +129,7 @@ public class ItemBox extends Entity implements GeoEntity {
                         hasItem = false;
                         tickDisabled = 0;
                         giveRandomItem(kart);
-                        Network.CHANNEL.sendToServer(new ItemBoxConsumeMessage(kart.kartItem));
+                        Network.CHANNEL.sendToServer(new ItemBoxConsumeMessage(kart.getKartItem()));
                     }
                 }
             }
@@ -149,26 +149,26 @@ public class ItemBox extends Entity implements GeoEntity {
      * @param kart
      */
     public void giveRandomItem(Kart kart) {
-        if (!kart.kartItem.equals("None")) return;
+        if (!kart.getKartItem().equals("None")) return;
 
         double rand = ClientRandom.nextInt(100);
 
         if (0 <= rand && rand < BANANA_DROP_RATE) {
-            kart.kartItem = "Banana";
+            kart.setKartItem("Banana");
         } else if (BANANA_DROP_RATE < rand && rand < GREEN_SHELL_DROP_RATE) {
-            kart.kartItem = "Green_shell";
+            kart.setKartItem("Green_shell");
         } else if (GREEN_SHELL_DROP_RATE < rand && rand < MUSHROOM_DROP_RATE) {
-            kart.kartItem = "Mushroom";
+            kart.setKartItem("Mushroom");
         } else if (MUSHROOM_DROP_RATE < rand && rand < FAKE_BOX_DROP_RATE) {
-            kart.kartItem = "Fake_box";
+            kart.setKartItem("Fake_box");
         } else if (FAKE_BOX_DROP_RATE < rand && rand < BOMB_OMB_DROP_RATE) {
-            kart.kartItem = "Bomb_omb";
+            kart.setKartItem("Bomb_omb");
         } else if (BOMB_OMB_DROP_RATE < rand && rand < STAR_DROP_RATE) {
-            kart.kartItem = "Star";
+            kart.setKartItem("Star");
         } else if (STAR_DROP_RATE < rand && rand < THUNDER_DROP_RATE) {
-            kart.kartItem = "Thunder";
+            kart.setKartItem("Thunder");
         } else if (THUNDER_DROP_RATE < rand && rand <= KLAXON_DROP_RATE) {
-            kart.kartItem = "Klaxon";
+            kart.setKartItem("Klaxon");
         }
     }
 

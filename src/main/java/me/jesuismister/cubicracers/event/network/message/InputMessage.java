@@ -48,13 +48,13 @@ public class InputMessage {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player!=null && player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
-                kart.isPressingKeyUp = message.keyUp;
-                kart.isPressingKeyDown = message.keyDown;
-                kart.isPressingKeyLeft = message.keyLeft;
-                kart.isPressingKeyRight = message.keyRight;
-                kart.isPressingKeyDelta = message.keyDelta;
-                kart.isPressingKeyDrift = message.keyDrift;
-                kart.isPressingKeyItem = message.keyItem;
+                kart.setIsPressingKeyUp(message.keyUp);
+                kart.setIsPressingKeyDown(message.keyDown);
+                kart.setIsPressingKeyLeft(message.keyLeft);
+                kart.setIsPressingKeyRight(message.keyRight);
+                kart.setIsPressingKeyDelta(message.keyDelta);
+                kart.setIsPressingKeyDrift(message.keyDrift);
+                kart.setIsPressingKeyItem(message.keyItem);
             }
         });
         context.setPacketHandled(true);

@@ -153,7 +153,7 @@ public class BobOmb extends Entity implements GeoEntity {
         List<Entity> nearbyEntities = this.level().getEntities(this, this.getBoundingBox().inflate(RANGE));
         for (Entity entity : nearbyEntities) {
             if (entity instanceof Kart kart) {
-                if (kart.canMove) Kart.stunKart(kart);
+                if (kart.getCanMove()) Kart.stunKart(kart);
             }
         }
     }

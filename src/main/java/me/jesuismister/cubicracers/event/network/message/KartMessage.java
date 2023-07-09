@@ -54,8 +54,8 @@ public class KartMessage {
                 kart.setYRot(message.rotY);
 
                 kart.setSpeed(message.speed);
-                kart.deltaOn = message.deltaOn;
-                kart.isDrifting = message.isDrifting;
+                kart.setDeltaOn(message.deltaOn);
+                kart.setIsDrifting(message.isDrifting);
             }
         });
         context.setPacketHandled(true);

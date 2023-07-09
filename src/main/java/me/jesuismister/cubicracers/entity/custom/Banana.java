@@ -100,7 +100,7 @@ public class Banana extends Entity implements GeoEntity {
                 if (entity instanceof Kart kart) {
                     if (kart.getFirstPassenger() != null) {
                         Network.CHANNEL.sendToServer(new BananaRemoveMessage());
-                        if (kart.canMove) {
+                        if (kart.getCanMove()) {
                             Kart.stunKart(kart);
                         }
                         this.remove(RemovalReason.KILLED);

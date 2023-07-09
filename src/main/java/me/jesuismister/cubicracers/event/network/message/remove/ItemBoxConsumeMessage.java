@@ -39,7 +39,7 @@ public class ItemBoxConsumeMessage {
                 for (Entity entity : nearbyEntities) {
                     if(entity instanceof ItemBox itemBox){
                         itemBox.hasItem = false;
-                        kart.kartItem = message.item;
+                        //kart.kartItem = message.item;
                         return;
                     }
                 }

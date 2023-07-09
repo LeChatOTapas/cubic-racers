@@ -28,8 +28,8 @@ public class KartRenderer extends GeoEntityRenderer<Kart> {
         //TOURNE LE KART DANS LA DIRECTION OU IL REGARDE
         Quaternionf rotation = new Quaternionf();
 
-        if(entity.canMove) rotation.rotateY((float) -Math.toRadians(entityYaw));
-        else rotation.rotateY((float) -Math.toRadians(entityYaw + entity.stunRotation));
+        if(entity.getCanMove()) rotation.rotateY((float) -Math.toRadians(entityYaw));
+        else rotation.rotateY((float) -Math.toRadians(entityYaw + entity.getStunRotation()));
         poseStack.mulPose(rotation);
 
         //RENDER LE KART
