@@ -358,6 +358,9 @@
 					}
 				}
 			}
+		},
+		"effect_drift": {
+			"loop": true
 		}
 	},
 	"geckolib_format_version": 2

@@ -118,9 +118,12 @@ public class BobOmb extends Entity implements GeoEntity {
                     }
                 }
             }
-            if (tickAlive > TICK_TO_DESPAWN) stun();
+            if (tickAlive > TICK_TO_DESPAWN){
+                stun();
+                this.remove(RemovalReason.KILLED);
+            }
         }else{
-            if (tickAlive > TICK_TO_DESPAWN+2) this.remove(RemovalReason.KILLED);
+            if (tickAlive > (TICK_TO_DESPAWN*2f)) this.remove(RemovalReason.KILLED);
         }
         tickAlive++;
         this.move(MoverType.SELF, new Vec3(0, -1, 0));

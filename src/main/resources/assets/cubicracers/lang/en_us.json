@@ -1,8 +1,21 @@
 {
   "creativemodetab.cubicracers_tab": "MC Kart",
 
+  "entity.cubicracers.banana": "Banana",
+  "entity.cubicracers.bob_omb": "Bob Omb",
+  "entity.cubicracers.fake_box": "Fake Box",
+  "entity.cubicracers.green_shell": "Green Shell",
+  "entity.cubicracers.item_box": "Item Box",
+
+  "entity.cubicracers.trash_kart": "Trash Kart",
+  "entity.cubicracers.standard_kart": "Standard Kart",
+  "entity.cubicracers.flame_flyer": "Flame Flyer",
+  "entity.cubicracers.b_dasher": "B-Dasher",
+
   "item.cubicracers.trash_kart": "Trash Kart",
   "item.cubicracers.standard_kart": "Standard Kart",
   "item.cubicracers.flame_flyer": "Flame Flyer",
+  "item.cubicracers.b_dasher": "B-Dasher",
+
   "item.cubicracers.item_box_spawn_item": "Item Box"
 }

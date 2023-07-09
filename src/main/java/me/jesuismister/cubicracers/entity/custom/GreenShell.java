@@ -125,7 +125,7 @@ public class GreenShell extends Entity implements GeoEntity {
         }
 
         //REBONDS
-        bounce();
+        if(this.horizontalCollision) bounce();
 
         //DEPLACEMENT DE LA CARAPACE
         setMovement(this);
@@ -175,18 +175,21 @@ public class GreenShell extends Entity implements GeoEntity {
     }
 
     private void bounce(){
-        if (!this.level().getBlockState(this.blockPosition().relative(Direction.WEST)).is(Blocks.AIR) || !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.AIR)) {
+        if (!this.level().getBlockState(this.blockPosition().relative(Direction.WEST)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.WEST)).is(Blocks.WATER)) {
             this.setYRot(-this.getYRot());
             bounceTime++;
-        }else if (!this.level().getBlockState(this.blockPosition().relative(Direction.NORTH)).is(Blocks.AIR)) {
+        }else if(!this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.WATER)){
+            this.setYRot(-this.getYRot());
+            bounceTime++;
+        }else if (!this.level().getBlockState(this.blockPosition().relative(Direction.NORTH)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.WATER)) {
             this.setYRot(-180-this.getYRot());
             bounceTime++;
-        }else if(!this.level().getBlockState(this.blockPosition().relative(Direction.SOUTH)).is(Blocks.AIR)){
+        }else if(!this.level().getBlockState(this.blockPosition().relative(Direction.SOUTH)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.WATER)){
             this.setYRot(180-this.getYRot());
             bounceTime++;
         }
 
-        if(bounceTime>3){
+        if(bounceTime>4){
             this.remove(RemovalReason.KILLED);
         }
     }
