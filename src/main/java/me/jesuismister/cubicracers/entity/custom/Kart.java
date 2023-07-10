@@ -83,6 +83,8 @@ public class Kart extends KartAbstract implements GeoEntity {
 
         entityData.define(isPressingKeyAccelerate, false);
         entityData.define(isPressingKeyDeccelerate, false);
+        entityData.define(isPressingKeyForward, false);
+        entityData.define(isPressingKeyBackward, false);
         entityData.define(isPressingKeyLeft, false);
         entityData.define(isPressingKeyRight, false);
         entityData.define(isPressingKeyDrift, false);
@@ -106,7 +108,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         entityData.define(canMove, true);
         entityData.define(stunRotation, 0.f);
 
-        entityData.define(kartItem, "Star");
+        entityData.define(kartItem, "Green_shell");
         entityData.define(isInvinsible, false);
         entityData.define(starSpeedBoost, 1f); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
         entityData.define(timeStar, 0.f);
@@ -130,8 +132,12 @@ public class Kart extends KartAbstract implements GeoEntity {
         if (player == null) {
             setIsPressingKeyAccelerate(false);
             setIsPressingKeyDeccelerate(false);
+
+            setIsPressingKeyFoward(false);
+            setIsPressingKeyBackward(false);
             setIsPressingKeyLeft(false);
             setIsPressingKeyRight(false);
+
             setIsPressingKeyDelta(false);
             setPreviousPressingKeyDelta(false);
             setIsPressingKeyDrift(false);
@@ -227,8 +233,12 @@ public class Kart extends KartAbstract implements GeoEntity {
     private void applyStun() {
         setIsPressingKeyAccelerate(false);
         setIsPressingKeyDeccelerate(false);
+
+        setIsPressingKeyFoward(false);
+        setIsPressingKeyBackward(false);
         setIsPressingKeyLeft(false);
         setIsPressingKeyRight(false);
+
         setIsPressingKeyDelta(false);
         setPreviousPressingKeyDelta(false);
         setIsPressingKeyDrift(false);
@@ -275,7 +285,7 @@ public class Kart extends KartAbstract implements GeoEntity {
             if(!level().isClientSide()) Network.CHANNEL.sendToServer(new FakeBoxUseMessage());
             sendConductorMessage("FAKE_BOX !!!!!");
         } else if (getKartItem().equals("Green_shell")) {
-            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new GreenShellUseMessage());
+            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new GreenShellUseMessage(getIsPressingKeyBackward()));
             sendConductorMessage("GREEN_SHELL !!!!!");
         }
         setKartItem("None");

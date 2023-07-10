@@ -54,8 +54,12 @@ public class ModEvents {
         public static void onKeyRegister(RegisterKeyMappingsEvent event) {
             event.register(KeyBinds.KART_ACCELERATE_KEY);
             event.register(KeyBinds.KART_DECCELERATE_KEY);
+
+            event.register(KeyBinds.KART_FORWARD_KEY);
+            event.register(KeyBinds.KART_BACKWARD_KEY);
             event.register(KeyBinds.KART_LEFT_KEY);
             event.register(KeyBinds.KART_RIGHT_KEY);
+
             event.register(KeyBinds.KART_DELTA_KEY);
             event.register(KeyBinds.KART_DRIFT_KEY);
             event.register(KeyBinds.KART_ITEM_KEY);
@@ -90,8 +94,10 @@ public class ModEvents {
                     kart.setIsPressingKeyDrift(KeyBinds.KART_DRIFT_KEY.isDown());
                     kart.setIsPressingKeyItem(KeyBinds.KART_ITEM_KEY.isDown());
 
-                    Network.CHANNEL.sendToServer(new InputMessage(kart.getIsPressingKeyAccelerate(),
-                            kart.getIsPressingKeyDeccelerate(), kart.getIsPressingKeyForward(), kart.getIsPressingKeyBackward(), kart.getIsPressingKeyLeft(), kart.getIsPressingKeyRight(),
+                    Network.CHANNEL.sendToServer(new InputMessage(
+                            kart.getIsPressingKeyAccelerate(), kart.getIsPressingKeyDeccelerate(),
+                            kart.getIsPressingKeyForward(), kart.getIsPressingKeyBackward(),
+                            kart.getIsPressingKeyLeft(), kart.getIsPressingKeyRight(),
                             kart.getIsPressingKeyDelta(), kart.getIsPressingKeyDrift(), kart.getIsPressingKeyItem()));
                 }else{
                     Network.CHANNEL.sendToServer(new InputMessage(false, false, false, false, false, false, false, false, false));

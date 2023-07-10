@@ -109,9 +109,7 @@ public abstract class KartAbstract extends Entity {
         return this.entityData.get(isPressingKeyForward);
     }
 
-    public void setIsPressingKeyFoward(boolean value) {
-        this.entityData.set(isPressingKeyForward, value);
-    }
+    public void setIsPressingKeyFoward(boolean value) { this.entityData.set(isPressingKeyForward, value); }
 
     public boolean getIsPressingKeyBackward() {
         return this.entityData.get(isPressingKeyBackward);

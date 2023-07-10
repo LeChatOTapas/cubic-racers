@@ -36,10 +36,12 @@ public class InputMessage {
     public static void encode(InputMessage message, FriendlyByteBuf buffer){
         buffer.writeBoolean(message.keyAccelerate);
         buffer.writeBoolean(message.keyDeccelerate);
+
         buffer.writeBoolean(message.keyForward);
         buffer.writeBoolean(message.keyBackward);
         buffer.writeBoolean(message.keyLeft);
         buffer.writeBoolean(message.keyRight);
+
         buffer.writeBoolean(message.keyDelta);
         buffer.writeBoolean(message.keyDrift);
         buffer.writeBoolean(message.keyItem);
@@ -56,8 +58,8 @@ public class InputMessage {
             if (player!=null && player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
                 kart.setIsPressingKeyAccelerate(message.keyAccelerate);
                 kart.setIsPressingKeyDeccelerate(message.keyDeccelerate);
-                kart.setIsPressingKeyAccelerate(message.keyForward);
-                kart.setIsPressingKeyDeccelerate(message.keyBackward);
+                kart.setIsPressingKeyFoward(message.keyForward);
+                kart.setIsPressingKeyBackward(message.keyBackward);
                 kart.setIsPressingKeyLeft(message.keyLeft);
                 kart.setIsPressingKeyRight(message.keyRight);
                 kart.setIsPressingKeyDelta(message.keyDelta);

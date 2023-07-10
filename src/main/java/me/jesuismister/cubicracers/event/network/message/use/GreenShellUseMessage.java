@@ -9,16 +9,18 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class GreenShellUseMessage {
+    public boolean isPressingKeyBackward;
 
-
-    public GreenShellUseMessage(){
+    public GreenShellUseMessage(boolean isPressingKeyBackward){
+        this.isPressingKeyBackward = isPressingKeyBackward;
     }
 
     public static void encode(GreenShellUseMessage message, FriendlyByteBuf buffer){
+        buffer.writeBoolean(message.isPressingKeyBackward);
     }
 
     public static GreenShellUseMessage decode(FriendlyByteBuf buffer){
-        return new GreenShellUseMessage();
+        return new GreenShellUseMessage(buffer.readBoolean());
     }
 
     public static void handle(GreenShellUseMessage message, Supplier<NetworkEvent.Context> contextSupplier){
@@ -26,7 +28,11 @@ public class GreenShellUseMessage {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
-                GreenShell.spawnGreenShell(kart);
+                if(message.isPressingKeyBackward){
+                    GreenShell.spawnGreenShellBack(kart);
+                }else{
+                    GreenShell.spawnGreenShellFront(kart);
+                }
             }
         });
         context.setPacketHandled(true);
