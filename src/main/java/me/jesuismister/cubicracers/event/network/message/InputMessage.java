@@ -8,8 +8,10 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class InputMessage {
-    public boolean keyUp;
-    public boolean keyDown;
+    public boolean keyAccelerate;
+    public boolean keyDeccelerate;
+    public boolean keyForward;
+    public boolean keyBackward;
     public boolean keyLeft;
     public boolean keyRight;
     public boolean keyDelta;
@@ -19,9 +21,11 @@ public class InputMessage {
     public InputMessage(){
     }
 
-    public InputMessage(boolean keyUp, boolean keyDown, boolean keyLeft, boolean keyRight, boolean keyDelta, boolean keyDrift, boolean keyItem){
-        this.keyUp = keyUp;
-        this.keyDown = keyDown;
+    public InputMessage(boolean keyAccelerate, boolean keyDeccelerate, boolean keyForward, boolean keyBackward, boolean keyLeft, boolean keyRight, boolean keyDelta, boolean keyDrift, boolean keyItem){
+        this.keyAccelerate = keyAccelerate;
+        this.keyDeccelerate = keyDeccelerate;
+        this.keyForward = keyForward;
+        this.keyBackward = keyBackward;
         this.keyLeft = keyLeft;
         this.keyRight = keyRight;
         this.keyDelta = keyDelta;
@@ -30,8 +34,10 @@ public class InputMessage {
     }
 
     public static void encode(InputMessage message, FriendlyByteBuf buffer){
-        buffer.writeBoolean(message.keyUp);
-        buffer.writeBoolean(message.keyDown);
+        buffer.writeBoolean(message.keyAccelerate);
+        buffer.writeBoolean(message.keyDeccelerate);
+        buffer.writeBoolean(message.keyForward);
+        buffer.writeBoolean(message.keyBackward);
         buffer.writeBoolean(message.keyLeft);
         buffer.writeBoolean(message.keyRight);
         buffer.writeBoolean(message.keyDelta);
@@ -40,7 +46,7 @@ public class InputMessage {
     }
 
     public static InputMessage decode(FriendlyByteBuf buffer){
-        return new InputMessage(buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean());
+        return new InputMessage(buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean());
     }
 
     public static void handle(InputMessage message, Supplier<NetworkEvent.Context> contextSupplier){
@@ -48,8 +54,10 @@ public class InputMessage {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player!=null && player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
-                kart.setIsPressingKeyUp(message.keyUp);
-                kart.setIsPressingKeyDown(message.keyDown);
+                kart.setIsPressingKeyAccelerate(message.keyAccelerate);
+                kart.setIsPressingKeyDeccelerate(message.keyDeccelerate);
+                kart.setIsPressingKeyAccelerate(message.keyForward);
+                kart.setIsPressingKeyDeccelerate(message.keyBackward);
                 kart.setIsPressingKeyLeft(message.keyLeft);
                 kart.setIsPressingKeyRight(message.keyRight);
                 kart.setIsPressingKeyDelta(message.keyDelta);

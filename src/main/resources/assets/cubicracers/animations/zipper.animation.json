@@ -313,6 +313,7 @@
 			}
 		},
 		"propeller_on": {
+			"loop": "hold_on_last_frame",
 			"animation_length": 0.29167,
 			"bones": {
 				"propeller": {
@@ -340,7 +341,7 @@
 					},
 					"scale": {
 						"0.0": {
-							"vector": [0.4, 0.3, 0.4]
+							"vector": [0, 0, 0]
 						},
 						"0.2917": {
 							"vector": [1, 1, 1]
@@ -350,6 +351,7 @@
 			}
 		},
 		"propeller_off": {
+			"loop": "hold_on_last_frame",
 			"animation_length": 0.29167,
 			"bones": {
 				"propeller": {
@@ -383,7 +385,7 @@
 							"vector": [1, 1, 1]
 						},
 						"0.2917": {
-							"vector": [0.4, 0.3, 0.4]
+							"vector": [0, 0, 0]
 						}
 					}
 				}

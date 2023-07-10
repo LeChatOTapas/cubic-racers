@@ -20,8 +20,10 @@ public abstract class KartAbstract extends Entity {
     public static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
 
     //KEYS POUR LE KART
-    public static final EntityDataAccessor<Boolean> isPressingKeyUp = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> isPressingKeyDown = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyAccelerate = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyDeccelerate = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyForward = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyBackward = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> isPressingKeyLeft = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> isPressingKeyRight = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> isPressingKeyDrift = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
@@ -87,20 +89,36 @@ public abstract class KartAbstract extends Entity {
 
     //
 
-    public boolean getIsPressingKeyUp() {
-        return this.entityData.get(isPressingKeyUp);
+    public boolean getIsPressingKeyAccelerate() {
+        return this.entityData.get(isPressingKeyAccelerate);
     }
 
-    public void setIsPressingKeyUp(boolean value) {
-        this.entityData.set(isPressingKeyUp, value);
+    public void setIsPressingKeyAccelerate(boolean value) {
+        this.entityData.set(isPressingKeyAccelerate, value);
     }
 
-    public boolean getIsPressingKeyDown() {
-        return this.entityData.get(isPressingKeyDown);
+    public boolean getIsPressingKeyDeccelerate() {
+        return this.entityData.get(isPressingKeyDeccelerate);
     }
 
-    public void setIsPressingKeyDown(boolean value) {
-        this.entityData.set(isPressingKeyDown, value);
+    public void setIsPressingKeyDeccelerate(boolean value) {
+        this.entityData.set(isPressingKeyDeccelerate, value);
+    }
+
+    public boolean getIsPressingKeyForward() {
+        return this.entityData.get(isPressingKeyForward);
+    }
+
+    public void setIsPressingKeyFoward(boolean value) {
+        this.entityData.set(isPressingKeyForward, value);
+    }
+
+    public boolean getIsPressingKeyBackward() {
+        return this.entityData.get(isPressingKeyBackward);
+    }
+
+    public void setIsPressingKeyBackward(boolean value) {
+        this.entityData.set(isPressingKeyBackward, value);
     }
 
     public boolean getIsPressingKeyLeft() {

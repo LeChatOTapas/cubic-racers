@@ -14,8 +14,11 @@ public class KeyBinds {
 
     public static final String KEY_KART_CATEOGRY = "key.cubicracers.kart_category";
 
-    public static final String KEY_UP = "key.cubicracers.forward";
-    public static final String KEY_DOWN = "key.cubicracers.backward";
+    public static final String KEY_ACCELERATE = "key.cubicracers.accelerate";
+    public static final String KEY_DECCELERATE = "key.cubicracers.deccelerate";
+
+    public static final String KEY_FORMWARD = "key.cubicracers.forward";
+    public static final String KEY_BACKWARD = "key.cubicracers.backward";
     public static final String KEY_LEFT = "key.cubicracers.left";
     public static final String KEY_RIGHT = "key.cubicracers.right";
 
@@ -23,9 +26,13 @@ public class KeyBinds {
     public static final String KEY_DRIFT = "key.cubicracers.drift";
     public static final String KEY_ITEM = "key.cubicracers.item";
 
-    public static final KeyMapping KART_UP_KEY = new KeyMapping(KEY_UP, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_W, KEY_KART_CATEOGRY);
-    public static final KeyMapping KART_DOWN_KEY = new KeyMapping(KEY_DOWN, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
+    public static final KeyMapping KART_ACCELERATE_KEY = new KeyMapping(KEY_ACCELERATE, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_A, KEY_KART_CATEOGRY);
+    public static final KeyMapping KART_DECCELERATE_KEY = new KeyMapping(KEY_DECCELERATE, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_E, KEY_KART_CATEOGRY);
+    public static final KeyMapping KART_FORWARD_KEY = new KeyMapping(KEY_FORMWARD, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_Z, KEY_KART_CATEOGRY);
+    public static final KeyMapping KART_BACKWARD_KEY = new KeyMapping(KEY_BACKWARD, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_S, KEY_KART_CATEOGRY);
     public static final KeyMapping KART_LEFT_KEY = new KeyMapping(KEY_LEFT, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_A, KEY_KART_CATEOGRY);
