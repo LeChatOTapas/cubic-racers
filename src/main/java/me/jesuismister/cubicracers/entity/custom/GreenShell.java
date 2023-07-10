@@ -1,29 +1,18 @@
 package me.jesuismister.cubicracers.entity.custom;
 
-import com.mojang.authlib.minecraft.client.MinecraftClient;
 import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.remove.GreenShellRemoveMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Minecart;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -105,27 +94,22 @@ public class GreenShell extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        //COTE CLIENT
-        if (this.level().isClientSide()) {
-            //RECUPERER TOUTES LES ENTITES PROCHES DE LA CARAPACE
-            List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
+        //RECUPERER TOUTES LES ENTITES PROCHES DE LA CARAPACE
+        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
 
-            for (Entity entity : nearbyEntities) {
-                if (entity instanceof Kart kart) {
-                    if (kart.getFirstPassenger() != null) {
-                        Network.CHANNEL.sendToServer(new GreenShellRemoveMessage());
-                        if (kart.getCanMove()) {
-                            Kart.stunKart(kart);
-                        }
-                        this.remove(RemovalReason.KILLED);
-                        return;
-                    }
+        for (Entity entity : nearbyEntities) {
+            if (entity instanceof Kart kart) {
+                //Network.CHANNEL.sendToServer(new GreenShellRemoveMessage());
+                if (kart.getCanMove()) {
+                    Kart.stunKart(kart);
                 }
+                this.remove(RemovalReason.KILLED);
+                return;
             }
         }
 
         //REBONDS
-        if(this.horizontalCollision) bounce();
+        if (this.horizontalCollision) bounce();
 
         //DEPLACEMENT DE LA CARAPACE
         setMovement(this);
@@ -155,6 +139,7 @@ public class GreenShell extends Entity implements GeoEntity {
 
     /**
      * Spawn la carapace verte derrière le kart
+     *
      * @param kart
      */
     public static void spawnGreenShellBack(Kart kart) {
@@ -162,7 +147,7 @@ public class GreenShell extends Entity implements GeoEntity {
             GreenShell green_shell = new GreenShell(KartItemsInit.GREEN_SHELL.get(), kart.level());
             float angle = (float) Math.toRadians(kart.getYRot());
             green_shell.setPos(kart.getX() + (Math.sin(angle) * 2.5f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2.5f));
-            green_shell.setYRot(kart.getYRot()+180);
+            green_shell.setYRot(kart.getYRot() + 180);
             kart.level().addFreshEntity(green_shell);
         }
     }
@@ -188,22 +173,22 @@ public class GreenShell extends Entity implements GeoEntity {
         return 1.2f;
     }
 
-    private void bounce(){
+    private void bounce() {
         if (!this.level().getBlockState(this.blockPosition().relative(Direction.WEST)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.WEST)).is(Blocks.WATER)) {
             this.setYRot(-this.getYRot());
             bounceTime++;
-        }else if(!this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.WATER)){
+        } else if (!this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.WATER)) {
             this.setYRot(-this.getYRot());
             bounceTime++;
-        }else if (!this.level().getBlockState(this.blockPosition().relative(Direction.NORTH)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.WATER)) {
-            this.setYRot(-180-this.getYRot());
+        } else if (!this.level().getBlockState(this.blockPosition().relative(Direction.NORTH)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.WATER)) {
+            this.setYRot(-180 - this.getYRot());
             bounceTime++;
-        }else if(!this.level().getBlockState(this.blockPosition().relative(Direction.SOUTH)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.WATER)){
-            this.setYRot(180-this.getYRot());
+        } else if (!this.level().getBlockState(this.blockPosition().relative(Direction.SOUTH)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.WATER)) {
+            this.setYRot(180 - this.getYRot());
             bounceTime++;
         }
 
-        if(bounceTime>4){
+        if (bounceTime > 4) {
             this.remove(RemovalReason.KILLED);
         }
     }

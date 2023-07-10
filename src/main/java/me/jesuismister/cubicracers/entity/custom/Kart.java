@@ -108,7 +108,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         entityData.define(canMove, true);
         entityData.define(stunRotation, 0.f);
 
-        entityData.define(kartItem, "Green_shell");
+        entityData.define(kartItem, "Banana");
         entityData.define(isInvinsible, false);
         entityData.define(starSpeedBoost, 1f); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
         entityData.define(timeStar, 0.f);
@@ -123,7 +123,7 @@ public class Kart extends KartAbstract implements GeoEntity {
     public void tick() {
         super.tick();
 
-        System.out.println(level() + " / item: " + getKartItem() + " / " + getSpeed() + " / " + getIsInvinsible());
+        System.out.println(level() + " / " + getKartItem());
 
         isStun(); // ON VOIT SI LE KART EST STUN
         if (!getCanMove()) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
@@ -259,7 +259,7 @@ public class Kart extends KartAbstract implements GeoEntity {
     private void useItem() {
         //SI L'OBJET DANS LE KART EST UNE BANANE
         if (getKartItem().equals("Banana")) {
-            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new BananaUseMessage());
+            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new BananaUseMessage(getIsPressingKeyForward()));
             sendConductorMessage("BANANE !!!!!");
         } else if (getKartItem().equals("Mushroom")) {
             setTimeBoost(5.f);

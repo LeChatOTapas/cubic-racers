@@ -1,7 +1,5 @@
 package me.jesuismister.cubicracers.entity.custom;
 
-import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.remove.ItemBoxConsumeMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import me.jesuismister.cubicracers.util.ClientRandom;
 import net.minecraft.nbt.CompoundTag;
@@ -43,8 +41,8 @@ public class ItemBox extends Entity implements GeoEntity {
     private static final double KLAXON_DROP_RATE = 100; //BORNE DE 95 à 100
 
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 4; //4s
-    private int tickDisabled = 0;
-    public boolean hasItem = true;
+    public static final EntityDataAccessor<Boolean> hasItem = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> tickDisabled = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.INT);
 
     public ItemBox(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
@@ -65,7 +63,7 @@ public class ItemBox extends Entity implements GeoEntity {
     }
 
     private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
-        if (hasItem) {
+        if (getHasItem()) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("box_on", Animation.LoopType.LOOP));
         } else {
@@ -78,6 +76,8 @@ public class ItemBox extends Entity implements GeoEntity {
     @Override
     protected void defineSynchedData() {
         this.entityData.define(SPEED, 0.0f);
+        this.entityData.define(hasItem, true);
+        this.entityData.define(tickDisabled, 0);
     }
 
     @Override
@@ -116,29 +116,29 @@ public class ItemBox extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        if (this.level().isClientSide()) {
-            //SI IL Y A UN ITEM DE DISPO DANS LE CUBE
-            if(hasItem){
-                //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
-                List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
+        //SI IL Y A UN ITEM DE DISPO DANS LE CUBE
+        if (getHasItem()) {
+            //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
+            List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
 
-                //PARCOURIR LA LISTE DES ENTITES PROCHES
-                for (Entity entity : nearbyEntities) {
-                    //ON CHECK QUE LES ENTITES "KART"
-                    if (entity instanceof Kart kart) {
-                        hasItem = false;
-                        tickDisabled = 0;
-                        giveRandomItem(kart);
-                        Network.CHANNEL.sendToServer(new ItemBoxConsumeMessage(kart.getKartItem()));
+            //PARCOURIR LA LISTE DES ENTITES PROCHES
+            for (Entity entity : nearbyEntities) {
+                //ON CHECK QUE LES ENTITES "KART"
+                if (entity instanceof Kart kart) {
+                    if (giveRandomItem(kart)) {
+                        setHasItem(false);
+                        setTickDisabled(0);
+                        break;
                     }
+                    //Network.CHANNEL.sendToServer(new ItemBoxConsumeMessage(kart.getKartItem()));
                 }
             }
         }
 
         //REAPPROVISIONNER LE CUBE AU BOUT DE X SECONDES
-        if (!hasItem) {
-            if (tickDisabled > TICK_TO_GET_BACK_ITEM) hasItem = true;
-            tickDisabled++;
+        if (!getHasItem()) {
+            if (getTickDisabled() > TICK_TO_GET_BACK_ITEM) setHasItem(true);
+            setTickDisabled(getTickDisabled() + 1);
         }
 
     }
@@ -148,28 +148,30 @@ public class ItemBox extends Entity implements GeoEntity {
      *
      * @param kart
      */
-    public void giveRandomItem(Kart kart) {
-        if (!kart.getKartItem().equals("None")) return;
+    public boolean giveRandomItem(Kart kart) {
+        if (!kart.getKartItem().equals("None")) return false;
 
         double rand = ClientRandom.nextInt(100);
 
         if (0 <= rand && rand < BANANA_DROP_RATE) {
             kart.setKartItem("Banana");
-        } else if (BANANA_DROP_RATE < rand && rand < GREEN_SHELL_DROP_RATE) {
+        } else if (BANANA_DROP_RATE <= rand && rand < GREEN_SHELL_DROP_RATE) {
             kart.setKartItem("Green_shell");
-        } else if (GREEN_SHELL_DROP_RATE < rand && rand < MUSHROOM_DROP_RATE) {
+        } else if (GREEN_SHELL_DROP_RATE <= rand && rand < MUSHROOM_DROP_RATE) {
             kart.setKartItem("Mushroom");
-        } else if (MUSHROOM_DROP_RATE < rand && rand < FAKE_BOX_DROP_RATE) {
+        } else if (MUSHROOM_DROP_RATE <= rand && rand < FAKE_BOX_DROP_RATE) {
             kart.setKartItem("Fake_box");
-        } else if (FAKE_BOX_DROP_RATE < rand && rand < BOMB_OMB_DROP_RATE) {
+        } else if (FAKE_BOX_DROP_RATE <= rand && rand < BOMB_OMB_DROP_RATE) {
             kart.setKartItem("Bomb_omb");
-        } else if (BOMB_OMB_DROP_RATE < rand && rand < STAR_DROP_RATE) {
+        } else if (BOMB_OMB_DROP_RATE <= rand && rand < STAR_DROP_RATE) {
             kart.setKartItem("Star");
-        } else if (STAR_DROP_RATE < rand && rand < THUNDER_DROP_RATE) {
+        } else if (STAR_DROP_RATE <= rand && rand < THUNDER_DROP_RATE) {
             kart.setKartItem("Thunder");
-        } else if (THUNDER_DROP_RATE < rand && rand <= KLAXON_DROP_RATE) {
+        } else if (THUNDER_DROP_RATE <= rand && rand <= KLAXON_DROP_RATE) {
             kart.setKartItem("Klaxon");
         }
+
+        return true;
     }
 
     @Override
@@ -184,5 +186,21 @@ public class ItemBox extends Entity implements GeoEntity {
             }
         }
         return false;
+    }
+
+    public boolean getHasItem() {
+        return this.entityData.get(hasItem);
+    }
+
+    public void setHasItem(boolean value) {
+        this.entityData.set(hasItem, value);
+    }
+
+    public int getTickDisabled() {
+        return this.entityData.get(tickDisabled);
+    }
+
+    public void setTickDisabled(int value) {
+        this.entityData.set(tickDisabled, value);
     }
 }

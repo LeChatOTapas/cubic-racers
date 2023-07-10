@@ -1,7 +1,5 @@
 package me.jesuismister.cubicracers.entity.custom;
 
-import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.remove.ItemBoxConsumeMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -104,7 +102,6 @@ public class FakeBox extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        if (this.level().isClientSide()) {
             //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
             List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
 
@@ -112,11 +109,10 @@ public class FakeBox extends Entity implements GeoEntity {
             for (Entity entity : nearbyEntities) {
                 //ON CHECK QUE LES ENTITES "KART"
                 if (entity instanceof Kart kart) {
-                    Network.CHANNEL.sendToServer(new ItemBoxConsumeMessage(""));
+                    //Network.CHANNEL.sendToServer(new ItemBoxConsumeMessage(""));
                     Kart.stunKart(kart);
                     this.remove(RemovalReason.KILLED);
                 }
-            }
         }
 
         //LE CUBE DESPAWN AU BOUT DE X SECS

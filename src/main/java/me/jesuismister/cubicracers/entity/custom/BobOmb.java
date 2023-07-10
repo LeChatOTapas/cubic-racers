@@ -97,34 +97,30 @@ public class BobOmb extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
 
-        //COTE CLIENT
-        if (this.level().isClientSide()) {
-            if(shouldExplode){
-                stun();
-                this.remove(RemovalReason.KILLED);
-                return;
-            }
+        if (shouldExplode) {
+            stun();
+            this.remove(RemovalReason.KILLED);
+            return;
+        }
 
-            //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
-            List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
+        //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
+        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
 
-            for (Entity entity : nearbyEntities) {
-                if (entity instanceof Kart kart) {
-                    if (kart.getFirstPassenger() != null) {
-                        Network.CHANNEL.sendToServer(new BobOmbRemoveMessage());
-                        stun();
-                        this.remove(RemovalReason.KILLED);
-                        return;
-                    }
+        for (Entity entity : nearbyEntities) {
+            if (entity instanceof Kart kart) {
+                if (kart.getFirstPassenger() != null) {
+                    Network.CHANNEL.sendToServer(new BobOmbRemoveMessage());
+                    stun();
+                    this.remove(RemovalReason.KILLED);
+                    return;
                 }
             }
-            if (tickAlive > TICK_TO_DESPAWN){
-                stun();
-                this.remove(RemovalReason.KILLED);
-            }
-        }else{
-            if (tickAlive > (TICK_TO_DESPAWN*2f)) this.remove(RemovalReason.KILLED);
         }
+        if (tickAlive > TICK_TO_DESPAWN) {
+            stun();
+            this.remove(RemovalReason.KILLED);
+        }
+
         tickAlive++;
         this.move(MoverType.SELF, new Vec3(0, -1, 0));
     }

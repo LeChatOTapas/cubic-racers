@@ -1,7 +1,5 @@
 package me.jesuismister.cubicracers.entity.custom;
 
-import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.remove.BananaRemoveMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -33,6 +31,9 @@ public class Banana extends Entity implements GeoEntity {
     public static final String ANIMATION = "animations/banana.animation.json";
     public static final float HITBOX = 1f;
 
+    public static final EntityDataAccessor<Boolean> isPropulsing = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
+    private float propulsionY = -1f;
+
     private static final int TICK_TO_DESPAWN = 20 * 90; //1min 30s
     private int tickAlive = 0;
 
@@ -52,7 +53,8 @@ public class Banana extends Entity implements GeoEntity {
 
     @Override
     protected void defineSynchedData() {
-        this.entityData.define(SPEED, 0.0f);
+        entityData.define(SPEED, 0.0f);
+        entityData.define(isPropulsing, false);
     }
 
     @Override
@@ -91,15 +93,21 @@ public class Banana extends Entity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        //COTE CLIENT
-        if (this.level().isClientSide()) {
+
+        if (getIsPropulsing() && !onGround()) {
+            double x = Math.sin(Math.toRadians(-getYRot())) * 3.5;
+            double z = Math.cos(Math.toRadians(-getYRot())) * 3.5;
+            Vec3 vec3 = new Vec3(x, 0, z);
+            setDeltaMovement(vec3);
+            this.move(MoverType.SELF, new Vec3(getDeltaMovement().x, (1-Math.sqrt(propulsionY))*3, getDeltaMovement().z));
+            propulsionY += 0.3f;
+        } else {
             //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
             List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
 
             for (Entity entity : nearbyEntities) {
                 if (entity instanceof Kart kart) {
                     if (kart.getFirstPassenger() != null) {
-                        Network.CHANNEL.sendToServer(new BananaRemoveMessage());
                         if (kart.getCanMove()) {
                             Kart.stunKart(kart);
                         }
@@ -108,14 +116,32 @@ public class Banana extends Entity implements GeoEntity {
                     }
                 }
             }
-        }
 
-        //DETRUIRE LA BANANE AU BOUT D'UN MOMENT
-        tickAlive++;
-        if (tickAlive > TICK_TO_DESPAWN) {
-            this.remove(RemovalReason.DISCARDED);
+            //DETRUIRE LA BANANE AU BOUT D'UN MOMENT
+            tickAlive++;
+            if (tickAlive > TICK_TO_DESPAWN) {
+                this.remove(RemovalReason.DISCARDED);
+            }
+
+            if (getIsPropulsing()) setIsPropulsing(false);
+            this.move(MoverType.SELF, new Vec3(0, -1, 0));
         }
-        this.move(MoverType.SELF, new Vec3(0, -1, 0));
+    }
+
+    /**
+     * Spawn la banane devant le kart
+     *
+     * @param kart
+     */
+    public static void spawnBananaFront(Kart kart) {
+        if (kart.level() != null) {
+            Banana banana = new Banana(KartItemsInit.BANANA.get(), kart.level());
+            double angle = Math.toRadians(kart.getYRot());
+            banana.setPos(kart.getX() + (-Math.sin(angle) * 3f), kart.getY() + 1, kart.getZ() + (Math.cos(angle) * 3f));
+            banana.setYRot(kart.getYRot());
+            banana.setIsPropulsing(true);
+            kart.level().addFreshEntity(banana);
+        }
     }
 
     /**
@@ -123,12 +149,21 @@ public class Banana extends Entity implements GeoEntity {
      *
      * @param kart
      */
-    public static void spawnBanana(Kart kart) {
+    public static void spawnBananaBack(Kart kart) {
         if (kart.level() != null) {
             Banana banana = new Banana(KartItemsInit.BANANA.get(), kart.level());
             double angle = Math.toRadians(kart.getYRot());
-            banana.setPos(kart.getX() + (Math.sin(angle) * 2f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2f));
+            banana.setPos(kart.getX() + (Math.sin(angle) * 2.5f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2.5f));
+            banana.setYRot(kart.getYRot() + 180);
             kart.level().addFreshEntity(banana);
         }
+    }
+
+    public boolean getIsPropulsing(){
+        return this.entityData.get(isPropulsing);
+    }
+
+    public void setIsPropulsing(boolean value){
+        this.entityData.set(isPropulsing, value);
     }
 }
