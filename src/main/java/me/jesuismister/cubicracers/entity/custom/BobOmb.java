@@ -1,7 +1,5 @@
 package me.jesuismister.cubicracers.entity.custom;
 
-import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.remove.BobOmbRemoveMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
@@ -38,9 +36,13 @@ public class BobOmb extends Entity implements GeoEntity {
     public static final float HITBOX = 1f;
     private static final float RANGE = 4;
 
-    private static final float TICK_TO_DESPAWN = 20f * 5f; //5s
+    private static final float TICK_TO_DESPAWN = 20f * 4f; //5s
+
+    public static final EntityDataAccessor<Boolean> isPropulsing = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> shouldExplode = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
+    private float propulsionY = -1f;
+
     private float tickAlive = 0;
-    public boolean shouldExplode = false;
 
     public BobOmb(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
@@ -58,6 +60,8 @@ public class BobOmb extends Entity implements GeoEntity {
     @Override
     protected void defineSynchedData() {
         this.entityData.define(SPEED, 0.0f);
+        this.entityData.define(shouldExplode, false);
+        this.entityData.define(isPropulsing, false);
     }
 
     @Override
@@ -97,46 +101,68 @@ public class BobOmb extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
 
-        if (shouldExplode) {
-            stun();
-            this.remove(RemovalReason.KILLED);
-            return;
-        }
+        if (getIsPropulsing() && !onGround()) {
+            double x = Math.sin(Math.toRadians(-getYRot())) * 3.5;
+            double z = Math.cos(Math.toRadians(-getYRot())) * 3.5;
+            Vec3 vec3 = new Vec3(x, 0, z);
+            setDeltaMovement(vec3);
+            this.move(MoverType.SELF, new Vec3(getDeltaMovement().x, (1-Math.sqrt(propulsionY))*3, getDeltaMovement().z));
+            propulsionY += 0.3f;
+        }else{
+            if (getShouldExplode()) {
+                stun();
+                this.remove(RemovalReason.KILLED);
+                return;
+            }
 
-        //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
-        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
-
-        for (Entity entity : nearbyEntities) {
-            if (entity instanceof Kart kart) {
-                if (kart.getFirstPassenger() != null) {
-                    Network.CHANNEL.sendToServer(new BobOmbRemoveMessage());
-                    stun();
-                    this.remove(RemovalReason.KILLED);
-                    return;
+            //RECUPERER TOUTES LES ENTITES PROCHES DE LA BOB OMB
+            List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
+            for (Entity entity : nearbyEntities) {
+                if (entity instanceof Kart) {
+                    setShouldExplode(true);
+                    break;
                 }
             }
-        }
-        if (tickAlive > TICK_TO_DESPAWN) {
-            stun();
-            this.remove(RemovalReason.KILLED);
-        }
 
-        tickAlive++;
-        this.move(MoverType.SELF, new Vec3(0, -1, 0));
+            tickAlive++;
+            if (tickAlive > TICK_TO_DESPAWN) {
+                setShouldExplode(true);
+            }
+            this.move(MoverType.SELF, new Vec3(0, -1, 0));
+
+            if (getIsPropulsing()) setIsPropulsing(false);
+            this.move(MoverType.SELF, new Vec3(0, -1, 0));
+        }
     }
 
     /**
-     * Spawn la bomb omb derrière le kart
+     * Spawn la bob omb devant le kart
      *
      * @param kart
      */
-    public static void spawnBobOmb(Kart kart) {
+    public static void spawnBobOmbFront(Kart kart) {
         if (kart.level() != null) {
-            BobOmb bombOmb = new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.level());
+            BobOmb bobOmb = new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.level());
             double angle = Math.toRadians(kart.getYRot());
-            bombOmb.setPos(kart.getX() + (Math.sin(angle) * 3f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 3f));
-            bombOmb.setYRot(kart.getYRot());
-            kart.level().addFreshEntity(bombOmb);
+            bobOmb.setPos(kart.getX() + (-Math.sin(angle) * 3f), kart.getY() + 1, kart.getZ() + (Math.cos(angle) * 3f));
+            bobOmb.setYRot(kart.getYRot());
+            bobOmb.setIsPropulsing(true);
+            kart.level().addFreshEntity(bobOmb);
+        }
+    }
+
+    /**
+     * Spawn la bob omb derrière le kart
+     *
+     * @param kart
+     */
+    public static void spawnBobOmbBack(Kart kart) {
+        if (kart.level() != null) {
+            BobOmb bobOmb = new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.level());
+            double angle = Math.toRadians(kart.getYRot());
+            bobOmb.setPos(kart.getX() + (Math.sin(angle) * 2.5f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2.5f));
+            bobOmb.setYRot(kart.getYRot() + 180);
+            kart.level().addFreshEntity(bobOmb);
         }
     }
 
@@ -166,5 +192,21 @@ public class BobOmb extends Entity implements GeoEntity {
 
             Minecraft.getInstance().particleEngine.createParticle(ParticleTypes.EXPLOSION, x, y, z, offsetX, offsetY, offsetZ);
         }
+    }
+
+    public boolean getShouldExplode(){
+        return this.entityData.get(shouldExplode);
+    }
+
+    public void setShouldExplode(boolean value){
+        this.entityData.set(shouldExplode, value);
+    }
+
+    public boolean getIsPropulsing(){
+        return this.entityData.get(isPropulsing);
+    }
+
+    public void setIsPropulsing(boolean value){
+        this.entityData.set(isPropulsing, value);
     }
 }

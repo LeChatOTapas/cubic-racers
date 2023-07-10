@@ -99,7 +99,6 @@ public class GreenShell extends Entity implements GeoEntity {
 
         for (Entity entity : nearbyEntities) {
             if (entity instanceof Kart kart) {
-                //Network.CHANNEL.sendToServer(new GreenShellRemoveMessage());
                 if (kart.getCanMove()) {
                     Kart.stunKart(kart);
                 }
