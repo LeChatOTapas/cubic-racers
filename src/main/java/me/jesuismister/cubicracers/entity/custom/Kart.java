@@ -5,7 +5,6 @@ import me.jesuismister.cubicracers.event.network.Network;
 import me.jesuismister.cubicracers.event.network.message.use.*;
 import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.itemKart.Klaxon;
-import me.jesuismister.cubicracers.particles.ParticlesInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -19,7 +18,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -27,7 +25,6 @@ import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = CubicRacers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -109,7 +106,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         entityData.define(canMove, true);
         entityData.define(stunRotation, 0.f);
 
-        entityData.define(kartItem, "Green_shell");
+        entityData.define(kartItem, "Star");
         entityData.define(isInvinsible, false);
         entityData.define(starSpeedBoost, 1f); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
         entityData.define(timeStar, 0.f);
@@ -124,7 +121,7 @@ public class Kart extends KartAbstract implements GeoEntity {
     public void tick() {
         super.tick();
 
-        //System.out.println(level() + " / " + getDriftingTime());
+        System.out.println(level() + " / item: " + getKartItem() + " / " + getSpeed() + " / " + getIsInvinsible());
 
         isStun(); // ON VOIT SI LE KART EST STUN
         if (!getCanMove()) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
@@ -252,7 +249,7 @@ public class Kart extends KartAbstract implements GeoEntity {
     private void useItem() {
         //SI L'OBJET DANS LE KART EST UNE BANANE
         if (getKartItem().equals("Banana")) {
-            Network.CHANNEL.sendToServer(new BananaUseMessage());
+            if(!level().isClientSide())Network.CHANNEL.sendToServer(new BananaUseMessage());
             sendConductorMessage("BANANE !!!!!");
         } else if (getKartItem().equals("Mushroom")) {
             setTimeBoost(5.f);
@@ -265,20 +262,20 @@ public class Kart extends KartAbstract implements GeoEntity {
             setSpeed(MAX_SPEED * getStarSpeedBoost());
             sendConductorMessage("STAR !!!!!");
         } else if (getKartItem().equals("Thunder")) {
-            Network.CHANNEL.sendToServer(new ThunderUseMessage());
+            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new ThunderUseMessage());
             sendConductorMessage("THUNDER !!!!!");
         } else if (getKartItem().equals("Klaxon")) {
-            Network.CHANNEL.sendToServer(new KlaxonUseMessage());
+            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new KlaxonUseMessage());
             setIsKlaxoning(true);
             sendConductorMessage("KLAXON !!!!!");
         } else if (getKartItem().equals("Bob_omb")) {
-            Network.CHANNEL.sendToServer(new BobOmbUseMessage());
+            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new BobOmbUseMessage());
             sendConductorMessage("BOB_OMB !!!!!");
         } else if (getKartItem().equals("Fake_box")) {
-            Network.CHANNEL.sendToServer(new FakeBoxUseMessage());
+            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new FakeBoxUseMessage());
             sendConductorMessage("FAKE_BOX !!!!!");
         } else if (getKartItem().equals("Green_shell")) {
-            Network.CHANNEL.sendToServer(new GreenShellUseMessage());
+            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new GreenShellUseMessage());
             sendConductorMessage("GREEN_SHELL !!!!!");
         }
         setKartItem("None");
@@ -651,19 +648,16 @@ public class Kart extends KartAbstract implements GeoEntity {
     private <T extends GeoAnimatable> PlayState predicate_drift(AnimationState<T> tAnimationState) {
         //ANIMATION DES PARTICULES VIOLETTES
         if (getDriftingTime() >= 3){
-            System.out.println("violet");
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_v", Animation.LoopType.LOOP));
         }
         //ANIMATION DES PARTICULES ORANGE
         else if (getDriftingTime() >= 2){
-            System.out.println("orange");
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_o", Animation.LoopType.LOOP));
         }
         //ANIMATION DES PARTICULES BLEUES
         else if (getDriftingTime() >= 1){
-            System.out.println("bleu");
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_b", Animation.LoopType.LOOP));
         }

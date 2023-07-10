@@ -127,7 +127,7 @@ public class Banana extends Entity implements GeoEntity {
         if (kart.level() != null) {
             Banana banana = new Banana(KartItemsInit.BANANA.get(), kart.level());
             double angle = Math.toRadians(kart.getYRot());
-            banana.setPos(kart.getX() + (Math.sin(angle) * 3f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 3f));
+            banana.setPos(kart.getX() + (Math.sin(angle) * 2f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2f));
             kart.level().addFreshEntity(banana);
         }
     }
