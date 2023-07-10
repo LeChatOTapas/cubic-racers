@@ -27,6 +27,7 @@ public class KartInit {
         KARTS_DATA.add(new KartData("standard_kart", 0.8f, 0.02f, 0.2f, 3.0f, -0.8f, 2f, 1.2f));
         KARTS_DATA.add(new KartData("flame_flyer", 0.8f, 0.02f, 0.2f, 3.0f, -0.8f, 2f, 1.2f));
         KARTS_DATA.add(new KartData("b_dasher", 0.8f, 0.02f, 0.2f, 3.0f, -0.8f, 2f, 0.8f));
+        KARTS_DATA.add(new KartData("zipper", 0.8f, 0.02f, 0.2f, 3.0f, -0.8f, 2f, 1.2f));
 
         for (KartData d : KARTS_DATA) {
             addNewKart(d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY, d.hitboxX, d.hitboxY);

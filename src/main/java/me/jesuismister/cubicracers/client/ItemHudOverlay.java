@@ -39,14 +39,14 @@ public class ItemHudOverlay {
 
             //CHOIX DE LA TEXTURE EN FONCTION DE L'OBJET EN STOCK
             ResourceLocation resource;
-            if (kart.kartItem.equals("Banana")) resource = BANANA_ITEM_BOX;
-            else if (kart.kartItem.equals("Mushroom")) resource = MUSHROOM_ITEM_BOX;
-            else if (kart.kartItem.equals("Star")) resource = STAR_ITEM_BOX;
-            else if (kart.kartItem.equals("Thunder")) resource = THUNDER_ITEM_BOX;
-            else if (kart.kartItem.equals("Klaxon")) resource = KLAXON_ITEM_BOX;
-            else if (kart.kartItem.equals("Bob_omb")) resource = BOB_OMB_ITEM_BOX;
-            else if (kart.kartItem.equals("Green_shell")) resource = GREEN_SHELL_ITEM_BOX;
-            else if (kart.kartItem.equals("Fake_box")) resource = FAKE_BOX_ITEM_BOX;
+            if (kart.getKartItem().equals("Banana")) resource = BANANA_ITEM_BOX;
+            else if (kart.getKartItem().equals("Mushroom")) resource = MUSHROOM_ITEM_BOX;
+            else if (kart.getKartItem().equals("Star")) resource = STAR_ITEM_BOX;
+            else if (kart.getKartItem().equals("Thunder")) resource = THUNDER_ITEM_BOX;
+            else if (kart.getKartItem().equals("Klaxon")) resource = KLAXON_ITEM_BOX;
+            else if (kart.getKartItem().equals("Bob_omb")) resource = BOB_OMB_ITEM_BOX;
+            else if (kart.getKartItem().equals("Green_shell")) resource = GREEN_SHELL_ITEM_BOX;
+            else if (kart.getKartItem().equals("Fake_box")) resource = FAKE_BOX_ITEM_BOX;
             else resource = EMPTY_ITEM_BOX;
 
             RenderSystem.setShaderTexture(0, resource);

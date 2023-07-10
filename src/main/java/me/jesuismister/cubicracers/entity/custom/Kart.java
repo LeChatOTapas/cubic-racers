@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -26,17 +27,17 @@ import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = CubicRacers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class Kart extends KartAbstract implements GeoEntity {
+    //CACHE
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
     //PATH
     public final String TEXTURE;
     public final String MODEL;
     public final String ANIMATION;
-
     //ATTRIBUTS DU KART
     public final float MAX_SPEED;
     public final float DELTA_SPEED;
@@ -48,31 +49,35 @@ public class Kart extends KartAbstract implements GeoEntity {
     public Kart(EntityType<?> entityType, Level level, String texture, String model, String animation, float maxSpeed,
                 float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY) {
         super(entityType, level);
-
         TEXTURE = texture;
         MODEL = model;
         ANIMATION = animation;
-
         MAX_SPEED = maxSpeed;
         DELTA_SPEED = MAX_SPEED;
         ACCELERATION_BOOST = accelerationBoost;
         BOOST = boost;
         MANIABILITE_COEEF = maniabiliteCoeff;
-
         PLAYER_POS_Y = playerPosY;
         setInvulnerable(false);
     }
-    
+
     public Kart(Level level, double x, double y, double z, String name, String texture, String model, String animation,
                 float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY) {
-
         this(KartInit.KARTS.get(name).get(), level, texture, model, animation, maxSpeed, accelerationBoost, boost,
                 maniabiliteCoeff, playerPosY);
-
         setPos(x, y, z);
         xo = x;
         yo = y;
         zo = z;
+    }
+
+    @Override
+    protected void positionRider(Entity player, MoveFunction position) {
+        super.positionRider(player, position);
+        double x = player.getX();
+        double y = player.getY() + PLAYER_POS_Y;
+        double z = player.getZ();
+        player.setPos(x, y, z);
     }
 
     @Override
@@ -111,15 +116,6 @@ public class Kart extends KartAbstract implements GeoEntity {
         entityData.define(isKlaxoning, false);
     }
 
-    @Override
-    protected void positionRider(Entity player, MoveFunction position) {
-        super.positionRider(player, position);
-        double x = player.getX();
-        double y = player.getY() + PLAYER_POS_Y;
-        double z = player.getZ();
-        player.setPos(x, y, z);
-    }
-
     //////////////////
     // TICK SECTION //
     //////////////////
@@ -127,6 +123,8 @@ public class Kart extends KartAbstract implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
+
+        //System.out.println(level() + " / " + getDriftingTime());
 
         isStun(); // ON VOIT SI LE KART EST STUN
         if (!getCanMove()) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
@@ -147,7 +145,6 @@ public class Kart extends KartAbstract implements GeoEntity {
                 move(MoverType.SELF, new Vec3(getDeltaMovement().x, getFallSpeed(), getDeltaMovement().z));
             }
         } else {
-            System.out.println(level() + " => speed: " + getSpeed() + " / Yrot: " + getYRot());
             collision(); // GERE LES COLLISIONS DU KART
 
             if (getCanMove() && getIsPressingKeyItem())
@@ -160,8 +157,7 @@ public class Kart extends KartAbstract implements GeoEntity {
             deltaplane(player); // ACTIVE LE DELTA PLANE
             rotateOrDrift(); // CALCUL LA ROTATION DU VEHCIULE
 
-            if (getCanMove()) setVectorMovment(); // SINON ON CALCUL LE VECTEUR DE VITESSE
-
+            if (getCanMove()) setVectorMovment(); // SI PAS STUN, CALCUL LE VECTEUR DE VITESSE
             setFallSpeed(calculateFallSpeed()); // CALCUL LA VITESSE DE CHUTE
 
             move(MoverType.SELF, new Vec3(getDeltaMovement().x, getFallSpeed(), getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
@@ -290,7 +286,6 @@ public class Kart extends KartAbstract implements GeoEntity {
 
     /**
      * Applique la rotation du kart en fonction de s'il tourne, drift, ou rien
-     *
      */
     private void rotateOrDrift() {
         //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
@@ -304,19 +299,6 @@ public class Kart extends KartAbstract implements GeoEntity {
                     } else if (getIsPressingKeyRight() && !getIsPressingKeyLeft()) {
                         setDrifting("Right");
                     }
-                }
-
-                //SI LE DRIFT EST INITIALISE
-                if (level().isClientSide() && getIsDrifting()) {
-                    //SPAWN DES PARTICULES VIOLETTES
-                    if (getDriftingTime() >= 3)
-                        spawnDriftParticules(ParticlesInit.DRIFT_PURPLE_PARTICLES.get());
-                        //SPAWN DES PARTICULES ROUGES
-                    else if (getDriftingTime() >= 2)
-                        spawnDriftParticules(ParticlesInit.DRIFT_ORANGE_PARTICLES.get());
-                        //SPAWN DES PARTICULES BLEUES
-                    else if (getDriftingTime() >= 1)
-                        spawnDriftParticules(ParticlesInit.DRIFT_BLUE_PARTICLES.get());
                 }
 
                 //DRIFT INITIAL : DRIFT A GAUCHE
@@ -472,6 +454,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         double x = Math.sin(-angle) * clamped_speed;
         double z = Math.cos(-angle) * clamped_speed;
         Vec3 vec3 = new Vec3(x, 0, z);
+
         setDeltaMovement(vec3);
     }
 
@@ -631,108 +614,64 @@ public class Kart extends KartAbstract implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
+        controllerRegistrar.add(new AnimationController<>(this, "controller_engine", 0, this::predicate_engine));
+        controllerRegistrar.add(new AnimationController<>(this, "controller_propeller", 0, this::predicate_propeller));
+        controllerRegistrar.add(new AnimationController<>(this, "controller_glider", 0, this::predicade_glider));
+        controllerRegistrar.add(new AnimationController<>(this, "controller_drift", 0, this::predicate_drift));
     }
 
-    /**
-     * Gère les animations en fonction du statut du kart
-     *
-     * @return
-     */
-    private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
-        //ANIMATION DE STUN
-        if (!getCanMove()) {
-            //ANIMATION : ARRET SOUS L'EAU
-            if (isInWater()) {
-                setWaterAnimationState(2);
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("propeller_stopped", Animation.LoopType.HOLD_ON_LAST_FRAME));
-            }
-            //ANIMATION : ARRET
-            else {
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("engine", Animation.LoopType.HOLD_ON_LAST_FRAME));
-            }
-            return PlayState.CONTINUE;
-        }
+    private <T extends GeoAnimatable> PlayState predicate_engine(AnimationState<T> tAnimationState) {
+        tAnimationState.getController().setAnimation(RawAnimation.begin()
+                .then("engine", Animation.LoopType.LOOP));
+        return PlayState.CONTINUE;
+    }
 
-        //ANIMATION : DANS L'EAU
-        if (isInWater()) {
-            //ANIMATION : MARCHE AVANT
-            if (getSpeed() > MIN_SPEED) {
-                //ANIMATION : MARCHE AVANT - ENTREE DANS L'EAU
-                if (getWaterAnimationState() == 0 || getWaterAnimationState() == 3) {
-                    setWaterAnimationState(1);
-                    tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("propeller_on", Animation.LoopType.PLAY_ONCE)
-                            .then("propeller_backwards", Animation.LoopType.LOOP)
-                    );
-                }
-                //ANIMATION : MARCHE AVANT - SIMPLE
-                else if (getWaterAnimationState() == 2) {
-                    tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("propeller_backwards", Animation.LoopType.LOOP));
-                }
-            }
-            //ANIMATION : MARCHE ARRIERE
-            else if (getSpeed() < (-MIN_SPEED)) {
-                setWaterAnimationState(2);
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("propeller_forwards", Animation.LoopType.LOOP));
-            }
-            //ANIMATION : ARRET
-            else {
-                setWaterAnimationState(2);
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("propeller_stopped", Animation.LoopType.HOLD_ON_LAST_FRAME));
-            }
+    private <T extends GeoAnimatable> PlayState predicate_propeller(AnimationState<T> tAnimationState) {
+        if(isInWater()){
+            tAnimationState.getController().setAnimation(RawAnimation.begin()
+                    .then("propeller_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
+        }else{
+            tAnimationState.getController().setAnimation(RawAnimation.begin()
+                    .then("propeller_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
         }
-        //ANIMATION : HORS DE L'EAU
-        else {
-            //ANIMATION : DANS LES AIRS
-            if (getDeltaOn()) {
-                setDeltaAnimationState(1);
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("glider_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
-            }
-            //ANIMATION : MARCHE AVANT
-            else if (getSpeed() > MIN_SPEED) {
-                //ANIMATION : MARCHE AVANT - ATTERISSAGE
-                if (getDeltaAnimationState() == 1) {
-                    setDeltaAnimationState(2);
-                    tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("glider_off", Animation.LoopType.PLAY_ONCE)
-                            .then("engine", Animation.LoopType.LOOP));
-                }
-                //ANIMATION : MARCHE AVANT - SORTIE D'EAU
-                else if (getWaterAnimationState() > 0) {
-                    setWaterAnimationState(3);
-                    tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("propeller_off", Animation.LoopType.PLAY_ONCE)
-                            .then("engine", Animation.LoopType.LOOP));
-                }
-                //ANIMATION : MARCHE AVANT
-                else if (getDeltaAnimationState() == 0 && getWaterAnimationState() == 0) {
-                    tAnimationState.getController().setAnimation(RawAnimation.begin()
-                            .then("engine", Animation.LoopType.LOOP));
-                }
-            }
-            //ANIMATION : MARCHE ARRIERE
-            else if (getSpeed() < (-MIN_SPEED)) {
-                setDeltaAnimationState(0);
-                setWaterAnimationState(0);
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("engine", Animation.LoopType.LOOP));
-            }
-            //ANIMATION : ARRET
-            else {
-                setDeltaAnimationState(0);
-                setWaterAnimationState(0);
-                tAnimationState.getController().setAnimation(RawAnimation.begin()
-                        .then("engine", Animation.LoopType.HOLD_ON_LAST_FRAME));
-            }
-        }
+        return PlayState.CONTINUE;
+    }
 
+    private <T extends GeoAnimatable> PlayState predicade_glider(AnimationState<T> tAnimationState) {
+        if(getDeltaOn()){
+            tAnimationState.getController().setAnimation(RawAnimation.begin()
+                    .then("glider_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
+        }else{
+            tAnimationState.getController().setAnimation(RawAnimation.begin()
+                    .then("glider_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
+        }
+        return PlayState.CONTINUE;
+    }
+
+    private <T extends GeoAnimatable> PlayState predicate_drift(AnimationState<T> tAnimationState) {
+        //ANIMATION DES PARTICULES VIOLETTES
+        if (getDriftingTime() >= 3){
+            System.out.println("violet");
+            tAnimationState.getController().setAnimation(RawAnimation.begin()
+                    .then("drift_v", Animation.LoopType.LOOP));
+        }
+        //ANIMATION DES PARTICULES ORANGE
+        else if (getDriftingTime() >= 2){
+            System.out.println("orange");
+            tAnimationState.getController().setAnimation(RawAnimation.begin()
+                    .then("drift_o", Animation.LoopType.LOOP));
+        }
+        //ANIMATION DES PARTICULES BLEUES
+        else if (getDriftingTime() >= 1){
+            System.out.println("bleu");
+            tAnimationState.getController().setAnimation(RawAnimation.begin()
+                    .then("drift_b", Animation.LoopType.LOOP));
+        }
+        //PAS D'ANIMATION DE DRIFT
+        else{
+            tAnimationState.getController().setAnimation(RawAnimation.begin()
+                    .then("drift_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
+        }
         return PlayState.CONTINUE;
     }
 }

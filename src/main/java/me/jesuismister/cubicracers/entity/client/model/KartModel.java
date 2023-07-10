@@ -51,9 +51,6 @@ public class KartModel extends GeoModel<Kart> {
             Optional<GeoBone> bonesGaucheArriere = this.getBone("back_left");
             Optional<GeoBone> bonesDroiteArriere = this.getBone("back_right");
 
-            if (!bonesGaucheArriere.isPresent() || !bonesDroiteArriere.isPresent() || !bonesGaucheAvant.isPresent() || !bonesDroiteAvant.isPresent())
-                return;
-
             //ON CALCUL L'ANGLE D'INCLINAISON EN Y
             float rotYGauche = 0;
             float rotYDroit = bonesDroiteArriere.get().getRotY();
@@ -115,12 +112,12 @@ public class KartModel extends GeoModel<Kart> {
                     Math.toRadians(kart.getSpeed() * 10 * WHEELS_ROTATION_DEGREE)) % Math.abs(360));
 
             //UPDATE
-            bonesGaucheAvant.get().updateRotation(-kart.getActualRotationWheels(), rotYGauche, 0);
-            bonesDroiteAvant.get().updateRotation(-kart.getActualRotationWheels(), rotYDroit, 0);
-            bonesGaucheArriere.get().updateRotation(-kart.getActualRotationWheels(), 0, 0);
-            bonesDroiteArriere.get().updateRotation(-kart.getActualRotationWheels(), bonesDroiteArriere.get().getRotY(), 0);
+            if(bonesGaucheAvant.isPresent()) bonesGaucheAvant.get().updateRotation(-kart.getActualRotationWheels(), rotYGauche, 0);
+            if(bonesDroiteAvant.isPresent()) bonesDroiteAvant.get().updateRotation(-kart.getActualRotationWheels(), rotYDroit, 0);
+            if(bonesGaucheArriere.isPresent()) bonesGaucheArriere.get().updateRotation(-kart.getActualRotationWheels(), 0, 0);
+            if(bonesDroiteArriere.isPresent()) bonesDroiteArriere.get().updateRotation(-kart.getActualRotationWheels(), bonesDroiteArriere.get().getRotY(), 0);
         }
-        //INCLINAISON DU VEHICULE (PAS BESOIN DE BOUGER LES ROUES CAR PAS DE ROUE EN DELTA PLANE)
+        //INCLINAISON DU VEHICULE (PAS BESOIN DE BOUGER LES ROUES EN DELTA PLANE)
         else {
             //INCLINAISON DU VEHICULE A GAUCHE
             if (kart.getIsPressingKeyLeft() && !kart.getIsPressingKeyRight()) {
