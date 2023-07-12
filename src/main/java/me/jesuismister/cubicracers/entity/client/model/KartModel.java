@@ -10,6 +10,7 @@ import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class KartModel extends GeoModel<Kart> {
@@ -56,7 +57,13 @@ public class KartModel extends GeoModel<Kart> {
 
             //ON CALCUL L'ANGLE D'INCLINAISON EN Y
             float rotYGauche = 0;
-            float rotYDroit = bonesDroiteArriere.get().getRotY();
+            float rotYDroit;
+            try{
+                rotYDroit = bonesDroiteArriere.get().getRotY();
+            }catch(NoSuchElementException e){
+                System.out.println("INVALID KART FORMAT");
+                return;
+            }
 
             //DRIFT A GAUCHE
             if (kart.getIsDrifting() && kart.getDriftingSens().equals("Left")) {

@@ -26,14 +26,14 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
     public static final float HITBOX_X = 1f;
     public static final float HITBOX_Y = 2f;
 
-    private static final double BANANA_DROP_RATE = 12.5; //BORNE DE 0 à 30
-    private static final double GREEN_SHELL_DROP_RATE = 25; //BORNE DE 0 à 30
-    private static final double MUSHROOM_DROP_RATE = 37.5; //BORNE DE 30 à 60
-    private static final double FAKE_BOX_DROP_RATE = 50; //BORNE DE 60 à 70
-    private static final double BOMB_OMB_DROP_RATE = 62.5; //BORNE DE 70 à 80
-    private static final double STAR_DROP_RATE = 75; //BORNE DE 80 à 90
-    private static final double THUNDER_DROP_RATE = 87.5; //BORNE DE 90 à 95
-    private static final double KLAXON_DROP_RATE = 100; //BORNE DE 95 à 100
+    private static final double BANANA_DROP_RATE = 12.5;
+    private static final double GREEN_SHELL_DROP_RATE = 25;
+    private static final double MUSHROOM_DROP_RATE = 37.5;
+    private static final double FAKE_BOX_DROP_RATE = 50;
+    private static final double BOMB_OMB_DROP_RATE = 62.5;
+    private static final double STAR_DROP_RATE = 75;
+    private static final double THUNDER_DROP_RATE = 87.5;
+    private static final double KLAXON_DROP_RATE = 100;
 
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 4; //4s
     public static final EntityDataAccessor<Boolean> hasItem = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
@@ -115,7 +115,7 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
      * @param kart
      */
     public boolean giveRandomItem(Kart kart) {
-        if (!kart.getKartItem().equals("None")) return false;
+        if (!kart.getKartItem().equals("None")) return true;
 
         double rand = ClientRandom.nextInt(100);
 

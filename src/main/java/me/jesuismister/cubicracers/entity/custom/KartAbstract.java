@@ -57,7 +57,6 @@ public abstract class KartAbstract extends Entity {
     public static final EntityDataAccessor<Float> actual_rotation_wheels = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
 
     //ANIMATION DEGATS
-    public static final float SPINNING_ANIMATION_TIME = 20.0f * 2.0f;
     public static final EntityDataAccessor<Boolean> canMove = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> stunRotation = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
 

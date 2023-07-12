@@ -29,6 +29,8 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid = CubicRacers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class Kart extends KartAbstract implements GeoEntity {
+    public static float HITBOX_X;
+    public static float HITBOX_Y;
     //CACHE
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     //PATH
@@ -44,7 +46,7 @@ public class Kart extends KartAbstract implements GeoEntity {
     public final float PLAYER_POS_Y;
 
     public Kart(EntityType<?> entityType, Level level, String texture, String model, String animation, float maxSpeed,
-                float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY) {
+                float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY, float hitboxX, float hitboxY) {
         super(entityType, level);
         TEXTURE = texture;
         MODEL = model;
@@ -55,13 +57,15 @@ public class Kart extends KartAbstract implements GeoEntity {
         BOOST = boost;
         MANIABILITE_COEEF = maniabiliteCoeff;
         PLAYER_POS_Y = playerPosY;
+        HITBOX_X = hitboxX;
+        HITBOX_Y = hitboxY;
         setInvulnerable(false);
     }
 
     public Kart(Level level, double x, double y, double z, String name, String texture, String model, String animation,
-                float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY) {
+                float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY, float hitboxX, float hitboxY) {
         this(KartInit.KARTS.get(name).get(), level, texture, model, animation, maxSpeed, accelerationBoost, boost,
-                maniabiliteCoeff, playerPosY);
+                maniabiliteCoeff, playerPosY, hitboxX, hitboxY);
         setPos(x, y, z);
         xo = x;
         yo = y;
@@ -108,7 +112,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         entityData.define(canMove, true);
         entityData.define(stunRotation, 0.f);
 
-        entityData.define(kartItem, "Bob_omb");
+        entityData.define(kartItem, "Green_shell");
         entityData.define(isInvinsible, false);
         entityData.define(starSpeedBoost, 1f); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
         entityData.define(timeStar, 0.f);
@@ -257,7 +261,7 @@ public class Kart extends KartAbstract implements GeoEntity {
     private void useItem() {
         //SI L'OBJET DANS LE KART EST UNE BANANE
         if (getKartItem().equals("Banana")) {
-            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new BananaUseMessage(getIsPressingKeyForward()));
+            if (!level().isClientSide()) Network.CHANNEL.sendToServer(new BananaUseMessage(getIsPressingKeyForward()));
             sendConductorMessage("BANANE !!!!!");
         } else if (getKartItem().equals("Mushroom")) {
             setTimeBoost(5.f);
@@ -270,20 +274,21 @@ public class Kart extends KartAbstract implements GeoEntity {
             setSpeed(MAX_SPEED * getStarSpeedBoost());
             sendConductorMessage("STAR !!!!!");
         } else if (getKartItem().equals("Thunder")) {
-            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new ThunderUseMessage());
+            if (!level().isClientSide()) Network.CHANNEL.sendToServer(new ThunderUseMessage());
             sendConductorMessage("THUNDER !!!!!");
         } else if (getKartItem().equals("Klaxon")) {
             //if(!level().isClientSide()) Network.CHANNEL.sendToServer(new KlaxonUseMessage());
             setIsKlaxoning(true);
             sendConductorMessage("KLAXON !!!!!");
         } else if (getKartItem().equals("Bob_omb")) {
-            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new BobOmbUseMessage(getIsPressingKeyForward()));
+            if (!level().isClientSide()) Network.CHANNEL.sendToServer(new BobOmbUseMessage(getIsPressingKeyForward()));
             sendConductorMessage("BOB_OMB !!!!!");
         } else if (getKartItem().equals("Fake_box")) {
-            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new FakeBoxUseMessage(getIsPressingKeyForward()));
+            if (!level().isClientSide()) Network.CHANNEL.sendToServer(new FakeBoxUseMessage(getIsPressingKeyForward()));
             sendConductorMessage("FAKE_BOX !!!!!");
         } else if (getKartItem().equals("Green_shell")) {
-            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new GreenShellUseMessage(getIsPressingKeyBackward()));
+            if (!level().isClientSide())
+                Network.CHANNEL.sendToServer(new GreenShellUseMessage(getIsPressingKeyBackward()));
             sendConductorMessage("GREEN_SHELL !!!!!");
         }
         setKartItem("None");
@@ -632,10 +637,10 @@ public class Kart extends KartAbstract implements GeoEntity {
     }
 
     private <T extends GeoAnimatable> PlayState predicate_propeller(AnimationState<T> tAnimationState) {
-        if(isInWater()){
+        if (isInWater()) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("propeller_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
-        }else{
+        } else {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("propeller_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
         }
@@ -643,10 +648,10 @@ public class Kart extends KartAbstract implements GeoEntity {
     }
 
     private <T extends GeoAnimatable> PlayState predicade_glider(AnimationState<T> tAnimationState) {
-        if(getDeltaOn()){
+        if (getDeltaOn()) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("glider_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
-        }else{
+        } else {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("glider_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
         }
@@ -655,22 +660,22 @@ public class Kart extends KartAbstract implements GeoEntity {
 
     private <T extends GeoAnimatable> PlayState predicate_drift(AnimationState<T> tAnimationState) {
         //ANIMATION DES PARTICULES VIOLETTES
-        if (getDriftingTime() >= 3){
+        if (getDriftingTime() >= 3) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_v", Animation.LoopType.LOOP));
         }
         //ANIMATION DES PARTICULES ORANGE
-        else if (getDriftingTime() >= 2){
+        else if (getDriftingTime() >= 2) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_o", Animation.LoopType.LOOP));
         }
         //ANIMATION DES PARTICULES BLEUES
-        else if (getDriftingTime() >= 1){
+        else if (getDriftingTime() >= 1) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_b", Animation.LoopType.LOOP));
         }
         //PAS D'ANIMATION DE DRIFT
-        else{
+        else {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
         }

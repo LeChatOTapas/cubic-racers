@@ -23,11 +23,11 @@ public class KartInit {
     public static final Map<String, RegistryObject<EntityType<Kart>>> KARTS = new HashMap<>();
 
     public static void initAllKarts() {
-        KARTS_DATA.add(new KartData("trash_kart", 0.8f, 0.02f, 0.2f, 3.0f, -0.5f, 1.7f, 1.2f));
-        KARTS_DATA.add(new KartData("standard_kart", 0.8f, 0.02f, 0.2f, 3.0f, -0.8f, 2f, 1.2f));
-        KARTS_DATA.add(new KartData("flame_flyer", 0.8f, 0.02f, 0.2f, 3.0f, -0.8f, 2f, 1.2f));
-        KARTS_DATA.add(new KartData("b_dasher", 0.8f, 0.02f, 0.2f, 3.0f, -0.8f, 2f, 0.8f));
-        KARTS_DATA.add(new KartData("zipper", 0.8f, 0.02f, 0.2f, 3.0f, -0.8f, 2f, 1.2f));
+        KARTS_DATA.add(new KartData("trash_kart",    0.6f, 0.015f, 0.6f, 2.0f, -0.5f, 1.7f, 1.2f));
+        KARTS_DATA.add(new KartData("standard_kart", 0.8f, 0.030f, 0.3f, 2.0f, -0.8f, 2.2f, 1.3f));
+        KARTS_DATA.add(new KartData("flame_flyer",   0.9f, 0.020f, 0.2f, 2.0f, -0.8f, 2.2f, 1.4f));
+        KARTS_DATA.add(new KartData("b_dasher",      0.7f, 0.020f, 0.5f, 2.0f, -0.8f, 2.0f, 1.0f));
+        KARTS_DATA.add(new KartData("zipper",        0.8f, 0.040f, 0.3f, 2.0f, -0.8f, 1.8f, 1.1f));
 
         for (KartData d : KARTS_DATA) {
             addNewKart(d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY, d.hitboxX, d.hitboxY);
@@ -49,7 +49,7 @@ public class KartInit {
 
         KARTS.put(name, ENTITY_TYPES.register(name, () -> EntityType.Builder.<Kart>of((type, level) ->
                         new Kart(type, level, texture, model, animation, maxSpeed, accelerationBoost, boost,
-                                maniabiliteCoeff, playerPosY), MobCategory.MISC)
+                                maniabiliteCoeff, playerPosY, hitboxX, hitboxY), MobCategory.MISC)
                 .sized(hitboxX, hitboxY)
                 .build(new ResourceLocation(CubicRacers.MODID, name).toString())));
     }

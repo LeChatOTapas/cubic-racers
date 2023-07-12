@@ -21,7 +21,7 @@ import java.util.List;
 public class GreenShell extends ItemKartAbstract implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private static final float MAX_SPEED = 1.2f;
+    private static final float MAX_SPEED = 1.5f;
 
     public static final String TEXTURE = "textures/entity/green_shell.png";
     public static final String MODEL = "geo/green_shell.geo.json";
