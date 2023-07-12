@@ -2,6 +2,7 @@ package me.jesuismister.cubicracers.network;
 
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.network.message.InputMessage;
+import me.jesuismister.cubicracers.network.message.ItemToClientMessage;
 import me.jesuismister.cubicracers.network.message.itemsKart.particles.ExplosionParticleMessage;
 import me.jesuismister.cubicracers.network.message.itemsKart.particles.KlaxonParticleMessage;
 import me.jesuismister.cubicracers.network.message.itemsKart.use.*;
@@ -18,6 +19,8 @@ public class Network {
 
     public static void init(){
         CHANNEL.registerMessage(i++, InputMessage.class, InputMessage::encode, InputMessage::decode, InputMessage::handle);
+
+        CHANNEL.registerMessage(i++, ItemToClientMessage.class, ItemToClientMessage::encode, ItemToClientMessage::decode, ItemToClientMessage::handle);
 
         CHANNEL.registerMessage(i++, BananaUseMessage.class, BananaUseMessage::encode, BananaUseMessage::decode, BananaUseMessage::handle);
         CHANNEL.registerMessage(i++, GreenShellUseMessage.class, GreenShellUseMessage::encode, GreenShellUseMessage::decode, GreenShellUseMessage::handle);

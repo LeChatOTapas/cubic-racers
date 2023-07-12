@@ -1,13 +1,19 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.init.KartItemsInit;
+import me.jesuismister.cubicracers.network.Network;
+import me.jesuismister.cubicracers.network.message.ItemToClientMessage;
 import me.jesuismister.cubicracers.util.ClientRandom;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.network.PacketDistributor;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -16,6 +22,7 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class ItemBox extends ItemKartAbstract implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -97,7 +104,6 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
                         setTickDisabled(0);
                         break;
                     }
-                    //Network.CHANNEL.sendToServer(new ItemBoxConsumeMessage(kart.getKartItem()));
                 }
             }
         }
@@ -116,7 +122,8 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
      * @param kart
      */
     public boolean giveRandomItem(Kart kart) {
-        if (!kart.getKartItem().equals("None")) return true;
+        if (!kart.getKartItem().equals("None") && kart.getFirstPassenger() != null && kart.getFirstPassenger() instanceof Player)
+            return false;
 
         double rand = ClientRandom.nextInt(100);
 
@@ -137,6 +144,9 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
         } else if (THUNDER_DROP_RATE <= rand && rand <= KLAXON_DROP_RATE) {
             kart.setKartItem("Klaxon");
         }
+
+        ServerPlayer player = (ServerPlayer) kart.getFirstPassenger();
+        Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new ItemToClientMessage(kart.getKartItem()));
 
         return true;
     }

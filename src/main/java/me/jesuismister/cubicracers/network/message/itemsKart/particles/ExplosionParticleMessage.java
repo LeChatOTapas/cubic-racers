@@ -1,5 +1,6 @@
 package me.jesuismister.cubicracers.network.message.itemsKart.particles;
 
+import me.jesuismister.cubicracers.network.ClientPacketHandlerClass;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;

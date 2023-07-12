@@ -50,8 +50,6 @@ public abstract class KartAbstract extends Entity {
 
     //ATTRIBUTS DE CONDUITE
     public static final EntityDataAccessor<Boolean> deltaOn = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Integer> deltaAnimationState = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> waterAnimationState = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> fallSpeed = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> pourcentage_inclinaison = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> actual_rotation_wheels = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
@@ -61,7 +59,7 @@ public abstract class KartAbstract extends Entity {
     public static final EntityDataAccessor<Float> stunRotation = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
 
     //KART ITEM
-    public static final EntityDataAccessor<String> kartItem = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.STRING);
+    private String kartItem;
     public static final EntityDataAccessor<Boolean> isInvinsible = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> starSpeedBoost = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
     public static final EntityDataAccessor<Float> timeStar = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
@@ -107,7 +105,9 @@ public abstract class KartAbstract extends Entity {
         return this.entityData.get(isPressingKeyForward);
     }
 
-    public void setIsPressingKeyFoward(boolean value) { this.entityData.set(isPressingKeyForward, value); }
+    public void setIsPressingKeyFoward(boolean value) {
+        this.entityData.set(isPressingKeyForward, value);
+    }
 
     public boolean getIsPressingKeyBackward() {
         return this.entityData.get(isPressingKeyBackward);
@@ -217,22 +217,6 @@ public abstract class KartAbstract extends Entity {
         this.entityData.set(deltaOn, value);
     }
 
-    public int getDeltaAnimationState() {
-        return this.entityData.get(deltaAnimationState);
-    }
-
-    public void setDeltaAnimationState(int value) {
-        this.entityData.set(deltaAnimationState, value);
-    }
-
-    public int getWaterAnimationState() {
-        return this.entityData.get(waterAnimationState);
-    }
-
-    public void setWaterAnimationState(int value) {
-        this.entityData.set(waterAnimationState, value);
-    }
-
     public float getFallSpeed() {
         return this.entityData.get(fallSpeed);
     }
@@ -278,11 +262,11 @@ public abstract class KartAbstract extends Entity {
     //
 
     public String getKartItem() {
-        return this.entityData.get(kartItem);
+        return kartItem;
     }
 
     public void setKartItem(String value) {
-        this.entityData.set(kartItem, value);
+        kartItem = value;
     }
 
     public boolean getIsInvinsible() {
@@ -331,8 +315,6 @@ public abstract class KartAbstract extends Entity {
         entityData.define(timeBoost, 0.0f);
 
         entityData.define(deltaOn, false);
-        entityData.define(deltaAnimationState, 0);
-        entityData.define(waterAnimationState, 0);
         entityData.define(fallSpeed, BASE_FALL_SPEED);
         entityData.define(pourcentage_inclinaison, 0.f);
         entityData.define(actual_rotation_wheels, 0.f);
@@ -340,7 +322,7 @@ public abstract class KartAbstract extends Entity {
         entityData.define(canMove, true);
         entityData.define(stunRotation, 0.f);
 
-        entityData.define(kartItem, "Klaxon");
+        kartItem = "Klaxon";
         entityData.define(isInvinsible, false);
         entityData.define(starSpeedBoost, 1f); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
         entityData.define(timeStar, 0.f);
