@@ -122,8 +122,10 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
      * @param kart
      */
     public boolean giveRandomItem(Kart kart) {
-        if (!kart.getKartItem().equals("None") && kart.getFirstPassenger() != null && kart.getFirstPassenger() instanceof Player)
+        if (kart.getFirstPassenger()== null || !(kart.getFirstPassenger() instanceof Player))
             return false;
+        else if(!kart.getKartItem().equals("None"))
+            return true;
 
         double rand = ClientRandom.nextInt(100);
 

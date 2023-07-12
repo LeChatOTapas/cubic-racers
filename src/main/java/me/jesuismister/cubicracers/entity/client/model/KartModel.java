@@ -25,7 +25,8 @@ public class KartModel extends GeoModel<Kart> {
 
     @Override
     public ResourceLocation getTextureResource(Kart kart) {
-        return new ResourceLocation(CubicRacers.MODID, kart.TEXTURE);
+        if(kart.getIsInvinsible()) return new ResourceLocation(CubicRacers.MODID, "textures/entity/star_model.png");
+        else return new ResourceLocation(CubicRacers.MODID, kart.TEXTURE);
     }
 
     @Override
@@ -69,13 +70,13 @@ public class KartModel extends GeoModel<Kart> {
             if (kart.getIsDrifting() && kart.getDriftingSens().equals("Left")) {
                 //PLUS MAINTIENT GAUCHE
                 if (kart.getIsPressingKeyLeft() && !kart.getIsPressingKeyRight()) {
-                    rotYGauche = 1.5f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                    rotYDroit = (1.5f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
+                    rotYGauche = 1.75f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
+                    rotYDroit = (1.75f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
                 }
                 //PLUS MAINTIENT DROITE
                 else if (kart.getIsPressingKeyRight() && !kart.getIsPressingKeyLeft()) {
-                    rotYGauche = 0.45f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                    rotYDroit = (0.45f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
+                    rotYGauche = -1.125f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
+                    rotYDroit = (-1.125f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
                 }
                 //NE MAINTIENT RIEN
                 else {
@@ -87,13 +88,13 @@ public class KartModel extends GeoModel<Kart> {
             else if (kart.getIsDrifting() && kart.getDriftingSens().equals("Right")) {
                 //PLUS MAINTIENT DROITE
                 if (kart.getIsPressingKeyRight() && !kart.getIsPressingKeyLeft()) {
-                    rotYGauche = -1.5f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                    rotYDroit = (-1.5f * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
+                    rotYGauche = -1.75f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
+                    rotYDroit = (-1.75f * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
                 }
                 //PLUS MAINTIENT GAUCHE
                 else if (kart.getIsPressingKeyLeft() && !kart.getIsPressingKeyRight()) {
-                    rotYGauche = -0.45f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                    rotYDroit = (-0.45f * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
+                    rotYGauche = 1.125f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
+                    rotYDroit = (1.125f * WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
                 }
                 //NE MAINTIENT RIEN
                 else {

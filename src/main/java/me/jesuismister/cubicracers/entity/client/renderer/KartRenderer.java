@@ -10,15 +10,19 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
+import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 public class KartRenderer extends GeoEntityRenderer<Kart> {
+
     public KartRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new KartModel());
+        //this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(Kart animatable) {
-        return new ResourceLocation(CubicRacers.MODID, animatable.TEXTURE);
+        if(animatable.getIsInvinsible()) return new ResourceLocation(CubicRacers.MODID, "textures/entity/star_model.png");
+        else return new ResourceLocation(CubicRacers.MODID, animatable.TEXTURE);
     }
 
     @Override
@@ -28,7 +32,17 @@ public class KartRenderer extends GeoEntityRenderer<Kart> {
         //TOURNE LE KART DANS LA DIRECTION OU IL REGARDE
         Quaternionf rotation = new Quaternionf();
 
-        if(entity.getCanMove()) rotation.rotateY((float) -Math.toRadians(entityYaw));
+        if(entity.getCanMove()){
+            if(entity.getIsDrifting()){
+                if(entity.getDriftingSens().equals("Left")){
+                    rotation.rotateY((float) -Math.toRadians(entityYaw - 20));
+                }else{
+                    rotation.rotateY((float) -Math.toRadians(entityYaw + 20));
+                }
+            }else{
+                rotation.rotateY((float) -Math.toRadians(entityYaw));
+            }
+        }
         else rotation.rotateY((float) -Math.toRadians(entityYaw + entity.getStunRotation()));
         poseStack.mulPose(rotation);
 
