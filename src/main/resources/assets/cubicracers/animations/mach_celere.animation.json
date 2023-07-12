@@ -10,17 +10,27 @@
 						"vector": [0, 0, 0]
 					}
 				},
-				"drift_b_l": {
-					"scale": {
-						"vector": [0, 0, 0]
-					}
-				},
 				"drift_o_r": {
 					"scale": {
 						"vector": [0, 0, 0]
 					}
 				},
+				"drift_v_r": {
+					"scale": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"drift_b_l": {
+					"scale": {
+						"vector": [0, 0, 0]
+					}
+				},
 				"drift_o_l": {
+					"scale": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"drift_v_l": {
 					"scale": {
 						"vector": [0, 0, 0]
 					}
@@ -63,6 +73,21 @@
 						}
 					}
 				},
+				"drift_right": {
+					"scale": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"b_3": {
+					"scale": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"drift_o_l2": {
+					"scale": {
+						"vector": [0, 0, 0]
+					}
+				},
 				"v_3": {
 					"scale": {
 						"0.0": {
@@ -99,21 +124,6 @@
 						"0.3333": {
 							"vector": [0, 0, 0]
 						}
-					}
-				},
-				"drift_v_l": {
-					"scale": {
-						"vector": [0, 0, 0]
-					}
-				},
-				"drift_v_r": {
-					"scale": {
-						"vector": [0, 0, 0]
-					}
-				},
-				"drifts": {
-					"scale": {
-						"vector": [0, 0, 0]
 					}
 				}
 			}
@@ -158,6 +168,59 @@
 				}
 			}
 		},
+		"glider_off": {
+			"animation_length": 0.45833,
+			"bones": {
+				"delta": {
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.0417": {
+							"vector": [0, 0, 0]
+						},
+						"0.4583": {
+							"vector": [0, -11, 7]
+						}
+					},
+					"scale": {
+						"0.0": {
+							"vector": [1, 1, 1]
+						},
+						"0.0833": {
+							"vector": [1, 1, 1]
+						},
+						"0.2083": {
+							"vector": [1.3, 0.9, 0.7]
+						},
+						"0.2917": {
+							"vector": [0.75, 1, 1.4]
+						},
+						"0.4583": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"glider": {
+					"position": {
+						"0.0": {
+							"vector": [0, 8.25, 0]
+						},
+						"0.4167": {
+							"vector": [0, 0, 0]
+						}
+					},
+					"scale": {
+						"0.0": {
+							"vector": [1.5, 1.8, 1.5]
+						},
+						"0.4167": {
+							"vector": [1, 1, 1]
+						}
+					}
+				}
+			}
+		},
 		"propeller_on": {
 			"animation_length": 0.29167,
 			"bones": {
@@ -168,6 +231,9 @@
 						},
 						"0.125": {
 							"vector": [-72.5, 0, 0]
+						},
+						"0.25": {
+							"vector": [0, 0, 0]
 						},
 						"0.2917": {
 							"vector": [0, 0, 0]
@@ -192,9 +258,95 @@
 				}
 			}
 		},
+		"glider_on": {
+			"animation_length": 0.375,
+			"bones": {
+				"moteur": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					},
+					"position": {
+						"vector": [0, 0, 0]
+					},
+					"scale": {
+						"0.0": {
+							"vector": [1, 1, 1]
+						},
+						"0.0417": {
+							"vector": [1, 1.1, 1],
+							"easing": "easeInCubic"
+						},
+						"0.0833": {
+							"vector": [1, 1.1, 1],
+							"easing": "easeInCubic"
+						},
+						"0.125": {
+							"vector": [1, 0.9, 1],
+							"easing": "easeInCubic"
+						},
+						"0.1667": {
+							"vector": [1, 0.9, 1],
+							"easing": "easeInCubic"
+						},
+						"0.2083": {
+							"vector": [1, 1, 1],
+							"easing": "easeOutCubic"
+						}
+					}
+				},
+				"delta": {
+					"position": {
+						"0.0": {
+							"vector": [0, -11, 7]
+						},
+						"0.25": {
+							"vector": [0, -1, 0]
+						},
+						"0.375": {
+							"vector": [0, -1, 0]
+						}
+					},
+					"scale": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.125": {
+							"vector": [1.3, 0.9, 0.7]
+						},
+						"0.2083": {
+							"vector": [0.75, 1, 1.4]
+						},
+						"0.25": {
+							"vector": [0.9, 1.1, 0.9]
+						},
+						"0.375": {
+							"vector": [0.9, 1.1, 0.9]
+						}
+					}
+				},
+				"glider": {
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.375": {
+							"vector": [0, 8.25, 0]
+						}
+					},
+					"scale": {
+						"0.0": {
+							"vector": [1, 1, 1]
+						},
+						"0.375": {
+							"vector": [1.5, 1.8, 1.5]
+						}
+					}
+				}
+			}
+		},
 		"engine": {
 			"loop": true,
-			"animation_length": 0.5,
+			"animation_length": 0.70833,
 			"bones": {
 				"moteur": {
 					"rotation": {
@@ -234,10 +386,10 @@
 						"0.0": {
 							"vector": [1, 1, 1]
 						},
-						"0.25": {
-							"vector": [1.05, 1.05, 1.05]
+						"0.375": {
+							"vector": [1.1, 1.1, 1.1]
 						},
-						"0.5": {
+						"0.7083": {
 							"vector": [1, 1, 1]
 						}
 					}
@@ -473,79 +625,6 @@
 						},
 						"0.24": {
 							"vector": [2, 2, 2]
-						}
-					}
-				}
-			}
-		},
-		"glider_on": {
-			"loop": true,
-			"animation_length": 0.48,
-			"bones": {
-				"bone": {
-					"position": {
-						"vector": [0, 0, -4]
-					},
-					"scale": {
-						"vector": [0.01, 0.01, 0.01]
-					}
-				},
-				"kart": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"0.48": {
-							"vector": [360, 0, 0]
-						}
-					}
-				},
-				"glider": {
-					"position": {
-						"0.0": {
-							"vector": [0, 0, 15]
-						},
-						"0.24": {
-							"vector": [0, 0, 0]
-						}
-					},
-					"scale": {
-						"0.0": {
-							"vector": [0.01, 0.01, 0.01]
-						},
-						"0.24": {
-							"vector": [1, 1, 1]
-						}
-					}
-				}
-			}
-		},
-		"glider_off": {
-			"animation_length": 0.24,
-			"bones": {
-				"bone": {
-					"position": {
-						"vector": [0, 0, -4]
-					},
-					"scale": {
-						"vector": [0.01, 0.01, 0.01]
-					}
-				},
-				"glider": {
-					"position": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"0.24": {
-							"vector": [0, 0, 15]
-						}
-					},
-					"scale": {
-						"0.0": {
-							"vector": [1, 1, 1]
-						},
-						"0.24": {
-							"vector": [0.01, 0.01, 0.01]
 						}
 					}
 				}

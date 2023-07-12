@@ -104,7 +104,7 @@ public abstract class ItemKartAbstract extends Entity {
     public static void spawnItemBack(Kart kart, ItemKartAbstract item) {
         if (kart.level() != null) {
             double angle = Math.toRadians(kart.getYRot());
-            item.setPos(kart.getX() + (Math.sin(angle) * kart.HITBOX_X*1f), kart.getY(), kart.getZ() + (-Math.cos(angle) * kart.HITBOX_X*1f));
+            item.setPos(kart.getX() + (Math.sin(angle) * kart.HITBOX_X*1.25f), kart.getY(), kart.getZ() + (-Math.cos(angle) * kart.HITBOX_X*1.25f));
             item.setYRot(kart.getYRot() + 180);
             kart.level().addFreshEntity(item);
         }
