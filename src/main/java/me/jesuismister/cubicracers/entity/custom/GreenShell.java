@@ -61,7 +61,7 @@ public class GreenShell extends ItemKartAbstract implements GeoEntity {
                 if (kart.getCanMove()) {
                     Kart.stunKart(kart);
                 }
-                this.remove(RemovalReason.KILLED);
+                if(!level().isClientSide()) this.remove(RemovalReason.KILLED);
                 return;
             }
         }

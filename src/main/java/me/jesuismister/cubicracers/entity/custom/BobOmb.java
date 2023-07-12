@@ -1,5 +1,9 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.network.Network;
+import me.jesuismister.cubicracers.network.message.itemsKart.particles.ExplosionParticleMessage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -8,6 +12,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.PacketDistributor;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -18,6 +23,7 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
+import java.util.Random;
 
 public class BobOmb extends ItemKartAbstract implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -53,6 +59,12 @@ public class BobOmb extends ItemKartAbstract implements GeoEntity {
     }
 
     @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(shouldExplode, false);
+    }
+
+    @Override
     public void tick() {
         super.tick();
 
@@ -66,7 +78,10 @@ public class BobOmb extends ItemKartAbstract implements GeoEntity {
         }else{
             if (getShouldExplode()) {
                 stun(RANGE);
-                this.remove(RemovalReason.KILLED);
+                if(!level().isClientSide()){
+                    sendExplosionParticle();
+                    this.remove(RemovalReason.KILLED);
+                }
                 return;
             }
 
@@ -90,20 +105,21 @@ public class BobOmb extends ItemKartAbstract implements GeoEntity {
         }
     }
 
-    /*
-    public static void spawnExplosionParticles(BobOmb bobOmb, double x, double y, double z, float size) {
-        if (!bobOmb.level().isClientSide()) return;
+    private void sendExplosionParticle() {
+        Network.CHANNEL.send(PacketDistributor.ALL.noArg(), new ExplosionParticleMessage(this.getX(), this.getY(), this.getZ()));
+    }
 
+    public static void spawnExplosionParticles(double x, double y, double z) {
         Random random = new Random();
 
         for (int i = 0; i < 10; i++) {
-            double offsetX = random.nextGaussian() * size;
-            double offsetY = random.nextGaussian() * size;
-            double offsetZ = random.nextGaussian() * size;
+            double offsetX = random.nextGaussian() * RANGE;
+            double offsetY = random.nextGaussian() * RANGE;
+            double offsetZ = random.nextGaussian() * RANGE;
 
             Minecraft.getInstance().particleEngine.createParticle(ParticleTypes.EXPLOSION, x, y, z, offsetX, offsetY, offsetZ);
         }
-    }*/
+    }
 
     public boolean getShouldExplode(){
         return this.entityData.get(shouldExplode);

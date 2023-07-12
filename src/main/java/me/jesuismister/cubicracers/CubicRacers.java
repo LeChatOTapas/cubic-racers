@@ -1,6 +1,6 @@
 package me.jesuismister.cubicracers;
 
-import me.jesuismister.cubicracers.event.network.Network;
+import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.init.*;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.ClientRandom;

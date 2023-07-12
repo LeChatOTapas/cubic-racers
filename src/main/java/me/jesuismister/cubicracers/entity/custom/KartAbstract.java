@@ -65,7 +65,6 @@ public abstract class KartAbstract extends Entity {
     public static final EntityDataAccessor<Boolean> isInvinsible = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> starSpeedBoost = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
     public static final EntityDataAccessor<Float> timeStar = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Boolean> isKlaxoning = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
 
     public KartAbstract(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
@@ -310,12 +309,41 @@ public abstract class KartAbstract extends Entity {
         this.entityData.set(timeStar, value);
     }
 
-    public boolean getIsKlaxoning() {
-        return this.entityData.get(isKlaxoning);
-    }
+    @Override
+    protected void defineSynchedData() {
+        entityData.define(SPEED, 0.0f);
 
-    public void setIsKlaxoning(boolean value) {
-        this.entityData.set(isKlaxoning, value);
+        entityData.define(isPressingKeyAccelerate, false);
+        entityData.define(isPressingKeyDeccelerate, false);
+        entityData.define(isPressingKeyForward, false);
+        entityData.define(isPressingKeyBackward, false);
+        entityData.define(isPressingKeyLeft, false);
+        entityData.define(isPressingKeyRight, false);
+        entityData.define(isPressingKeyDrift, false);
+        entityData.define(isPressingKeyItem, false);
+        entityData.define(isPressingKeyDelta, false);
+        entityData.define(previousPressingKeyDelta, false);
+
+        entityData.define(isDrifting, false);
+        entityData.define(driftingSens, "None");
+        entityData.define(driftingTime, 0.0f);
+        entityData.define(driftTimeBoost, 0.0f);
+        entityData.define(timeBoost, 0.0f);
+
+        entityData.define(deltaOn, false);
+        entityData.define(deltaAnimationState, 0);
+        entityData.define(waterAnimationState, 0);
+        entityData.define(fallSpeed, BASE_FALL_SPEED);
+        entityData.define(pourcentage_inclinaison, 0.f);
+        entityData.define(actual_rotation_wheels, 0.f);
+
+        entityData.define(canMove, true);
+        entityData.define(stunRotation, 0.f);
+
+        entityData.define(kartItem, "Klaxon");
+        entityData.define(isInvinsible, false);
+        entityData.define(starSpeedBoost, 1f); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
+        entityData.define(timeStar, 0.f);
     }
 
     ////////////

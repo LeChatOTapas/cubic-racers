@@ -1,4 +1,4 @@
-package me.jesuismister.cubicracers.event.network.message.use;
+package me.jesuismister.cubicracers.network.message.itemsKart.use;
 
 import me.jesuismister.cubicracers.entity.custom.GreenShell;
 import me.jesuismister.cubicracers.entity.custom.Kart;

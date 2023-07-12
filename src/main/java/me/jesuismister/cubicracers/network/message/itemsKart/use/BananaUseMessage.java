@@ -1,9 +1,8 @@
-package me.jesuismister.cubicracers.event.network.message.use;
+package me.jesuismister.cubicracers.network.message.itemsKart.use;
 
 import me.jesuismister.cubicracers.entity.custom.Banana;
 import me.jesuismister.cubicracers.entity.custom.ItemKartAbstract;
 import me.jesuismister.cubicracers.entity.custom.Kart;
-import me.jesuismister.cubicracers.event.network.message.InputMessage;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;

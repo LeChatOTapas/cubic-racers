@@ -1,6 +1,6 @@
-package me.jesuismister.cubicracers.event.network.message.use;
+package me.jesuismister.cubicracers.network.message.itemsKart.use;
 
-import me.jesuismister.cubicracers.entity.custom.FakeBox;
+import me.jesuismister.cubicracers.entity.custom.BobOmb;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.network.FriendlyByteBuf;
@@ -9,30 +9,30 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class FakeBoxUseMessage {
+public class BobOmbUseMessage {
     private boolean isPressingKeyForward;
 
-    public FakeBoxUseMessage(boolean isPressingKeyForward){
+    public BobOmbUseMessage(boolean isPressingKeyForward) {
         this.isPressingKeyForward = isPressingKeyForward;
     }
 
-    public static void encode(FakeBoxUseMessage message, FriendlyByteBuf buffer){
+    public static void encode(BobOmbUseMessage message, FriendlyByteBuf buffer) {
         buffer.writeBoolean(message.isPressingKeyForward);
     }
 
-    public static FakeBoxUseMessage decode(FriendlyByteBuf buffer){
-        return new FakeBoxUseMessage(buffer.readBoolean());
+    public static BobOmbUseMessage decode(FriendlyByteBuf buffer) {
+        return new BobOmbUseMessage(buffer.readBoolean());
     }
 
-    public static void handle(FakeBoxUseMessage message, Supplier<NetworkEvent.Context> contextSupplier){
+    public static void handle(BobOmbUseMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
                 if (message.isPressingKeyForward) {
-                    FakeBox.spawnItemFront(kart, new FakeBox(KartItemsInit.FAKE_BOX.get(), kart.level()));
+                    BobOmb.spawnItemFront(kart, new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.level()));
                 } else {
-                    FakeBox.spawnItemBack(kart, new FakeBox(KartItemsInit.FAKE_BOX.get(), kart.level()));
+                    BobOmb.spawnItemBack(kart, new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.level()));
                 }
             }
         });

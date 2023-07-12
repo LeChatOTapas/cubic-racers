@@ -1,4 +1,4 @@
-package me.jesuismister.cubicracers.event.network.message;
+package me.jesuismister.cubicracers.network.message;
 
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.network.FriendlyByteBuf;

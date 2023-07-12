@@ -75,6 +75,7 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
 
     @Override
     protected void defineSynchedData() {
+        super.defineSynchedData();
         this.entityData.define(hasItem, true);
         this.entityData.define(tickDisabled, 0);
     }
@@ -91,7 +92,7 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
             for (Entity entity : nearbyEntities) {
                 //ON CHECK QUE LES ENTITES "KART"
                 if (entity instanceof Kart kart) {
-                    if (level().isClientSide() && giveRandomItem(kart)) {
+                    if (!level().isClientSide() && giveRandomItem(kart)) {
                         setHasItem(false);
                         setTickDisabled(0);
                         break;

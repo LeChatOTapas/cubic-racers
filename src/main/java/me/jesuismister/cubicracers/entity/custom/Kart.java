@@ -1,10 +1,9 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.event.network.Network;
-import me.jesuismister.cubicracers.event.network.message.use.*;
+import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.init.KartInit;
-import me.jesuismister.cubicracers.itemKart.Klaxon;
+import me.jesuismister.cubicracers.network.message.itemsKart.use.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -81,44 +80,6 @@ public class Kart extends KartAbstract implements GeoEntity {
         player.setPos(x, y, z);
     }
 
-    @Override
-    protected void defineSynchedData() {
-        entityData.define(SPEED, 0.0f);
-
-        entityData.define(isPressingKeyAccelerate, false);
-        entityData.define(isPressingKeyDeccelerate, false);
-        entityData.define(isPressingKeyForward, false);
-        entityData.define(isPressingKeyBackward, false);
-        entityData.define(isPressingKeyLeft, false);
-        entityData.define(isPressingKeyRight, false);
-        entityData.define(isPressingKeyDrift, false);
-        entityData.define(isPressingKeyItem, false);
-        entityData.define(isPressingKeyDelta, false);
-        entityData.define(previousPressingKeyDelta, false);
-
-        entityData.define(isDrifting, false);
-        entityData.define(driftingSens, "None");
-        entityData.define(driftingTime, 0.0f);
-        entityData.define(driftTimeBoost, 0.0f);
-        entityData.define(timeBoost, 0.0f);
-
-        entityData.define(deltaOn, false);
-        entityData.define(deltaAnimationState, 0);
-        entityData.define(waterAnimationState, 0);
-        entityData.define(fallSpeed, BASE_FALL_SPEED);
-        entityData.define(pourcentage_inclinaison, 0.f);
-        entityData.define(actual_rotation_wheels, 0.f);
-
-        entityData.define(canMove, true);
-        entityData.define(stunRotation, 0.f);
-
-        entityData.define(kartItem, "Green_shell");
-        entityData.define(isInvinsible, false);
-        entityData.define(starSpeedBoost, 1f); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
-        entityData.define(timeStar, 0.f);
-        entityData.define(isKlaxoning, false);
-    }
-
     //////////////////
     // TICK SECTION //
     //////////////////
@@ -154,10 +115,6 @@ public class Kart extends KartAbstract implements GeoEntity {
 
             if (getCanMove() && getIsPressingKeyItem())
                 useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
-            if (getIsKlaxoning()) {
-                Klaxon.applyKlaxonToOthersKarts(this);
-                setIsKlaxoning(false);
-            }
 
             deltaplane(player); // ACTIVE LE DELTA PLANE
             rotateOrDrift(); // CALCUL LA ROTATION DU VEHCIULE
@@ -259,7 +216,6 @@ public class Kart extends KartAbstract implements GeoEntity {
      * Utilise l'objet contenu dans le kart
      */
     private void useItem() {
-        //SI L'OBJET DANS LE KART EST UNE BANANE
         if (getKartItem().equals("Banana")) {
             if (!level().isClientSide()) Network.CHANNEL.sendToServer(new BananaUseMessage(getIsPressingKeyForward()));
             sendConductorMessage("BANANE !!!!!");
@@ -277,8 +233,7 @@ public class Kart extends KartAbstract implements GeoEntity {
             if (!level().isClientSide()) Network.CHANNEL.sendToServer(new ThunderUseMessage());
             sendConductorMessage("THUNDER !!!!!");
         } else if (getKartItem().equals("Klaxon")) {
-            //if(!level().isClientSide()) Network.CHANNEL.sendToServer(new KlaxonUseMessage());
-            setIsKlaxoning(true);
+            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new KlaxonUseMessage(getX(), getY(), getZ()));
             sendConductorMessage("KLAXON !!!!!");
         } else if (getKartItem().equals("Bob_omb")) {
             if (!level().isClientSide()) Network.CHANNEL.sendToServer(new BobOmbUseMessage(getIsPressingKeyForward()));
@@ -287,8 +242,7 @@ public class Kart extends KartAbstract implements GeoEntity {
             if (!level().isClientSide()) Network.CHANNEL.sendToServer(new FakeBoxUseMessage(getIsPressingKeyForward()));
             sendConductorMessage("FAKE_BOX !!!!!");
         } else if (getKartItem().equals("Green_shell")) {
-            if (!level().isClientSide())
-                Network.CHANNEL.sendToServer(new GreenShellUseMessage(getIsPressingKeyBackward()));
+            if (!level().isClientSide()) Network.CHANNEL.sendToServer(new GreenShellUseMessage(getIsPressingKeyBackward()));
             sendConductorMessage("GREEN_SHELL !!!!!");
         }
         setKartItem("None");
