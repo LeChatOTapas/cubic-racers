@@ -2,6 +2,7 @@ package me.jesuismister.cubicracers.event.network.message.use;
 
 import me.jesuismister.cubicracers.entity.custom.GreenShell;
 import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -29,9 +30,9 @@ public class GreenShellUseMessage {
             ServerPlayer player = context.getSender();
             if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
                 if(message.isPressingKeyBackward){
-                    GreenShell.spawnGreenShellBack(kart);
+                    GreenShell.spawnItemBack(kart, new GreenShell(KartItemsInit.GREEN_SHELL.get(), kart.level()));
                 }else{
-                    GreenShell.spawnGreenShellFront(kart);
+                    GreenShell.spawnItemFront(kart, new GreenShell(KartItemsInit.GREEN_SHELL.get(), kart.level()));
                 }
             }
         });

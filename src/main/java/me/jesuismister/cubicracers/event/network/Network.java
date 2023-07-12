@@ -29,7 +29,7 @@ public class Network {
         CHANNEL.registerMessage(11, FakeBoxUseMessage.class, FakeBoxUseMessage::encode, FakeBoxUseMessage::decode, FakeBoxUseMessage::handle);
 
         CHANNEL.registerMessage(7, ThunderUseMessage.class, ThunderUseMessage::encode, ThunderUseMessage::decode, ThunderUseMessage::handle);
-        CHANNEL.registerMessage(8, KlaxonUseMessage.class, KlaxonUseMessage::encode, KlaxonUseMessage::decode, KlaxonUseMessage::handle);
+        //CHANNEL.registerMessage(8, KlaxonUseMessage.class, KlaxonUseMessage::encode, KlaxonUseMessage::decode, KlaxonUseMessage::handle);
     }
 
 }

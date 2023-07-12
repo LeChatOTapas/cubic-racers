@@ -2,7 +2,6 @@ package me.jesuismister.cubicracers.client;
 
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 

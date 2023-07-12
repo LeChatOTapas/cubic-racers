@@ -1,8 +1,10 @@
 package me.jesuismister.cubicracers.event.network.message.use;
 
 import me.jesuismister.cubicracers.entity.custom.Banana;
+import me.jesuismister.cubicracers.entity.custom.ItemKartAbstract;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import me.jesuismister.cubicracers.event.network.message.InputMessage;
+import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -30,9 +32,9 @@ public class BananaUseMessage {
             ServerPlayer player = context.getSender();
             if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
                 if(message.isPressingKeyForward){
-                    Banana.spawnBananaFront(kart);
+                    ItemKartAbstract.spawnItemFront(kart, new Banana(KartItemsInit.BANANA.get(), kart.level()));
                 }else{
-                    Banana.spawnBananaBack(kart);
+                    ItemKartAbstract.spawnItemBack(kart, new Banana(KartItemsInit.BANANA.get(), kart.level()));
                 }
             }
         });

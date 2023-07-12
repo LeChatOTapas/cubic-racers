@@ -2,6 +2,7 @@ package me.jesuismister.cubicracers.event.network.message.use;
 
 import me.jesuismister.cubicracers.entity.custom.BobOmb;
 import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.init.KartItemsInit;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -29,9 +30,9 @@ public class BobOmbUseMessage {
             ServerPlayer player = context.getSender();
             if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
                 if (message.isPressingKeyForward) {
-                    BobOmb.spawnBobOmbFront(kart);
+                    BobOmb.spawnItemFront(kart, new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.level()));
                 } else {
-                    BobOmb.spawnBobOmbBack(kart);
+                    BobOmb.spawnItemBack(kart, new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.level()));
                 }
             }
         });

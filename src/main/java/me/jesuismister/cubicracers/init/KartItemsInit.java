@@ -1,7 +1,5 @@
 package me.jesuismister.cubicracers.init;
 
-import ca.weblite.objc.Proxy;
-import io.netty.util.Attribute;
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.*;
 import net.minecraft.resources.ResourceLocation;

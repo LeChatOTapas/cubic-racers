@@ -1,9 +1,5 @@
 package me.jesuismister.cubicracers.entity.custom;
 
-import me.jesuismister.cubicracers.init.KartItemsInit;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -12,7 +8,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -23,10 +18,8 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
-import java.util.Random;
 
-public class BobOmb extends Entity implements GeoEntity {
-    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(BobOmb.class, EntityDataSerializers.FLOAT);
+public class BobOmb extends ItemKartAbstract implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public static final String TEXTURE = "textures/entity/bob_omb.png";
@@ -38,10 +31,7 @@ public class BobOmb extends Entity implements GeoEntity {
 
     private static final float TICK_TO_DESPAWN = 20f * 4f; //5s
 
-    public static final EntityDataAccessor<Boolean> isPropulsing = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> shouldExplode = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    private float propulsionY = -1f;
-
     private float tickAlive = 0;
 
     public BobOmb(EntityType<?> p_19870_, Level p_19871_) {
@@ -58,43 +48,8 @@ public class BobOmb extends Entity implements GeoEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(SPEED, 0.0f);
-        this.entityData.define(shouldExplode, false);
-        this.entityData.define(isPropulsing, false);
-    }
-
-    @Override
-    protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {
-    }
-
-    @Override
-    protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {
-    }
-
-    @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
-    }
-
-    @Override
-    public boolean isPickable() {
-        return true;
-    }
-
-    @Override
-    public boolean isNoGravity() {
-        return false;
-    }
-
-    @Override
-    public boolean isPushable() {
-        return false;
-    }
-
-    @Override
-    protected boolean canRide(@NotNull Entity rider) {
-        return false;
     }
 
     @Override
@@ -110,7 +65,7 @@ public class BobOmb extends Entity implements GeoEntity {
             propulsionY += 0.3f;
         }else{
             if (getShouldExplode()) {
-                stun();
+                stun(RANGE);
                 this.remove(RemovalReason.KILLED);
                 return;
             }
@@ -135,51 +90,7 @@ public class BobOmb extends Entity implements GeoEntity {
         }
     }
 
-    /**
-     * Spawn la bob omb devant le kart
-     *
-     * @param kart
-     */
-    public static void spawnBobOmbFront(Kart kart) {
-        if (kart.level() != null) {
-            BobOmb bobOmb = new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.level());
-            double angle = Math.toRadians(kart.getYRot());
-            bobOmb.setPos(kart.getX() + (-Math.sin(angle) * 3f), kart.getY() + 1, kart.getZ() + (Math.cos(angle) * 3f));
-            bobOmb.setYRot(kart.getYRot());
-            bobOmb.setIsPropulsing(true);
-            kart.level().addFreshEntity(bobOmb);
-        }
-    }
-
-    /**
-     * Spawn la bob omb derrière le kart
-     *
-     * @param kart
-     */
-    public static void spawnBobOmbBack(Kart kart) {
-        if (kart.level() != null) {
-            BobOmb bobOmb = new BobOmb(KartItemsInit.BOMB_OMB.get(), kart.level());
-            double angle = Math.toRadians(kart.getYRot());
-            bobOmb.setPos(kart.getX() + (Math.sin(angle) * 2.5f), kart.getY(), kart.getZ() + (-Math.cos(angle) * 2.5f));
-            bobOmb.setYRot(kart.getYRot() + 180);
-            kart.level().addFreshEntity(bobOmb);
-        }
-    }
-
-    /**
-     * Stun tous les karts proches
-     */
-    public void stun() {
-        spawnExplosionParticles(this, this.getX(), this.getY(), this.getZ(), RANGE);
-
-        List<Entity> nearbyEntities = this.level().getEntities(this, this.getBoundingBox().inflate(RANGE));
-        for (Entity entity : nearbyEntities) {
-            if (entity instanceof Kart kart) {
-                if (kart.getCanMove()) Kart.stunKart(kart);
-            }
-        }
-    }
-
+    /*
     public static void spawnExplosionParticles(BobOmb bobOmb, double x, double y, double z, float size) {
         if (!bobOmb.level().isClientSide()) return;
 
@@ -192,7 +103,7 @@ public class BobOmb extends Entity implements GeoEntity {
 
             Minecraft.getInstance().particleEngine.createParticle(ParticleTypes.EXPLOSION, x, y, z, offsetX, offsetY, offsetZ);
         }
-    }
+    }*/
 
     public boolean getShouldExplode(){
         return this.entityData.get(shouldExplode);
@@ -200,13 +111,5 @@ public class BobOmb extends Entity implements GeoEntity {
 
     public void setShouldExplode(boolean value){
         this.entityData.set(shouldExplode, value);
-    }
-
-    public boolean getIsPropulsing(){
-        return this.entityData.get(isPropulsing);
-    }
-
-    public void setIsPropulsing(boolean value){
-        this.entityData.set(isPropulsing, value);
     }
 }

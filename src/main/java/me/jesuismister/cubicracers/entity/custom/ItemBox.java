@@ -2,16 +2,12 @@ package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import me.jesuismister.cubicracers.util.ClientRandom;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -21,8 +17,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class ItemBox extends Entity implements GeoEntity {
-    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(ItemBox.class, EntityDataSerializers.FLOAT);
+public class ItemBox extends ItemKartAbstract implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public static final String TEXTURE = "textures/entity/item_box.png";
@@ -58,6 +53,11 @@ public class ItemBox extends Entity implements GeoEntity {
     }
 
     @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
+
+    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
     }
@@ -75,42 +75,8 @@ public class ItemBox extends Entity implements GeoEntity {
 
     @Override
     protected void defineSynchedData() {
-        this.entityData.define(SPEED, 0.0f);
         this.entityData.define(hasItem, true);
         this.entityData.define(tickDisabled, 0);
-    }
-
-    @Override
-    protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {
-    }
-
-    @Override
-    protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
-
-    @Override
-    public boolean isPickable() {
-        return true;
-    }
-
-    @Override
-    public boolean isNoGravity() {
-        return false;
-    }
-
-    @Override
-    public boolean isPushable() {
-        return false;
-    }
-
-    @Override
-    protected boolean canRide(@NotNull Entity rider) {
-        return false;
     }
 
     @Override
@@ -125,7 +91,7 @@ public class ItemBox extends Entity implements GeoEntity {
             for (Entity entity : nearbyEntities) {
                 //ON CHECK QUE LES ENTITES "KART"
                 if (entity instanceof Kart kart) {
-                    if (giveRandomItem(kart)) {
+                    if (level().isClientSide() && giveRandomItem(kart)) {
                         setHasItem(false);
                         setTickDisabled(0);
                         break;
@@ -172,20 +138,6 @@ public class ItemBox extends Entity implements GeoEntity {
         }
 
         return true;
-    }
-
-    @Override
-    /**
-     * Méthode qui fait en sorte de détruire la box quand elle prend des dégats
-     */
-    public boolean hurt(DamageSource damage, float p_19947_) {
-        if (damage.getEntity() instanceof Player player) {
-            if (player.getVehicle() == null) {
-                this.remove(RemovalReason.KILLED);
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean getHasItem() {

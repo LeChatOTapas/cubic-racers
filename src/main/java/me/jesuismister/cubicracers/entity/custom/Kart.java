@@ -273,14 +273,14 @@ public class Kart extends KartAbstract implements GeoEntity {
             if(!level().isClientSide()) Network.CHANNEL.sendToServer(new ThunderUseMessage());
             sendConductorMessage("THUNDER !!!!!");
         } else if (getKartItem().equals("Klaxon")) {
-            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new KlaxonUseMessage());
+            //if(!level().isClientSide()) Network.CHANNEL.sendToServer(new KlaxonUseMessage());
             setIsKlaxoning(true);
             sendConductorMessage("KLAXON !!!!!");
         } else if (getKartItem().equals("Bob_omb")) {
             if(!level().isClientSide()) Network.CHANNEL.sendToServer(new BobOmbUseMessage(getIsPressingKeyForward()));
             sendConductorMessage("BOB_OMB !!!!!");
         } else if (getKartItem().equals("Fake_box")) {
-            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new FakeBoxUseMessage());
+            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new FakeBoxUseMessage(getIsPressingKeyForward()));
             sendConductorMessage("FAKE_BOX !!!!!");
         } else if (getKartItem().equals("Green_shell")) {
             if(!level().isClientSide()) Network.CHANNEL.sendToServer(new GreenShellUseMessage(getIsPressingKeyBackward()));
