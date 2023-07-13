@@ -3,16 +3,57 @@
 	"animations": {
 		"box_on": {
 			"loop": true,
-			"animation_length": 4,
+			"animation_length": 3,
 			"bones": {
-				"item_box": {
+				"box": {
 					"rotation": {
 						"0.0": {
 							"vector": [0, 0, 0]
 						},
-						"4.0": {
-							"vector": [0, 360, 0],
-							"easing": "linear"
+						"0.76": {
+							"vector": [-90, -90, 0]
+						},
+						"1.48": {
+							"vector": [-180, -180, 0]
+						},
+						"2.24": {
+							"vector": [-270, -270, 0]
+						},
+						"3.0": {
+							"vector": [-360, -360, 0]
+						}
+					},
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.76": {
+							"vector": [0, 0, 0]
+						},
+						"1.48": {
+							"vector": [0, 0, 0]
+						},
+						"2.24": {
+							"vector": [0, 0, 0]
+						},
+						"3.0": {
+							"vector": [0, 0, 0]
+						}
+					},
+					"scale": {
+						"vector": [1, 1, 1]
+					}
+				},
+				"all": {
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.48": {
+							"vector": [0, 5, 0]
+						},
+						"3.0": {
+							"vector": [0, 0, 0]
 						}
 					}
 				}
@@ -21,7 +62,7 @@
 		"box_off": {
 			"loop": true,
 			"bones": {
-				"item_box": {
+				"all": {
 					"scale": {
 						"vector": [0, 0, 0]
 					}

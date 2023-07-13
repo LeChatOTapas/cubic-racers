@@ -12,12 +12,14 @@
   "entity.cubicracers.flame_flyer": "Flame Flyer",
   "entity.cubicracers.b_dasher": "B-Dasher",
   "entity.cubicracers.zipper": "Zipper",
+  "entity.cubicracers.mach_celere": "Mach-celere",
 
   "item.cubicracers.trash_kart": "Trash Kart",
   "item.cubicracers.standard_kart": "Standard Kart",
   "item.cubicracers.flame_flyer": "Flame Flyer",
   "item.cubicracers.b_dasher": "B-Dasher",
   "item.cubicracers.zipper": "Zipper",
+  "item.cubicracers.mach_celere": "Mach-celere",
 
   "item.cubicracers.item_box_spawn_item": "Item Box"
 }

@@ -3,11 +3,14 @@ package me.jesuismister.cubicracers.entity.client.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.client.model.KartModel;
+import me.jesuismister.cubicracers.entity.custom.ItemBox;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
@@ -52,5 +55,11 @@ public class KartRenderer extends GeoEntityRenderer<Kart> {
         poseStack.popPose();
     }
 
+    @Override
+    public RenderType getRenderType(Kart animatable, ResourceLocation texture, @Nullable MultiBufferSource bufferSource, float partialTick) {
+        return super.getRenderType(animatable, texture, bufferSource, partialTick);
 
+        //Ca fait bugué le glowmask de l'étoile ???
+        //return RenderType.entityTranslucent(new ResourceLocation(CubicRacers.MODID, animatable.TEXTURE));
+    }
 }

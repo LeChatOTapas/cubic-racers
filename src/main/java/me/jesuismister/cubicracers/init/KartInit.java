@@ -27,7 +27,7 @@ public class KartInit {
         KARTS_DATA.add(new KartData("standard_kart", 0.80f, 0.020f, 0.3f, 2.0f, -0.8f, 2.2f, 1.3f));
         KARTS_DATA.add(new KartData("flame_flyer",   0.90f, 0.010f, 0.2f, 1.5f, -0.8f, 2.2f, 1.4f));
         KARTS_DATA.add(new KartData("b_dasher",      0.70f, 0.030f, 0.4f, 2.0f, -0.8f, 2.0f, 1.0f));
-        KARTS_DATA.add(new KartData("zipper",        0.80f, 0.030f, 0.3f, 2.5f, -0.8f, 1.8f, 1.1f));
+        KARTS_DATA.add(new KartData("zipper",        0.80f, 0.030f, 0.3f, 2.5f, -0.8f, 1.7f, 1.2f));
         KARTS_DATA.add(new KartData("mach_celere",   0.70f, 0.040f, 0.5f, 1.5f, -0.8f, 2.2f, 1.0f));
 
         for (KartData d : KARTS_DATA) {
