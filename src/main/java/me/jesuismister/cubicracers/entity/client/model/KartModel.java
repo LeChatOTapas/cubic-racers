@@ -71,17 +71,17 @@ public class KartModel extends GeoModel<Kart> {
                 //PLUS MAINTIENT GAUCHE
                 if (kart.getIsPressingKeyLeft() && !kart.getIsPressingKeyRight()) {
                     rotYGauche = 1.75f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                    rotYDroit = (1.75f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
+                    rotYDroit = (1.75f * WHEELS_TURN_DEGREE) * Mth.DEG_TO_RAD;
                 }
                 //PLUS MAINTIENT DROITE
                 else if (kart.getIsPressingKeyRight() && !kart.getIsPressingKeyLeft()) {
                     rotYGauche = -1.125f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                    rotYDroit = (-1.125f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
+                    rotYDroit = (-1.125f * WHEELS_TURN_DEGREE) * Mth.DEG_TO_RAD;
                 }
                 //NE MAINTIENT RIEN
                 else {
                     rotYGauche = 1.125f * WHEELS_TURN_DEGREE * Mth.DEG_TO_RAD;
-                    rotYDroit = (1.125f * WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
+                    rotYDroit = (1.125f * WHEELS_TURN_DEGREE) * Mth.DEG_TO_RAD;
                 }
             }
             //DRIFT A DROITE
@@ -112,7 +112,7 @@ public class KartModel extends GeoModel<Kart> {
                 }
                 //ROUES A DROITES
                 if (kart.getIsPressingKeyLeft() && !kart.getIsPressingKeyRight()) {
-                    rotYDroit = (WHEELS_TURN_DEGREE + 180) * Mth.DEG_TO_RAD;
+                    rotYDroit = (WHEELS_TURN_DEGREE) * Mth.DEG_TO_RAD;
                 } else if (kart.getIsPressingKeyRight() && !kart.getIsPressingKeyLeft()) {
                     rotYDroit = (-WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
                 }
