@@ -3,10 +3,12 @@ package me.jesuismister.cubicracers.entity.custom;
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.init.KartInit;
+import me.jesuismister.cubicracers.network.message.ItemToClientMessage;
 import me.jesuismister.cubicracers.network.message.itemsKart.use.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -17,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -90,6 +93,10 @@ public class Kart extends KartAbstract implements GeoEntity {
 
         isStun(); // ON VOIT SI LE KART EST STUN
         if (!getCanMove()) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
+
+        if (getTimeStar() > 0) setTimeStar(getTimeStar() - 0.1f);
+        if (getDriftTimeBoost() > 0) setDriftTimeBoost(getDriftTimeBoost() - 0.1f);
+        if (getTimeBoost() > 0) setTimeBoost(getTimeBoost() - 0.1f);
 
         Player player = (Player) getFirstPassenger();
         if (player == null) {
@@ -217,7 +224,7 @@ public class Kart extends KartAbstract implements GeoEntity {
      */
     private void useItem() {
         if (getKartItem().equals("Banana")) {
-            if (!level().isClientSide()) Network.CHANNEL.sendToServer(new BananaUseMessage(getIsPressingKeyForward()));
+            if (level().isClientSide()) Network.CHANNEL.sendToServer(new BananaUseMessage(getIsPressingKeyForward()));
             sendConductorMessage("BANANE !!!!!");
         } else if (getKartItem().equals("Mushroom")) {
             setTimeBoost(5.f);
@@ -230,19 +237,20 @@ public class Kart extends KartAbstract implements GeoEntity {
             setSpeed(MAX_SPEED * getStarSpeedBoost());
             sendConductorMessage("STAR !!!!!");
         } else if (getKartItem().equals("Thunder")) {
-            if (!level().isClientSide()) Network.CHANNEL.sendToServer(new ThunderUseMessage());
+            if (level().isClientSide()) Network.CHANNEL.sendToServer(new ThunderUseMessage());
             sendConductorMessage("THUNDER !!!!!");
         } else if (getKartItem().equals("Klaxon")) {
-            if(!level().isClientSide()) Network.CHANNEL.sendToServer(new KlaxonUseMessage(getX(), getY(), getZ()));
+            if (level().isClientSide()) Network.CHANNEL.sendToServer(new KlaxonUseMessage(getX(), getY(), getZ()));
             sendConductorMessage("KLAXON !!!!!");
         } else if (getKartItem().equals("Bob_omb")) {
-            if (!level().isClientSide()) Network.CHANNEL.sendToServer(new BobOmbUseMessage(getIsPressingKeyForward()));
+            if (level().isClientSide()) Network.CHANNEL.sendToServer(new BobOmbUseMessage(getIsPressingKeyForward()));
             sendConductorMessage("BOB_OMB !!!!!");
         } else if (getKartItem().equals("Fake_box")) {
-            if (!level().isClientSide()) Network.CHANNEL.sendToServer(new FakeBoxUseMessage(getIsPressingKeyForward()));
+            if (level().isClientSide()) Network.CHANNEL.sendToServer(new FakeBoxUseMessage(getIsPressingKeyForward()));
             sendConductorMessage("FAKE_BOX !!!!!");
         } else if (getKartItem().equals("Green_shell")) {
-            if (!level().isClientSide()) Network.CHANNEL.sendToServer(new GreenShellUseMessage(getIsPressingKeyBackward()));
+            if (level().isClientSide())
+                Network.CHANNEL.sendToServer(new GreenShellUseMessage(getIsPressingKeyBackward()));
             sendConductorMessage("GREEN_SHELL !!!!!");
         }
         setKartItem("None");
@@ -403,15 +411,10 @@ public class Kart extends KartAbstract implements GeoEntity {
         //BOOST LE JOUEUR S'IL EST SOUS BOOST DE DRIFT OU CHAMPIGNON
         if (getDriftTimeBoost() > 0 || getTimeBoost() > 0) {
             clamped_speed = Mth.clamp(getSpeed() + BOOST, 0, MAX_SPEED + BOOST);
-            if (getDriftTimeBoost() > 0)
-                setDriftTimeBoost(getDriftTimeBoost() - 0.1f);
-            else if (getTimeBoost() > 0)
-                setTimeBoost(getTimeBoost() - 0.1f);
         }
         //ACCELERE LE TOUT SI SOUS ETOILE
         if (getIsInvinsible() && !getIsPressingKeyDeccelerate())
             clamped_speed = clamped_speed * getStarSpeedBoost();
-        if (getTimeStar() > 0) setTimeStar(getTimeStar() - 0.1f);
         setSpeed(clamped_speed);
 
         //CALCUL ET APPLICATION DU VECTEUR DE DEPLACEMENT

@@ -100,6 +100,7 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
                 //ON CHECK QUE LES ENTITES "KART"
                 if (entity instanceof Kart kart) {
                     if (!level().isClientSide() && giveRandomItem(kart)) {
+
                         setHasItem(false);
                         setTickDisabled(0);
                         break;
@@ -124,29 +125,28 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
     public boolean giveRandomItem(Kart kart) {
         if (kart.getFirstPassenger()== null || !(kart.getFirstPassenger() instanceof Player))
             return false;
-        else if(!kart.getKartItem().equals("None"))
-            return true;
 
-        double rand = ClientRandom.nextInt(100);
+        if(!kart.getKartItem().equals("None")){
+            double rand = ClientRandom.nextInt(100);
 
-        if (0 <= rand && rand < BANANA_DROP_RATE) {
-            kart.setKartItem("Banana");
-        } else if (BANANA_DROP_RATE <= rand && rand < GREEN_SHELL_DROP_RATE) {
-            kart.setKartItem("Green_shell");
-        } else if (GREEN_SHELL_DROP_RATE <= rand && rand < MUSHROOM_DROP_RATE) {
-            kart.setKartItem("Mushroom");
-        } else if (MUSHROOM_DROP_RATE <= rand && rand < FAKE_BOX_DROP_RATE) {
-            kart.setKartItem("Fake_box");
-        } else if (FAKE_BOX_DROP_RATE <= rand && rand < BOMB_OMB_DROP_RATE) {
-            kart.setKartItem("Bomb_omb");
-        } else if (BOMB_OMB_DROP_RATE <= rand && rand < STAR_DROP_RATE) {
-            kart.setKartItem("Star");
-        } else if (STAR_DROP_RATE <= rand && rand < THUNDER_DROP_RATE) {
-            kart.setKartItem("Thunder");
-        } else if (THUNDER_DROP_RATE <= rand && rand <= KLAXON_DROP_RATE) {
-            kart.setKartItem("Klaxon");
+            if (0 <= rand && rand < BANANA_DROP_RATE) {
+                kart.setKartItem("Banana");
+            } else if (BANANA_DROP_RATE <= rand && rand < GREEN_SHELL_DROP_RATE) {
+                kart.setKartItem("Green_shell");
+            } else if (GREEN_SHELL_DROP_RATE <= rand && rand < MUSHROOM_DROP_RATE) {
+                kart.setKartItem("Mushroom");
+            } else if (MUSHROOM_DROP_RATE <= rand && rand < FAKE_BOX_DROP_RATE) {
+                kart.setKartItem("Fake_box");
+            } else if (FAKE_BOX_DROP_RATE <= rand && rand < BOMB_OMB_DROP_RATE) {
+                kart.setKartItem("Bomb_omb");
+            } else if (BOMB_OMB_DROP_RATE <= rand && rand < STAR_DROP_RATE) {
+                kart.setKartItem("Star");
+            } else if (STAR_DROP_RATE <= rand && rand < THUNDER_DROP_RATE) {
+                kart.setKartItem("Thunder");
+            } else if (THUNDER_DROP_RATE <= rand && rand <= KLAXON_DROP_RATE) {
+                kart.setKartItem("Klaxon");
+            }
         }
-
         ServerPlayer player = (ServerPlayer) kart.getFirstPassenger();
         Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new ItemToClientMessage(kart.getKartItem()));
 

@@ -23,7 +23,6 @@ public class ItemBoxRenderer extends GeoEntityRenderer<ItemBox> {
     public ItemBoxRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ItemBoxModel());
         this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
-        //this.addRenderLayer(new VanillaGlowingGeoLayer<>(this));
     }
 
     @Override
