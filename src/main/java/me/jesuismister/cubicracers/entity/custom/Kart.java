@@ -46,6 +46,8 @@ public class Kart extends KartAbstract implements GeoEntity {
     public final float BOOST;
     public final float MANIABILITE_COEEF;
     public final float PLAYER_POS_Y;
+    //OTHERS
+    public float speedToShow = 0;
 
     public Kart(EntityType<?> entityType, Level level, String texture, String model, String animation, float maxSpeed,
                 float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY, float hitboxX, float hitboxY) {
@@ -277,7 +279,7 @@ public class Kart extends KartAbstract implements GeoEntity {
                 if (getIsDrifting() && getDriftingSens().equals("Left")) {
                     //LE JOUEUR MAINTIENT LA TOUCHE GAUCHE
                     if (getIsPressingKeyLeft() && !getIsPressingKeyRight()) {
-                        if (getIsPressingKeyAccelerate() && getDriftingTime() < 3.0f)
+                        if (getDriftingTime() < 3.0f)
                             setDriftingTime(getDriftingTime() + 0.06f);
                         setYRot(getYRot() - MANIABILITE_COEEF * DRIFT_ANGLE);
                     }
@@ -287,7 +289,7 @@ public class Kart extends KartAbstract implements GeoEntity {
                     }
                     //LE JOUEUR NE MAINTIENT RIEN
                     else {
-                        if (getIsPressingKeyDeccelerate() && getDriftingTime() < 3.0f)
+                        if (getDriftingTime() < 3.0f)
                             setDriftingTime(getDriftingTime() + 0.02f);
                         setYRot(getYRot() - MANIABILITE_COEEF * (DRIFT_ANGLE * 0.75f));
                     }
@@ -306,7 +308,7 @@ public class Kart extends KartAbstract implements GeoEntity {
                     }
                     //LE JOUEUR NE MAINTIENT RIEN
                     else {
-                        if (getIsPressingKeyAccelerate() && getDriftingTime() < 3.0f)
+                        if (getDriftingTime() < 3.0f)
                             setDriftingTime(getDriftingTime() + 0.02f);
                         setYRot(getYRot() + MANIABILITE_COEEF * (DRIFT_ANGLE * 0.75f));
                     }
@@ -415,12 +417,12 @@ public class Kart extends KartAbstract implements GeoEntity {
         //ACCELERE LE TOUT SI SOUS ETOILE
         if (getIsInvinsible() && !getIsPressingKeyDeccelerate())
             clamped_speed = clamped_speed * getStarSpeedBoost();
-        setSpeed(clamped_speed);
 
         //CALCUL ET APPLICATION DU VECTEUR DE DEPLACEMENT
         double x = Math.sin(-angle) * clamped_speed;
         double z = Math.cos(-angle) * clamped_speed;
         Vec3 vec3 = new Vec3(x, 0, z);
+        speedToShow = clamped_speed;
 
         setDeltaMovement(vec3);
     }

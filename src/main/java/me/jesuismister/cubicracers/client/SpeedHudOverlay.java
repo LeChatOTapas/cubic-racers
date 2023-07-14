@@ -13,7 +13,7 @@ public class SpeedHudOverlay {
             Kart kart = (Kart) gui.getMinecraft().player.getVehicle();
             if (kart == null || !kart.level().isClientSide()) return;
 
-            String text = "Speed: " + (((float)Math.round(kart.getSpeed()*1000000f))/1000000f);
+            String text = "Speed: " + (((float)Math.round(kart.speedToShow*1000000f))/1000000f + " (" + (((float)Math.round(kart.getSpeed()*1000000f))/1000000f) + ")");
             int textWidth = Minecraft.getInstance().font.width(text);
             int textX = (screenWidth - textWidth) / 2;
 
