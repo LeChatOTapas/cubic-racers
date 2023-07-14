@@ -5,11 +5,6 @@
 			"loop": true,
 			"animation_length": 0.24,
 			"bones": {
-				"glider": {
-					"scale": {
-						"vector": [0, 0, 0]
-					}
-				},
 				"b_1": {
 					"scale": {
 						"0.0": {
@@ -93,11 +88,6 @@
 			"loop": true,
 			"animation_length": 0.24,
 			"bones": {
-				"glider": {
-					"scale": {
-						"vector": [0, 0, 0]
-					}
-				},
 				"drift_b_l": {
 					"scale": {
 						"vector": [0, 0, 0]
@@ -181,11 +171,6 @@
 			"loop": true,
 			"animation_length": 0.24,
 			"bones": {
-				"glider": {
-					"scale": {
-						"vector": [0, 0, 0]
-					}
-				},
 				"drift_b_l": {
 					"scale": {
 						"vector": [0, 0, 0]
@@ -266,6 +251,7 @@
 			}
 		},
 		"glider_on": {
+			"loop": "hold_on_last_frame",
 			"animation_length": 0.29167,
 			"bones": {
 				"glider": {
@@ -303,6 +289,7 @@
 			}
 		},
 		"glider_off": {
+			"loop": "hold_on_last_frame",
 			"animation_length": 0.29167,
 			"bones": {
 				"glider": {
@@ -355,11 +342,6 @@
 					}
 				},
 				"drift_v_r": {
-					"scale": {
-						"vector": [0, 0, 0]
-					}
-				},
-				"glider": {
 					"scale": {
 						"vector": [0, 0, 0]
 					}
@@ -507,11 +489,6 @@
 						"0.25": {
 							"vector": [1, 1, 1]
 						}
-					}
-				},
-				"glider": {
-					"scale": {
-						"vector": [0, 0, 0]
 					}
 				},
 				"klaxon": {
