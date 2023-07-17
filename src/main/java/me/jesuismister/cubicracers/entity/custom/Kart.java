@@ -1,14 +1,14 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.init.KartInit;
-import me.jesuismister.cubicracers.network.message.ItemToClientMessage;
+import me.jesuismister.cubicracers.network.Network;
+import me.jesuismister.cubicracers.network.message.KartPositionMessage;
 import me.jesuismister.cubicracers.network.message.itemsKart.use.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -16,10 +16,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -93,6 +93,7 @@ public class Kart extends KartAbstract implements GeoEntity {
     public void tick() {
         super.tick();
 
+        collision(); // GERE LES COLLISIONS DU KART
         isStun(); // ON VOIT SI LE KART EST STUN
         if (!getCanMove()) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
 
@@ -102,26 +103,12 @@ public class Kart extends KartAbstract implements GeoEntity {
 
         Player player = (Player) getFirstPassenger();
         if (player == null) {
-            setIsPressingKeyAccelerate(false);
-            setIsPressingKeyDeccelerate(false);
-
-            setIsPressingKeyFoward(false);
-            setIsPressingKeyBackward(false);
-            setIsPressingKeyLeft(false);
-            setIsPressingKeyRight(false);
-
-            setIsPressingKeyDelta(false);
-            setPreviousPressingKeyDelta(false);
-            setIsPressingKeyDrift(false);
-            setIsPressingKeyItem(false);
+            resetBindValue();
             if (getSpeed() > 0) {
                 slowDownKart();
                 setKartMovement();
-                move(MoverType.SELF, new Vec3(getDeltaMovement().x, getFallSpeed(), getDeltaMovement().z));
             }
         } else {
-            collision(); // GERE LES COLLISIONS DU KART
-
             if (getCanMove() && getIsPressingKeyItem())
                 useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
 
@@ -129,11 +116,31 @@ public class Kart extends KartAbstract implements GeoEntity {
             rotateOrDrift(); // CALCUL LA ROTATION DU VEHCIULE
 
             if (getCanMove()) setVectorMovment(); // SI PAS STUN, CALCUL LE VECTEUR DE VITESSE
-            setFallSpeed(calculateFallSpeed()); // CALCUL LA VITESSE DE CHUTE
 
-            move(MoverType.SELF, new Vec3(getDeltaMovement().x, getFallSpeed(), getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
             moveCamera(player); // BOUGE LA CAMERA EN CONSEQUENCE DU MOUVEMENT
+
+            //ENVOIE LES POSITIONS AU SERVEUR
+            if (level().isClientSide()) {
+                Network.CHANNEL.sendToServer(new KartPositionMessage(getX(), getY(), getZ()));
+            }
         }
+
+        move(MoverType.SELF, new Vec3(getDeltaMovement().x, calculateFallSpeed(), getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
+    }
+
+    private void resetBindValue() {
+        setIsPressingKeyAccelerate(false);
+        setIsPressingKeyDeccelerate(false);
+
+        setIsPressingKeyFoward(false);
+        setIsPressingKeyBackward(false);
+        setIsPressingKeyLeft(false);
+        setIsPressingKeyRight(false);
+
+        setIsPressingKeyDelta(false);
+        setPreviousPressingKeyDelta(false);
+        setIsPressingKeyDrift(false);
+        setIsPressingKeyItem(false);
     }
 
     /**
@@ -148,10 +155,10 @@ public class Kart extends KartAbstract implements GeoEntity {
         }
         //VITESSE DE CHUTE : EN CHUTE LIBRE
         else if (!onGround() && !getDeltaOn() && getFallSpeed() >= FALL_SPEED_LIMIT) {
-            return getFallSpeed() * FALL_SPEED_MULTIPLIER;
+            return BASE_FALL_SPEED * FALL_SPEED_MULTIPLIER;
         }
         //VITESSE DE CHUTE : SUR TERRE
-        return BASE_FALL_SPEED;
+        return 0;
     }
 
     /**
@@ -180,7 +187,7 @@ public class Kart extends KartAbstract implements GeoEntity {
             setSpeed(DELTA_SPEED);
         }
         //VECTEUR DE MOUVEMENT : MARCHE AVANT !!!
-        else if (getIsPressingKeyAccelerate()) {
+        else if ((!horizontalCollision || getSpeed() <= MAX_SPEED / 10) && getIsPressingKeyAccelerate()) {
             setSpeed(Mth.clamp(getSpeed() + ACCELERATION_BOOST, -MAX_SPEED / 2, MAX_SPEED));
         }
         //VECTEUR DE MOUVEMENT : MARCHE ARRIERE !!!
@@ -199,18 +206,7 @@ public class Kart extends KartAbstract implements GeoEntity {
      * Applique le stun au kart
      */
     private void applyStun() {
-        setIsPressingKeyAccelerate(false);
-        setIsPressingKeyDeccelerate(false);
-
-        setIsPressingKeyFoward(false);
-        setIsPressingKeyBackward(false);
-        setIsPressingKeyLeft(false);
-        setIsPressingKeyRight(false);
-
-        setIsPressingKeyDelta(false);
-        setPreviousPressingKeyDelta(false);
-        setIsPressingKeyDrift(false);
-        setIsPressingKeyItem(false);
+        resetBindValue();
 
         setDriftTimeBoost(0.f);
         setTimeBoost(0.f);
@@ -370,6 +366,16 @@ public class Kart extends KartAbstract implements GeoEntity {
      * Méthode qui gère tout ce qui touche aux collisions
      */
     private void collision() {
+        if (getFirstPassenger() != null) {
+            Player player = (Player) getFirstPassenger();
+            int blockX = (int) Math.floor(getX());
+            int blockY = (int) Math.floor(getY());
+            int blockZ = (int) Math.floor(getZ());
+            if (!player.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock().equals(Blocks.AIR)) {
+                setPos(getX(), getY() + 1, getZ());
+            }
+        }
+
         //SI COLLISION, ON RESET LE BOOST DU DRIFT
         if (horizontalCollision) {
             setDriftingTime(0.f);
@@ -502,19 +508,6 @@ public class Kart extends KartAbstract implements GeoEntity {
         double motionZ = Math.cos(Math.toRadians(yaw));
         spawnParticules(particle, 0.25 * Math.cos(Math.toRadians(yaw)), 0, 0.25 * Math.sin(Math.toRadians(yaw)),
                 motionX * 0.5f, 0, motionZ * 0.5f);
-    }
-
-    /**
-     * Fonction qui gère les particules du drift
-     *
-     * @param particle
-     */
-    public void spawnDriftParticules(SimpleParticleType particle) {
-        if (!level().isClientSide()) return;
-
-        float yaw = getYRot();
-        spawnParticules(particle, 1 * Math.cos(Math.toRadians(yaw)), 0, 1 * Math.sin(Math.toRadians(yaw)),
-                0, 0, 0);
     }
 
     /**

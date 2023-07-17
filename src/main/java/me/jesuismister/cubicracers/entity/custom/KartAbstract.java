@@ -12,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +38,7 @@ public abstract class KartAbstract extends Entity {
     public static final float BASE_FALL_SPEED = -0.5f;
     public static final float REDUCED_FALL_SPEED = -0.2f;
     public static final float FALL_SPEED_LIMIT = -3.0f;
-    public static final float FALL_SPEED_MULTIPLIER = 1.05f;
+    public static final float FALL_SPEED_MULTIPLIER = 4.0f;
     public static final float COEFF_FROTTEMENT = 0.85f;
 
     //ATTRIBUTS DU DRIFT
@@ -76,12 +77,10 @@ public abstract class KartAbstract extends Entity {
         this.entityData.set(SPEED, value);
     }
 
-    private int steps;
+    private int steps = 0;
     private double clientX;
     private double clientY;
     private double clientZ;
-    private double clientYaw;
-    private double clientPitch;
 
     //
 
@@ -322,10 +321,14 @@ public abstract class KartAbstract extends Entity {
         entityData.define(canMove, true);
         entityData.define(stunRotation, 0.f);
 
-        kartItem = "Star";
+        kartItem = "None";
         entityData.define(isInvinsible, false);
         entityData.define(starSpeedBoost, 1f); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
         entityData.define(timeStar, 0.f);
+
+        entityData.define(xPos, (float) getY());
+        entityData.define(yPos, (float) getY());
+        entityData.define(zPos, (float) getY());
     }
 
     ////////////
@@ -423,9 +426,19 @@ public abstract class KartAbstract extends Entity {
     ///////////////////////////////
     // FIX DES ROLLBACKS SERVEUR //
     ///////////////////////////////
+    private int i = 0;
+    public static final EntityDataAccessor<Float> xPos = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> yPos = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> zPos = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
 
     @Override
     public void tick() {
+        if (!level().isClientSide) {
+            this.xo = getX();
+            this.yo = getY();
+            this.zo = getZ();
+        }
+
         super.tick();
         tickLerp();
     }
@@ -438,14 +451,10 @@ public abstract class KartAbstract extends Entity {
 
         if (this.steps > 0) {
             double d0 = getX() + (clientX - getX()) / (double) steps;
-            double d1 = getY() + (clientY - getY()) / (double) steps;
+            //double d1 = getY() + (clientY - getY()) / (double) steps;
             double d2 = getZ() + (clientZ - getZ()) / (double) steps;
-            double d3 = Mth.wrapDegrees(clientYaw - (double) getYRot());
-            setYRot((float) ((double) getYRot() + d3 / (double) steps));
-            setXRot((float) ((double) getXRot() + (clientPitch - (double) getXRot()) / (double) steps));
             --steps;
-            setPos(d0, d1, d2);
-            setRot(getYRot(), getXRot());
+            setPos(d0, getY(), d2);
         }
     }
 
@@ -455,8 +464,6 @@ public abstract class KartAbstract extends Entity {
         this.clientX = x;
         this.clientY = y;
         this.clientZ = z;
-        this.clientYaw = yaw;
-        this.clientPitch = pitch;
         this.steps = 10;
     }
 }

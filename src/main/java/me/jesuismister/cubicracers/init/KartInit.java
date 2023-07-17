@@ -23,13 +23,22 @@ public class KartInit {
     public static final Map<String, RegistryObject<EntityType<Kart>>> KARTS = new HashMap<>();
 
     public static void initAllKarts() {
-        KARTS_DATA.add(new KartData("trash_kart",    0.60f, 0.020f, 0.6f, 2.0f, -0.5f, 1.7f, 1.2f));
-        KARTS_DATA.add(new KartData("standard_kart", 0.80f, 0.030f, 0.3f, 2.0f, -1.0f, 2.2f, 1.3f));
-        KARTS_DATA.add(new KartData("flame_flyer",   0.90f, 0.020f, 0.3f, 1.5f, -0.9f, 2.1f, 1.4f));
-        KARTS_DATA.add(new KartData("b_dasher",      0.70f, 0.035f, 0.5f, 2.0f, -0.8f, 2.3f, 1.0f));
-        KARTS_DATA.add(new KartData("zipper",        0.80f, 0.030f, 0.2f, 2.5f, -0.8f, 1.7f, 1.2f));
-        KARTS_DATA.add(new KartData("mach_celere",   0.70f, 0.045f, 0.3f, 1.5f, -0.8f, 2.3f, 1.0f));
-        KARTS_DATA.add(new KartData("rally_romper",  1.00f, 0.015f, 0.1f, 1.5f, -0.3f, 2.5f, 1.8f));
+        /*
+        KARTS_DATA.add(new KartData("trash_kart",    0.60f, 0.020f, 0.6f, 3.0f, -0.5f, 1.7f, 1.2f));
+        KARTS_DATA.add(new KartData("standard_kart", 0.80f, 0.030f, 0.3f, 3.0f, -1.0f, 2.2f, 1.3f));
+        KARTS_DATA.add(new KartData("flame_flyer",   0.90f, 0.020f, 0.3f, 3.0f, -0.9f, 2.1f, 1.4f));
+        KARTS_DATA.add(new KartData("b_dasher",      0.70f, 0.035f, 0.5f, 3.0f, -0.8f, 2.3f, 1.0f));
+        KARTS_DATA.add(new KartData("zipper",        0.80f, 0.030f, 0.2f, 3.0f, -0.8f, 1.7f, 1.2f));
+        KARTS_DATA.add(new KartData("mach_celere",   0.70f, 0.045f, 0.3f, 3.0f, -0.8f, 2.3f, 1.0f));
+        KARTS_DATA.add(new KartData("rally_romper",  1.00f, 0.015f, 0.1f, 3.0f, -0.3f, 2.5f, 1.8f));
+        */
+        KARTS_DATA.add(new KartData("trash_kart",    1.20f, 0.025f, 0.5f, 2.5f, -0.5f, 1.7f, 1.2f));
+        KARTS_DATA.add(new KartData("standard_kart", 1.20f, 0.025f, 0.5f, 2.5f, -1.0f, 2.2f, 1.3f));
+        KARTS_DATA.add(new KartData("flame_flyer",   1.20f, 0.025f, 0.5f, 2.5f, -0.9f, 2.1f, 1.4f));
+        KARTS_DATA.add(new KartData("b_dasher",      1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 2.3f, 1.0f));
+        KARTS_DATA.add(new KartData("zipper",        1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 1.7f, 1.2f));
+        KARTS_DATA.add(new KartData("mach_celere",   1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 2.3f, 1.0f));
+        KARTS_DATA.add(new KartData("rally_romper",  1.20f, 0.025f, 0.5f, 2.5f, -0.3f, 2.5f, 1.8f));
 
         for (KartData d : KARTS_DATA) {
             addNewKart(d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY, d.hitboxX, d.hitboxY);

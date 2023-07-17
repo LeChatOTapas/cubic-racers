@@ -126,7 +126,7 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
         if (kart.getFirstPassenger()== null || !(kart.getFirstPassenger() instanceof Player))
             return false;
 
-        if(!kart.getKartItem().equals("None")){
+        if(kart.getKartItem().equals("None")){
             double rand = ClientRandom.nextInt(100);
 
             if (0 <= rand && rand < BANANA_DROP_RATE) {
