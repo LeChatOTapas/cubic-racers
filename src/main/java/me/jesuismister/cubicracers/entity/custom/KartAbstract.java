@@ -1,5 +1,6 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -417,6 +418,16 @@ public abstract class KartAbstract extends Entity {
         try {
             if (this != null && this.getFirstPassenger() != null && this.getFirstPassenger() instanceof Player player) {
                 player.sendSystemMessage(Component.literal(msg));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendAll(String msg) {
+        try {
+            if (Minecraft.getInstance()!=null && Minecraft.getInstance().player!=null) {
+                Minecraft.getInstance().player.sendSystemMessage(Component.literal(msg));
             }
         } catch (Exception e) {
             e.printStackTrace();

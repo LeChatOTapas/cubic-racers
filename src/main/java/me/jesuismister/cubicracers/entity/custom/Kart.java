@@ -98,6 +98,9 @@ public class Kart extends KartAbstract implements GeoEntity {
         Player player = (Player) getFirstPassenger();
         if (player == null) {
             resetBindValue();
+        }else{
+            //sendAll(level() + ": " + (Math.round(getX()*100)/100f + " / " + Math.round(getY()*100)/100f + " / " + Math.round(getZ()*100)/100f));
+            //if(!level().isClientSide()) sendConductorMessage(level() + ": " + (Math.round(getX()*100)/100f + " / " + Math.round(getY()*100)/100f + " / " + Math.round(getZ()*100)/100f));
         }
 
         collision(); // GERE LES COLLISIONS DU KART
