@@ -2,6 +2,7 @@ package me.jesuismister.cubicracers.init;
 
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.block.BoosterBlock;
+import me.jesuismister.cubicracers.block.RoadBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
@@ -33,4 +34,7 @@ public class BlockInit {
     //BLOCKS
     public static final RegistryObject<Block> BOOSTER = registerBlock("booster", () ->
             new BoosterBlock(BlockBehaviour.Properties.copy(Blocks.PINK_GLAZED_TERRACOTTA).sound(SoundType.AMETHYST)));
+
+    public static final RegistryObject<Block> ROAD_BLOCK = registerBlock("road_block", () ->
+            new RoadBlock(BlockBehaviour.Properties.copy(Blocks.STONE)));
 }

@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.block.RoadBlock;
 import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.KartPositionMessage;
@@ -366,20 +367,37 @@ public class Kart extends KartAbstract implements GeoEntity {
     }
 
     private boolean isValidBlockCollision(){
-        Player player = (Player) getFirstPassenger();
         int blockX = (int) Math.floor(getX());
         int blockY = (int) Math.floor(getY());
         int blockZ = (int) Math.floor(getZ());
-        if(player.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.AIR)){
+
+        if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.AIR)){
             return false;
-        }else if(player.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.WATER)){
+        }else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.WATER)){
             return false;
-        }else if(player.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.LAVA)){
+        }else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.LAVA)){
             return false;
-        }else if(player.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock().getName().toString().contains("slab")){
+        }else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock().getName().toString().contains("slab")){
             return false;
         }
         return true;
+    }
+
+    private boolean isOnRoadBlock(){
+        int blockX = (int) Math.floor(getX());
+        int blockY = (int) Math.floor(getY()) - 1;
+        int blockZ = (int) Math.floor(getZ());
+
+        if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.AIR)){
+            return true;
+        } else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.WATER)){
+            return true;
+        } else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.LAVA)){
+            return true;
+        } else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock() instanceof RoadBlock){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -440,6 +458,11 @@ public class Kart extends KartAbstract implements GeoEntity {
         //ACCELERE LE TOUT SI SOUS ETOILE
         if (getIsInvinsible() && !getIsPressingKeyDeccelerate())
             clamped_speed = clamped_speed * getStarSpeedBoost();
+
+        //SI PAS SUR UN BLOC DE ROUTE (SANS BOOST OU ETOILE), ON SLOW LE VEHICULE
+        if(!isOnRoadBlock() && (!getIsInvinsible() || getTimeBoost()<=0)){
+            setSpeed(Mth.clamp(getSpeed(), -MAX_SPEED/2, MAX_SPEED/2));
+        }
 
         //CALCUL ET APPLICATION DU VECTEUR DE DEPLACEMENT
         double x = Math.sin(-angle) * clamped_speed;
