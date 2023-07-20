@@ -124,7 +124,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         moveCamera(player); // BOUGE LA CAMERA EN CONSEQUENCE DU MOUVEMENT
 
         //ENVOIE LES POSITIONS AU SERVEUR
-        if (player != null && level().isClientSide()) {
+        if (level().isClientSide() && player!=null && player.getVehicle()!=null && player.getVehicle().equals(this)) {
             Network.CHANNEL.sendToServer(new KartPositionMessage(getX(), getY(), getZ()));
         }
 
