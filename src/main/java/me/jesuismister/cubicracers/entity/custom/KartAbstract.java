@@ -415,8 +415,8 @@ public abstract class KartAbstract extends Entity {
      */
     public void sendConductorMessage(String msg) {
         try {
-            if (this != null && this.getFirstPassenger() != null && this.getFirstPassenger() instanceof Player) {
-                this.getFirstPassenger().sendSystemMessage(Component.literal(msg));
+            if (this != null && this.getFirstPassenger() != null && this.getFirstPassenger() instanceof Player player) {
+                player.sendSystemMessage(Component.literal(msg));
             }
         } catch (Exception e) {
             e.printStackTrace();

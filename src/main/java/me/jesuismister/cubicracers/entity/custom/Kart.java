@@ -17,6 +17,7 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
@@ -93,36 +94,35 @@ public class Kart extends KartAbstract implements GeoEntity {
     public void tick() {
         super.tick();
 
+        // ON MET LES BINDS A FALSE SI PAS DE JOUEUR DANS LE VEHICULE
+        Player player = (Player) getFirstPassenger();
+        if (player == null) {
+            resetBindValue();
+        }
+
         collision(); // GERE LES COLLISIONS DU KART
         isStun(); // ON VOIT SI LE KART EST STUN
         if (!getCanMove()) applyStun(); // SI LE KART EST STUN, ON APPLIQUE LA PROCEDURE DE STUN
 
+        // ON UPDATE LES TIMERS
         if (getTimeStar() > 0) setTimeStar(getTimeStar() - 0.1f);
         if (getDriftTimeBoost() > 0) setDriftTimeBoost(getDriftTimeBoost() - 0.1f);
         if (getTimeBoost() > 0) setTimeBoost(getTimeBoost() - 0.1f);
 
-        Player player = (Player) getFirstPassenger();
-        if (player == null) {
-            resetBindValue();
-            if (getSpeed() > 0) {
-                slowDownKart();
-                setKartMovement();
-            }
-        } else {
-            if (getCanMove() && getIsPressingKeyItem())
-                useItem(); // UTILISE L'ITEM SI LE JOUEUR LE VEUT
+        // UTILISE L'ITEM SI LE JOUEUR LE VEUT
+        if (getCanMove() && getIsPressingKeyItem())
+            useItem();
 
-            deltaplane(player); // ACTIVE LE DELTA PLANE
-            rotateOrDrift(); // CALCUL LA ROTATION DU VEHCIULE
+        deltaplane(player); // ACTIVE LE DELTA PLANE
+        rotateOrDrift(); // CALCUL LA ROTATION DU VEHCIULE
 
-            if (getCanMove()) setVectorMovment(); // SI PAS STUN, CALCUL LE VECTEUR DE VITESSE
+        if (getCanMove()) setVectorMovment(); // SI PAS STUN, CALCUL LE VECTEUR DE VITESSE
 
-            moveCamera(player); // BOUGE LA CAMERA EN CONSEQUENCE DU MOUVEMENT
+        moveCamera(player); // BOUGE LA CAMERA EN CONSEQUENCE DU MOUVEMENT
 
-            //ENVOIE LES POSITIONS AU SERVEUR
-            if (level().isClientSide()) {
-                Network.CHANNEL.sendToServer(new KartPositionMessage(getX(), getY(), getZ()));
-            }
+        //ENVOIE LES POSITIONS AU SERVEUR
+        if (player != null && level().isClientSide()) {
+            Network.CHANNEL.sendToServer(new KartPositionMessage(getX(), getY(), getZ()));
         }
 
         move(MoverType.SELF, new Vec3(getDeltaMovement().x, calculateFallSpeed(), getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
@@ -226,7 +226,7 @@ public class Kart extends KartAbstract implements GeoEntity {
             sendConductorMessage("BANANE !!!!!");
         } else if (getKartItem().equals("Mushroom")) {
             setTimeBoost(5.f);
-            setSpeed(MAX_SPEED);
+            setSpeed(MAX_SPEED + BOOST);
             sendConductorMessage("MUSHROOM !!!!!");
         } else if (getKartItem().equals("Star")) {
             setTimeStar(20f);
@@ -362,16 +362,30 @@ public class Kart extends KartAbstract implements GeoEntity {
         }
     }
 
+    private boolean isValidBlockCollision(){
+        Player player = (Player) getFirstPassenger();
+        int blockX = (int) Math.floor(getX());
+        int blockY = (int) Math.floor(getY());
+        int blockZ = (int) Math.floor(getZ());
+        if(player.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.AIR)){
+            return false;
+        }else if(player.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.WATER)){
+            return false;
+        }else if(player.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.LAVA)){
+            return false;
+        }else if(player.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock().getName().toString().contains("slab")){
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Méthode qui gère tout ce qui touche aux collisions
      */
     private void collision() {
+        //SI LE KART A UN PASSAGER ET QUE LE KART EST DANS UN BLOCK, ALORS ON LE REMONTE D'UN BLOC
         if (getFirstPassenger() != null) {
-            Player player = (Player) getFirstPassenger();
-            int blockX = (int) Math.floor(getX());
-            int blockY = (int) Math.floor(getY());
-            int blockZ = (int) Math.floor(getZ());
-            if (!player.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock().equals(Blocks.AIR)) {
+            if (isValidBlockCollision()){
                 setPos(getX(), getY() + 1, getZ());
             }
         }

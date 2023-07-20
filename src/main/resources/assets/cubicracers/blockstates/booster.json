@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "cubicracers:block/booster",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "cubicracers:block/booster",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "cubicracers:block/booster"
+    },
+    "facing=west": {
+      "model": "cubicracers:block/booster",
+      "y": 90
+    }
+  }
+}

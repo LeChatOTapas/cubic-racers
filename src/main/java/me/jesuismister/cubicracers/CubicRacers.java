@@ -5,6 +5,7 @@ import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.ClientRandom;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -46,9 +47,10 @@ public class CubicRacers {
      */
     private void addCreativeTab(BuildCreativeModeTabContentsEvent event) {
         if (event.getTab() == ModCreativeModeTabs.CUBIC_RACERS_TAB.get()) {
-            event.accept(ItemInit.ITEM_BOX_SPAWN_ITEM);
+            event.accept(ItemInit.ITEM_BOX_SPAWN_ITEM.get());
+            event.accept(BlockInit.BOOSTER.get());
             for (RegistryObject<Item> r : ItemInit.KARTS_SPAWN_ITEM) {
-                event.accept(r);
+                event.accept(r.get());
             }
         }
     }
