@@ -2,7 +2,11 @@
   "creativemodetab.cubicracers_tab": "MC Kart",
 
   "block.cubicracers.booster": "Booster",
+  "block.cubicracers.kart_controller": "Kart Controller",
   "block.cubicracers.road_block": "Road Block (Normal)",
+  "block.cubicracers.road_block_dirt": "Road Block (Dirt)",
+  "block.cubicracers.road_block_sand": "Road Block (Sand)",
+  "block.cubicracers.road_block_snow": "Road Block (Snow)",
 
   "entity.cubicracers.banana": "Banana",
   "entity.cubicracers.bob_omb": "Bob Omb",

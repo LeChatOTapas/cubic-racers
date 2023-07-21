@@ -38,7 +38,7 @@ public class KartInit {
         KARTS_DATA.add(new KartData("b_dasher",      1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 2.3f, 1.0f));
         KARTS_DATA.add(new KartData("zipper",        1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 1.7f, 1.2f));
         KARTS_DATA.add(new KartData("mach_celere",   1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 2.3f, 1.0f));
-        KARTS_DATA.add(new KartData("rally_romper",  1.20f, 0.025f, 0.5f, 2.5f, -0.3f, 2.5f, 1.8f));
+        KARTS_DATA.add(new KartData("rally_romper",  1.20f, 0.025f, 0.5f, 2.5f, -0.7f, 2.5f, 1.8f));
 
         for (KartData d : KARTS_DATA) {
             addNewKart(d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY, d.hitboxX, d.hitboxY);
