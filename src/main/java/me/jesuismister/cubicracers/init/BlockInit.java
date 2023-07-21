@@ -2,6 +2,7 @@ package me.jesuismister.cubicracers.init;
 
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.block.BoosterBlock;
+import me.jesuismister.cubicracers.block.KartController;
 import me.jesuismister.cubicracers.block.RoadBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
@@ -37,4 +38,7 @@ public class BlockInit {
 
     public static final RegistryObject<Block> ROAD_BLOCK = registerBlock("road_block", () ->
             new RoadBlock(BlockBehaviour.Properties.copy(Blocks.STONE)));
+
+    public static final RegistryObject<Block> KART_CONTROLLER = registerBlock("kart_controller", () ->
+            new KartController(BlockBehaviour.Properties.copy(Blocks.PINK_GLAZED_TERRACOTTA)));
 }

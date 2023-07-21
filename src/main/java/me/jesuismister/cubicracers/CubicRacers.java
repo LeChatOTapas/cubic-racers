@@ -48,8 +48,12 @@ public class CubicRacers {
     private void addCreativeTab(BuildCreativeModeTabContentsEvent event) {
         if (event.getTab() == ModCreativeModeTabs.CUBIC_RACERS_TAB.get()) {
             event.accept(ItemInit.ITEM_BOX_SPAWN_ITEM.get());
+
             event.accept(BlockInit.BOOSTER.get());
+            event.accept(BlockInit.KART_CONTROLLER.get());
+
             event.accept(BlockInit.ROAD_BLOCK.get());
+
             for (RegistryObject<Item> r : ItemInit.KARTS_SPAWN_ITEM) {
                 event.accept(r.get());
             }

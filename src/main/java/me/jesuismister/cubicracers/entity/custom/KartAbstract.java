@@ -36,10 +36,8 @@ public abstract class KartAbstract extends Entity {
     //ATTRIBUTS GENERAUX DES KARTS
     public static final float MIN_SPEED = 0.075f;
     public static final float FREINAGE_SPEED = 1.05f;
-    public static final float BASE_FALL_SPEED = -0.5f;
+    public static final float BASE_FALL_SPEED = -1.0f;
     public static final float REDUCED_FALL_SPEED = -0.2f;
-    public static final float FALL_SPEED_LIMIT = -3.0f;
-    public static final float FALL_SPEED_MULTIPLIER = 4.0f;
     public static final float COEFF_FROTTEMENT = 0.85f;
 
     //ATTRIBUTS DU DRIFT
@@ -52,7 +50,6 @@ public abstract class KartAbstract extends Entity {
 
     //ATTRIBUTS DE CONDUITE
     public static final EntityDataAccessor<Boolean> deltaOn = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Float> fallSpeed = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> pourcentage_inclinaison = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> actual_rotation_wheels = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
 
@@ -65,6 +62,9 @@ public abstract class KartAbstract extends Entity {
     public static final EntityDataAccessor<Boolean> isInvinsible = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> starSpeedBoost = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
     public static final EntityDataAccessor<Float> timeStar = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
+
+    //LOCK
+    public static final EntityDataAccessor<Boolean> isLock = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
 
     public KartAbstract(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
@@ -217,14 +217,6 @@ public abstract class KartAbstract extends Entity {
         this.entityData.set(deltaOn, value);
     }
 
-    public float getFallSpeed() {
-        return this.entityData.get(fallSpeed);
-    }
-
-    public void setFallSpeed(float value) {
-        this.entityData.set(fallSpeed, value);
-    }
-
     public float getPourcentageInclinaison() {
         return this.entityData.get(pourcentage_inclinaison);
     }
@@ -293,6 +285,16 @@ public abstract class KartAbstract extends Entity {
         this.entityData.set(timeStar, value);
     }
 
+    //
+
+    public boolean getIsLock() {
+        return this.entityData.get(isLock);
+    }
+
+    public void setisLock(boolean value) {
+        this.entityData.set(isLock, value);
+    }
+
     @Override
     protected void defineSynchedData() {
         entityData.define(SPEED, 0.0f);
@@ -315,7 +317,6 @@ public abstract class KartAbstract extends Entity {
         entityData.define(timeBoost, 0.0f);
 
         entityData.define(deltaOn, false);
-        entityData.define(fallSpeed, BASE_FALL_SPEED);
         entityData.define(pourcentage_inclinaison, 0.f);
         entityData.define(actual_rotation_wheels, 0.f);
 
@@ -327,9 +328,7 @@ public abstract class KartAbstract extends Entity {
         entityData.define(starSpeedBoost, 1f); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
         entityData.define(timeStar, 0.f);
 
-        entityData.define(xPos, (float) getY());
-        entityData.define(yPos, (float) getY());
-        entityData.define(zPos, (float) getY());
+        entityData.define(isLock, false);
     }
 
     ////////////
@@ -437,10 +436,6 @@ public abstract class KartAbstract extends Entity {
     ///////////////////////////////
     // FIX DES ROLLBACKS SERVEUR //
     ///////////////////////////////
-    private int i = 0;
-    public static final EntityDataAccessor<Float> xPos = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> yPos = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> zPos = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
 
     @Override
     public void tick() {
@@ -462,7 +457,6 @@ public abstract class KartAbstract extends Entity {
 
         if (this.steps > 0) {
             double d0 = getX() + (clientX - getX()) / (double) steps;
-            //double d1 = getY() + (clientY - getY()) / (double) steps;
             double d2 = getZ() + (clientZ - getZ()) / (double) steps;
             --steps;
             setPos(d0, getY(), d2);

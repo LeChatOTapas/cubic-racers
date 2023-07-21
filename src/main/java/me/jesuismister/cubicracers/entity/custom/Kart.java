@@ -1,13 +1,16 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.block.KartController;
 import me.jesuismister.cubicracers.block.RoadBlock;
+import me.jesuismister.cubicracers.init.BlockInit;
 import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.KartPositionMessage;
 import me.jesuismister.cubicracers.network.message.itemsKart.use.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
@@ -19,6 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
@@ -99,9 +103,11 @@ public class Kart extends KartAbstract implements GeoEntity {
         Player player = (Player) getFirstPassenger();
         if (player == null) {
             resetBindValue();
-        }else{
-            //sendAll(level() + ": " + (Math.round(getX()*100)/100f + " / " + Math.round(getY()*100)/100f + " / " + Math.round(getZ()*100)/100f));
-            //if(!level().isClientSide()) sendConductorMessage(level() + ": " + (Math.round(getX()*100)/100f + " / " + Math.round(getY()*100)/100f + " / " + Math.round(getZ()*100)/100f));
+        }
+
+        if(isOnKartController()){
+            setSpeed(0);
+            return;
         }
 
         collision(); // GERE LES COLLISIONS DU KART
@@ -153,13 +159,17 @@ public class Kart extends KartAbstract implements GeoEntity {
      * @return
      */
     private float calculateFallSpeed() {
-        //VITESSE DE CHUTE : DANS LA MER OU EN DELTA
-        if (isInWater() || getDeltaOn()) {
+        //VITESSE DE CHUTE : EN DELTA
+        if (getDeltaOn()) {
             return REDUCED_FALL_SPEED;
         }
+        //VITESSE DE CHUTE : DANS l4EAU
+        else if(isInWater()){
+            return REDUCED_FALL_SPEED*3;
+        }
         //VITESSE DE CHUTE : EN CHUTE LIBRE
-        else if (!onGround() && !getDeltaOn() && getFallSpeed() >= FALL_SPEED_LIMIT) {
-            return BASE_FALL_SPEED * FALL_SPEED_MULTIPLIER;
+        else if (!onGround() && !getDeltaOn()) {
+            return BASE_FALL_SPEED;
         }
         //VITESSE DE CHUTE : SUR TERRE
         return 0;
@@ -381,6 +391,31 @@ public class Kart extends KartAbstract implements GeoEntity {
             return false;
         }
         return true;
+    }
+
+    private boolean isOnKartController(){
+        int blockX = (int) Math.floor(getX());
+        int blockY = (int) Math.floor(getY()) - 1;
+        int blockZ = (int) Math.floor(getZ());
+        BlockState blockState = this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ));
+
+        if(blockState.is(BlockInit.KART_CONTROLLER.get())){
+            if(blockState.getValue(KartController.LIT)){
+                setSpeed(0);
+                if (blockState.getValue(KartController.FACING).getOpposite().equals(Direction.NORTH)) {
+                    setYRot(180);
+                } else if (blockState.getValue(KartController.FACING).getOpposite().equals(Direction.WEST)) {
+                    setYRot(90);
+                } else if (blockState.getValue(KartController.FACING).getOpposite().equals(Direction.EAST)) {
+                    setYRot(-90);
+                } else if (blockState.getValue(KartController.FACING).getOpposite().equals(Direction.SOUTH)) {
+                    setYRot(0);
+                }
+                setPos(blockX + 0.5d, blockY + 1d, blockZ + 0.5d);
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isOnRoadBlock(){
