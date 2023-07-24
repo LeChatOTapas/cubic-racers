@@ -20,6 +20,7 @@ public class SoundsInit {
 
     public static RegistryObject<SoundEvent> ENGINE_IDLE = addSound("engine_idle");
     public static RegistryObject<SoundEvent> ENGINE_MAX = addSound("engine_max");
+    public static RegistryObject<SoundEvent> STAR_MODE = addSound("kart_star_mode");
 
     public static RegistryObject<SoundEvent> addSound(String soundName) {
         return SOUND_REGISTER.register(soundName, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(CubicRacers.MODID, soundName)));

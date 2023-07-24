@@ -27,7 +27,7 @@ public class SoundEngineIdle extends SoundLoopKart {
 
     @Override
     public boolean shouldStopSound() {
-        if (kart.getSpeed() > kart.MAX_SPEED*0.2f || kart.getSpeed() < -kart.MAX_SPEED*0.2f) {
+        if (kart.getIsInvinsible() || kart.getSpeed() > kart.MAX_SPEED*0.2f || kart.getSpeed() < -kart.MAX_SPEED*0.2f) {
             return true;
         }
         return false;

@@ -6,5 +6,9 @@
   "engine_max": {
     "subtitle": "sound.kart.engine_max",
     "sounds": [ "cubicracers:engine_max" ]
+  },
+  "kart_star_mode": {
+    "subtitle": "sound.kart.kart_star_mode",
+    "sounds": [ "cubicracers:kart_star_mode" ]
   }
 }

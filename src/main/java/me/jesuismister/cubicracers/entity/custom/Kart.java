@@ -11,6 +11,7 @@ import me.jesuismister.cubicracers.network.message.KartPositionMessage;
 import me.jesuismister.cubicracers.network.message.itemsKart.use.*;
 import me.jesuismister.cubicracers.sounds.SoundEngineIdle;
 import me.jesuismister.cubicracers.sounds.SoundEngineMax;
+import me.jesuismister.cubicracers.sounds.SoundStarMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
@@ -75,6 +76,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         HITBOX_X = hitboxX;
         HITBOX_Y = hitboxY;
         setInvulnerable(false);
+        useItem(); //je sais pas pourquoi mais si je fais pas ça, ça veut pas mettre bien l'item à vide
     }
 
     public Kart(Level level, double x, double y, double z, String name, String texture, String model, String animation,
@@ -724,12 +726,17 @@ public class Kart extends KartAbstract implements GeoEntity {
     private SoundEngineIdle engineIdleLoop;
     @OnlyIn(Dist.CLIENT)
     private SoundEngineMax engineMaxLoop;
+    @OnlyIn(Dist.CLIENT)
+    private SoundStarMode starModeLoop;
 
     @OnlyIn(Dist.CLIENT)
     public void updateSounds() {
         if(getIsInvinsible()) {
             System.out.println("STAR");
-            //playSoundEffect(SoundsInit.ENGINE_IDLE.get());
+            if (!isSoundPlaying(starModeLoop)) {
+                starModeLoop = new SoundStarMode(this, SoundsInit.STAR_MODE.get(), SoundSource.RECORDS);
+                SoundsInit.playSoundLoop(starModeLoop, level());
+            }
         }else if(getDeltaOn()){
             System.out.println("DELTA");
             //playSoundEffect(SoundsInit.ENGINE_IDLE.get());
