@@ -5,6 +5,7 @@ import me.jesuismister.cubicracers.sounds.SoundEngineIdleLoop;
 import me.jesuismister.cubicracers.sounds.SoundLoopKart;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -17,6 +18,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -343,6 +345,10 @@ public abstract class KartAbstract extends Entity {
 
     @OnlyIn(Dist.CLIENT)
     private SoundEngineIdleLoop engineIdleLoop;
+
+    private void playSoundEffect(SoundEvent event, double x, double y, double z, Player entity){
+        SoundsInit.playSound(event, level(), new BlockPos((int)x, (int)y, (int)z), entity, SoundSource.RECORDS);
+    }
 
     @OnlyIn(Dist.CLIENT)
     public void updateSounds() {

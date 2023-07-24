@@ -25,7 +25,7 @@ public class SoundsInit {
     }
 
     public static void playSound(SoundEvent evt, Level world, BlockPos pos, Player entity, SoundSource category, float volume) {
-        playSound(evt, world, pos, entity, category, volume, 1.0F);
+        playSound(evt, world, pos, entity, category, volume, 0.5F);
     }
 
     public static void playSound(SoundEvent evt, Level world, BlockPos pos, Player entity, SoundSource category, float volume, float pitch) {

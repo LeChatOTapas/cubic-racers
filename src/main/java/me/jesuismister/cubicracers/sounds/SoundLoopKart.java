@@ -8,9 +8,12 @@ import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3d;
 
 public abstract class SoundLoopKart extends AbstractTickableSoundInstance {
-
+    private Vec3 prevPlayerPos;
+    private Vec3 prevSoundPos;
     protected KartAbstract kart;
 
     public SoundLoopKart(KartAbstract kart, SoundEvent event, SoundSource category) {
@@ -20,12 +23,18 @@ public abstract class SoundLoopKart extends AbstractTickableSoundInstance {
         this.delay = 0;
         this.volume = CubicRacers.CLIENT_CONFIG.kartVolume.get().floatValue();
         this.pitch = 1F;
-        this.relative = false;
+        this.relative = true;
         this.attenuation = Attenuation.LINEAR;
         this.updatePos();
     }
 
     public void updatePos() {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null) {
+            prevPlayerPos = player.position();
+        }
+
+        prevSoundPos = new Vec3(x, y, z);
         this.x = (float) kart.getX();
         this.y = (float) kart.getY();
         this.z = (float) kart.getZ();
@@ -52,6 +61,12 @@ public abstract class SoundLoopKart extends AbstractTickableSoundInstance {
             setDonePlaying();
             return;
         }
+
+        // Calculate the distance between the player and the sound source
+        double distance = player.position().distanceTo(new Vec3(x, y, z));
+
+        // Adjust the volume based on the distance (you can use any attenuation formula you like)
+        this.volume = Math.max(0.0F, volume - (float) (distance * 0.025));
 
         updatePos();
     }
