@@ -1,0 +1,6 @@
+{
+  "engine_idle": {
+    "subtitle": "sound.kart.engine_idle",
+    "sounds": [ "cubicracers:engine_idle" ]
+  }
+}

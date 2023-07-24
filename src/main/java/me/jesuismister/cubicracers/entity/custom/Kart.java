@@ -165,7 +165,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         }
         //VITESSE DE CHUTE : DANS l4EAU
         else if(isInWater()){
-            return REDUCED_FALL_SPEED*3;
+            return REDUCED_FALL_SPEED*2;
         }
         //VITESSE DE CHUTE : EN CHUTE LIBRE
         else if (!onGround() && !getDeltaOn()) {

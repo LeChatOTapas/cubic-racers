@@ -1,11 +1,17 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.init.SoundsInit;
+import me.jesuismister.cubicracers.sounds.SoundEngineIdleLoop;
+import me.jesuismister.cubicracers.sounds.SoundLoopKart;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -36,7 +42,7 @@ public abstract class KartAbstract extends Entity {
     //ATTRIBUTS GENERAUX DES KARTS
     public static final float MIN_SPEED = 0.075f;
     public static final float FREINAGE_SPEED = 1.05f;
-    public static final float BASE_FALL_SPEED = -1.0f;
+    public static final float BASE_FALL_SPEED = -1.2f;
     public static final float REDUCED_FALL_SPEED = -0.2f;
     public static final float COEFF_FROTTEMENT = 0.85f;
 
@@ -332,6 +338,31 @@ public abstract class KartAbstract extends Entity {
     }
 
     ////////////
+    // SOUNDS //
+    ////////////
+
+    @OnlyIn(Dist.CLIENT)
+    private SoundEngineIdleLoop engineIdleLoop;
+
+    @OnlyIn(Dist.CLIENT)
+    public void updateSounds() {
+        if (getSpeed() == 0) {
+            if (!isSoundPlaying(engineIdleLoop)) {
+                engineIdleLoop = new SoundEngineIdleLoop(this, SoundsInit.ENGINE_IDLE.get(), SoundSource.RECORDS);
+                SoundsInit.playSoundLoop(engineIdleLoop, level());
+            }
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public boolean isSoundPlaying(SoundInstance sound) {
+        if (sound == null) {
+            return false;
+        }
+        return Minecraft.getInstance().getSoundManager().isActive(sound);
+    }
+
+    ////////////
     // AUTRES //
     ////////////
 
@@ -446,7 +477,9 @@ public abstract class KartAbstract extends Entity {
         }
 
         super.tick();
+
         tickLerp();
+        updateSounds();
     }
 
     private void tickLerp() {

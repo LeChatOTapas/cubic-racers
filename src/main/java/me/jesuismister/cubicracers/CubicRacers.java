@@ -1,5 +1,6 @@
 package me.jesuismister.cubicracers;
 
+import de.maxhenkel.corelib.CommonRegistry;
 import me.jesuismister.cubicracers.init.*;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegistryObject;
@@ -17,9 +19,13 @@ import net.minecraftforge.registries.RegistryObject;
 public class CubicRacers {
     public static final String MODID = "cubicracers";
     public static final long SEED = System.currentTimeMillis();
+    public static ClientConfig CLIENT_CONFIG;
 
     public CubicRacers() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        SoundsInit.SOUND_REGISTER.register(bus);
+        CLIENT_CONFIG = CommonRegistry.registerConfig(ModConfig.Type.CLIENT, ClientConfig.class);
 
         KartInit.initAllKarts(); //IMPORTANT DE LE METTRE AVANT LE "KartInit.ENTITY_TYPES.register(bus)"
         KartInit.ENTITY_TYPES.register(bus);
