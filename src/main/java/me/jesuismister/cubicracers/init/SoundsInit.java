@@ -19,6 +19,7 @@ public class SoundsInit {
     public static final DeferredRegister<SoundEvent> SOUND_REGISTER = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, CubicRacers.MODID);
 
     public static RegistryObject<SoundEvent> ENGINE_IDLE = addSound("engine_idle");
+    public static RegistryObject<SoundEvent> ENGINE_MAX = addSound("engine_max");
 
     public static RegistryObject<SoundEvent> addSound(String soundName) {
         return SOUND_REGISTER.register(soundName, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(CubicRacers.MODID, soundName)));
@@ -40,15 +41,6 @@ public class SoundsInit {
 
     public static void playSound(SoundEvent evt, Level world, BlockPos pos, Player entity, SoundSource category) {
         playSound(evt, world, pos, entity, category, 0.15F);
-    }
-
-    public static boolean isCarSoundCategory(SoundEvent event) {
-        if (event == null) {
-            return false;
-        }
-        return event.equals(ENGINE_IDLE.get()) ||
-                event.equals(ENGINE_IDLE.get());
-
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -1,7 +1,7 @@
 package me.jesuismister.cubicracers.sounds;
 
 import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.entity.custom.KartAbstract;
+import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
@@ -9,18 +9,19 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3d;
 
 public abstract class SoundLoopKart extends AbstractTickableSoundInstance {
     private Vec3 prevPlayerPos;
     private Vec3 prevSoundPos;
-    protected KartAbstract kart;
+    protected Kart kart;
+    public float default_volume;
 
-    public SoundLoopKart(KartAbstract kart, SoundEvent event, SoundSource category) {
+    public SoundLoopKart(Kart kart, SoundEvent event, SoundSource category) {
         super(event, category, SoundInstance.createUnseededRandom());
         this.kart = kart;
         this.looping = true;
         this.delay = 0;
+        this.default_volume = CubicRacers.CLIENT_CONFIG.kartVolume.get().floatValue();
         this.volume = CubicRacers.CLIENT_CONFIG.kartVolume.get().floatValue();
         this.pitch = 1F;
         this.relative = true;

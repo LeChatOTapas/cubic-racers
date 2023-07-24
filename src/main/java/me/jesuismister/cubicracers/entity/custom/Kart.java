@@ -5,14 +5,19 @@ import me.jesuismister.cubicracers.block.KartController;
 import me.jesuismister.cubicracers.block.RoadBlock;
 import me.jesuismister.cubicracers.init.BlockInit;
 import me.jesuismister.cubicracers.init.KartInit;
+import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.KartPositionMessage;
 import me.jesuismister.cubicracers.network.message.itemsKart.use.*;
+import me.jesuismister.cubicracers.sounds.SoundEngineIdle;
+import me.jesuismister.cubicracers.sounds.SoundEngineMax;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -21,10 +26,10 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.common.Mod;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -136,6 +141,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         }
 
         move(MoverType.SELF, new Vec3(getDeltaMovement().x, calculateFallSpeed(), getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
+        updateSounds();
     }
 
     private void resetBindValue() {
@@ -707,5 +713,48 @@ public class Kart extends KartAbstract implements GeoEntity {
                     .then("drift_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
         }
         return PlayState.CONTINUE;
+    }
+
+    ////////////
+    // SOUNDS //
+    ////////////
+
+    public float previousSpeed = 0;
+    @OnlyIn(Dist.CLIENT)
+    private SoundEngineIdle engineIdleLoop;
+    @OnlyIn(Dist.CLIENT)
+    private SoundEngineMax engineMaxLoop;
+
+    @OnlyIn(Dist.CLIENT)
+    public void updateSounds() {
+        if(getIsInvinsible()) {
+            System.out.println("STAR");
+            //playSoundEffect(SoundsInit.ENGINE_IDLE.get());
+        }else if(getDeltaOn()){
+            System.out.println("DELTA");
+            //playSoundEffect(SoundsInit.ENGINE_IDLE.get());
+        }else{
+            if (getSpeed() > -MAX_SPEED*0.2f && getSpeed() < MAX_SPEED*0.2f) {
+                if (!isSoundPlaying(engineIdleLoop)) {
+                    engineIdleLoop = new SoundEngineIdle(this, SoundsInit.ENGINE_IDLE.get(), SoundSource.RECORDS);
+                    SoundsInit.playSoundLoop(engineIdleLoop, level());
+                }
+            }
+            if(getSpeed() != 0){
+                if (!isSoundPlaying(engineMaxLoop)) {
+                    engineMaxLoop = new SoundEngineMax(this, SoundsInit.ENGINE_MAX.get(), SoundSource.RECORDS);
+                    SoundsInit.playSoundLoop(engineMaxLoop, level());
+                }
+            }
+        }
+        previousSpeed = getSpeed();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public boolean isSoundPlaying(SoundInstance sound) {
+        if (sound == null) {
+            return false;
+        }
+        return Minecraft.getInstance().getSoundManager().isActive(sound);
     }
 }

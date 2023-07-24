@@ -2,5 +2,9 @@
   "engine_idle": {
     "subtitle": "sound.kart.engine_idle",
     "sounds": [ "cubicracers:engine_idle" ]
+  },
+  "engine_max": {
+    "subtitle": "sound.kart.engine_max",
+    "sounds": [ "cubicracers:engine_max" ]
   }
 }

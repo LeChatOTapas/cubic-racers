@@ -1,27 +1,17 @@
 package me.jesuismister.cubicracers.entity.custom;
 
-import me.jesuismister.cubicracers.init.SoundsInit;
-import me.jesuismister.cubicracers.sounds.SoundEngineIdleLoop;
-import me.jesuismister.cubicracers.sounds.SoundLoopKart;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -340,35 +330,6 @@ public abstract class KartAbstract extends Entity {
     }
 
     ////////////
-    // SOUNDS //
-    ////////////
-
-    @OnlyIn(Dist.CLIENT)
-    private SoundEngineIdleLoop engineIdleLoop;
-
-    private void playSoundEffect(SoundEvent event, double x, double y, double z, Player entity){
-        SoundsInit.playSound(event, level(), new BlockPos((int)x, (int)y, (int)z), entity, SoundSource.RECORDS);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void updateSounds() {
-        if (getSpeed() == 0) {
-            if (!isSoundPlaying(engineIdleLoop)) {
-                engineIdleLoop = new SoundEngineIdleLoop(this, SoundsInit.ENGINE_IDLE.get(), SoundSource.RECORDS);
-                SoundsInit.playSoundLoop(engineIdleLoop, level());
-            }
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public boolean isSoundPlaying(SoundInstance sound) {
-        if (sound == null) {
-            return false;
-        }
-        return Minecraft.getInstance().getSoundManager().isActive(sound);
-    }
-
-    ////////////
     // AUTRES //
     ////////////
 
@@ -485,7 +446,6 @@ public abstract class KartAbstract extends Entity {
         super.tick();
 
         tickLerp();
-        updateSounds();
     }
 
     private void tickLerp() {
