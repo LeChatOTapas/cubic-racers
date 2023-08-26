@@ -17,7 +17,18 @@
   },
   "kart_drifting": {
     "subtitle": "sound.kart.kart_drifting",
-    "sounds": [
-      "cubicracers:kart_drifting" ]
+    "sounds": [ "cubicracers:kart_drifting" ]
+  },
+  "kart_off_road": {
+    "subtitle": "sound.kart.kart_off_road",
+    "sounds": [ "cubicracers:kart_off_road" ]
+  },
+  "kart_speed_boost": {
+    "subtitle": "sound.kart.kart_speed_boost",
+    "sounds": [ "cubicracers:kart_speed_boost" ]
+  },
+  "kart_stun_by_item": {
+    "subtitle": "sound.kart.kart_stun_by_item",
+    "sounds": [ "cubicracers:kart_stun_by_item" ]
   }
 }

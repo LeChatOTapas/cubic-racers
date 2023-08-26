@@ -281,7 +281,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
         if (getSpeed() != 0 && getCanMove()) {
             //SI LE JOUEUR APPUIE SUR LA TOUCHE DE DRIFT, QUE LE KART AVANCE ASSEZ VITE ET AUTRES CONDITIONS
-            if (getIsPressingKeyDrift() && !horizontalCollision && !getDeltaOn() && getSpeed() > MAX_SPEED * 0.25) {
+            if ((isOnRoadBlock() || getTimeBoost()>0 || getDriftTimeBoost()>0) && getIsPressingKeyDrift() && !horizontalCollision && !getDeltaOn() && getSpeed() > MAX_SPEED * 0.25) {
                 //INIT DU DRIFT SI PAS ENCORE FAIT
                 if (getDriftingTime() == 0) {
                     if (getIsPressingKeyLeft() && !getIsPressingKeyRight()) {
@@ -424,7 +424,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         return false;
     }
 
-    private boolean isOnRoadBlock(){
+    public boolean isOnRoadBlock(){
         int blockX = (int) Math.floor(getX());
         int blockY = (int) Math.floor(getY()) - 1;
         int blockZ = (int) Math.floor(getZ());
@@ -720,6 +720,8 @@ public class Kart extends KartAbstract implements GeoEntity {
     ////////////
 
     //public float previousSpeed = 0;
+    public boolean boostFini = true;
+    public boolean stunFini = true;
     @OnlyIn(Dist.CLIENT)
     private SoundEngineIdle engineIdleLoop;
     @OnlyIn(Dist.CLIENT)
@@ -730,6 +732,10 @@ public class Kart extends KartAbstract implements GeoEntity {
     private SoundKartGliding kartGliding;
     @OnlyIn(Dist.CLIENT)
     private SoundKartDrifting kartDrifting;
+    @OnlyIn(Dist.CLIENT)
+    private SoundKartOffRoad kartOffRoad;
+    //@OnlyIn(Dist.CLIENT)
+    //private SoundKartStunByItem kartStunByItem;
 
     @OnlyIn(Dist.CLIENT)
     public void updateSounds() {
@@ -744,8 +750,8 @@ public class Kart extends KartAbstract implements GeoEntity {
         }else{
             //ARRET OU EN MOUVEMENT
             if(!isOnRoadBlock()){
-                //engineIdleLoop = new SoundEngineIdle(this, SoundsInit.ENGINE_IDLE.get(), SoundSource.RECORDS);
-                //SoundsInit.playSoundLoop(engineIdleLoop, level());
+                kartOffRoad = new SoundKartOffRoad(this, SoundsInit.KART_OFF_ROAD.get(), SoundSource.RECORDS);
+                SoundsInit.playSoundLoop(kartOffRoad, level());
             } else if (getSpeed() > -MAX_SPEED*0.2f && getSpeed() < MAX_SPEED*0.2f) {
                 if (!isSoundPlaying(engineIdleLoop)) {
                     engineIdleLoop = new SoundEngineIdle(this, SoundsInit.ENGINE_IDLE.get(), SoundSource.RECORDS);
@@ -762,6 +768,32 @@ public class Kart extends KartAbstract implements GeoEntity {
             if(getIsDrifting()){
                 kartDrifting = new SoundKartDrifting(this, SoundsInit.KART_DRIFTING.get(), SoundSource.RECORDS);
                 SoundsInit.playSoundLoop(kartDrifting, level());
+            }
+
+            //BOOST DE VITESSE
+            if(boostFini==true && (getTimeBoost()>0)){
+                boostFini = false;
+                int blockX = (int) Math.floor(getX());
+                int blockY = (int) Math.floor(getY());
+                int blockZ = (int) Math.floor(getZ());
+
+                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                    SoundsInit.playSound(SoundsInit.KART_SPEED_BOOST.get(), level(), new BlockPos(blockX, blockY, blockZ), player, SoundSource.RECORDS, 1.2f);
+            }else if(!boostFini && getTimeBoost()<=0){
+                boostFini = true;
+            }
+
+            //SOUND EFFECT STUN
+            if(stunFini && !getCanMove()){
+                stunFini = false;
+                int blockX = (int) Math.floor(getX());
+                int blockY = (int) Math.floor(getY());
+                int blockZ = (int) Math.floor(getZ());
+
+                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                    SoundsInit.playSound(SoundsInit.KART_STUN_BY_ITEM.get(), level(), new BlockPos(blockX, blockY, blockZ), player, SoundSource.RECORDS, 1.3f);
+            }else if(!stunFini && getCanMove()){
+                stunFini = true;
             }
         }
         //previousSpeed = getSpeed();
