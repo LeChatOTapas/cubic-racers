@@ -9,9 +9,7 @@ import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.KartPositionMessage;
 import me.jesuismister.cubicracers.network.message.itemsKart.use.*;
-import me.jesuismister.cubicracers.sounds.SoundEngineIdle;
-import me.jesuismister.cubicracers.sounds.SoundEngineMax;
-import me.jesuismister.cubicracers.sounds.SoundStarMode;
+import me.jesuismister.cubicracers.sounds.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
@@ -721,40 +719,52 @@ public class Kart extends KartAbstract implements GeoEntity {
     // SOUNDS //
     ////////////
 
-    public float previousSpeed = 0;
+    //public float previousSpeed = 0;
     @OnlyIn(Dist.CLIENT)
     private SoundEngineIdle engineIdleLoop;
     @OnlyIn(Dist.CLIENT)
     private SoundEngineMax engineMaxLoop;
     @OnlyIn(Dist.CLIENT)
     private SoundStarMode starModeLoop;
+    @OnlyIn(Dist.CLIENT)
+    private SoundKartGliding kartGliding;
+    @OnlyIn(Dist.CLIENT)
+    private SoundKartDrifting kartDrifting;
 
     @OnlyIn(Dist.CLIENT)
     public void updateSounds() {
         if(getIsInvinsible()) {
-            System.out.println("STAR");
             if (!isSoundPlaying(starModeLoop)) {
                 starModeLoop = new SoundStarMode(this, SoundsInit.STAR_MODE.get(), SoundSource.RECORDS);
                 SoundsInit.playSoundLoop(starModeLoop, level());
             }
         }else if(getDeltaOn()){
-            System.out.println("DELTA");
-            //playSoundEffect(SoundsInit.ENGINE_IDLE.get());
+            kartGliding = new SoundKartGliding(this, SoundsInit.KART_GLIDING.get(), SoundSource.RECORDS);
+            SoundsInit.playSoundLoop(kartGliding, level());
         }else{
-            if (getSpeed() > -MAX_SPEED*0.2f && getSpeed() < MAX_SPEED*0.2f) {
+            //ARRET OU EN MOUVEMENT
+            if(!isOnRoadBlock()){
+                //engineIdleLoop = new SoundEngineIdle(this, SoundsInit.ENGINE_IDLE.get(), SoundSource.RECORDS);
+                //SoundsInit.playSoundLoop(engineIdleLoop, level());
+            } else if (getSpeed() > -MAX_SPEED*0.2f && getSpeed() < MAX_SPEED*0.2f) {
                 if (!isSoundPlaying(engineIdleLoop)) {
                     engineIdleLoop = new SoundEngineIdle(this, SoundsInit.ENGINE_IDLE.get(), SoundSource.RECORDS);
                     SoundsInit.playSoundLoop(engineIdleLoop, level());
                 }
-            }
-            if(getSpeed() != 0){
+            }else if(getSpeed() != 0){
                 if (!isSoundPlaying(engineMaxLoop)) {
                     engineMaxLoop = new SoundEngineMax(this, SoundsInit.ENGINE_MAX.get(), SoundSource.RECORDS);
                     SoundsInit.playSoundLoop(engineMaxLoop, level());
                 }
             }
+
+            //DRIFTING OU PAS DRIFTING
+            if(getIsDrifting()){
+                kartDrifting = new SoundKartDrifting(this, SoundsInit.KART_DRIFTING.get(), SoundSource.RECORDS);
+                SoundsInit.playSoundLoop(kartDrifting, level());
+            }
         }
-        previousSpeed = getSpeed();
+        //previousSpeed = getSpeed();
     }
 
     @OnlyIn(Dist.CLIENT)

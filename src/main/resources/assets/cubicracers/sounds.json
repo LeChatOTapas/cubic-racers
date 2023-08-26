@@ -10,5 +10,14 @@
   "kart_star_mode": {
     "subtitle": "sound.kart.kart_star_mode",
     "sounds": [ "cubicracers:kart_star_mode" ]
+  },
+  "kart_gliding": {
+    "subtitle": "sound.kart.kart_gliding",
+    "sounds": [ "cubicracers:kart_gliding" ]
+  },
+  "kart_drifting": {
+    "subtitle": "sound.kart.kart_drifting",
+    "sounds": [
+      "cubicracers:kart_drifting" ]
   }
 }

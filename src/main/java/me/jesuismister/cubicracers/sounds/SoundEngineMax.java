@@ -27,11 +27,9 @@ public class SoundEngineMax extends SoundLoopKart {
 
     @Override
     public boolean shouldStopSound() {
-        if (kart.getIsInvinsible() || kart.getSpeed() == 0) {
+        if (kart.getDeltaOn() || kart.getIsInvinsible() || kart.getSpeed() == 0) {
             return true;
         }
         return false;
     }
-
-
 }
