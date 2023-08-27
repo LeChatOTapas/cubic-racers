@@ -300,7 +300,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
         if (getSpeed() != 0 && getCanMove()) {
             //SI LE JOUEUR APPUIE SUR LA TOUCHE DE DRIFT, QUE LE KART AVANCE ASSEZ VITE ET AUTRES CONDITIONS
-            if ((isOnRoadBlock() || getTimeBoost()>0 || getDriftTimeBoost()>0) && getIsPressingKeyDrift() && !horizontalCollision && !getDeltaOn() && getSpeed() > MAX_SPEED * 0.25) {
+            if ((isOnRoadBlock() || getTimeBoost()>0 || getDriftTimeBoost()>0 || getIsInvinsible()) && getIsPressingKeyDrift() && !horizontalCollision && !getDeltaOn() && getSpeed() > MAX_SPEED * 0.25) {
                 //INIT DU DRIFT SI PAS ENCORE FAIT
                 if (getDriftingTime() == 0) {
                     if (getIsPressingKeyLeft() && !getIsPressingKeyRight()) {
@@ -812,7 +812,7 @@ public class Kart extends KartAbstract implements GeoEntity {
                 if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
                     SoundsInit.playSound(SoundsInit.GREEN_SHELL_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
             }else if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player){
-                SoundsInit.playSound(SoundsInit.BANANA_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+                SoundsInit.playSound(SoundsInit.BANANA_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 0.7f);
             }
             stunMotif = "None";
         }
