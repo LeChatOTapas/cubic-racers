@@ -1,10 +1,16 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.init.SoundsInit;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -65,7 +71,7 @@ public class Banana extends ItemKartAbstract implements GeoEntity {
                 if (entity instanceof Kart kart) {
                     if (kart.getFirstPassenger() != null) {
                         if (kart.getCanMove()) {
-                            Kart.stunKart(kart);
+                            Kart.stunKart(kart, "Banana");
                         }
                         if(!level().isClientSide()) this.remove(RemovalReason.KILLED);
                         return;

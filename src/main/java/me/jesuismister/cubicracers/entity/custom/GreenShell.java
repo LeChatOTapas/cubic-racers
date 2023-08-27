@@ -1,12 +1,22 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.init.SoundsInit;
+import me.jesuismister.cubicracers.sounds.SoundEngineIdle;
+import me.jesuismister.cubicracers.sounds.SoundGreenShellMoving;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -59,7 +69,7 @@ public class GreenShell extends ItemKartAbstract implements GeoEntity {
         for (Entity entity : nearbyEntities) {
             if (entity instanceof Kart kart) {
                 if (kart.getCanMove()) {
-                    Kart.stunKart(kart);
+                    Kart.stunKart(kart, "Green_shell");
                 }
                 if(!level().isClientSide()) this.remove(RemovalReason.KILLED);
                 return;
@@ -75,6 +85,7 @@ public class GreenShell extends ItemKartAbstract implements GeoEntity {
 
         //DETRUIRE LA CARAPACE AU BOUT D'UN MOMENT
         tickAlive++;
+        playMovingSound();
         if (tickAlive > TICK_TO_DESPAWN) {
             this.remove(RemovalReason.DISCARDED);
         }
@@ -115,5 +126,29 @@ public class GreenShell extends ItemKartAbstract implements GeoEntity {
         if (bounceTime > 4) {
             this.remove(RemovalReason.KILLED);
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private SoundGreenShellMoving greenShellMoving;
+
+    @OnlyIn(Dist.CLIENT)
+    public void playMovingSound(){
+        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(15));
+        for (Entity entity : nearbyEntities) {
+            if (entity instanceof Player) {
+                if (!isSoundPlaying(greenShellMoving)) {
+                    greenShellMoving = new SoundGreenShellMoving(this, SoundsInit.GREEN_SHELL_MOVING.get(), SoundSource.RECORDS);
+                    SoundsInit.playSoundLoop(greenShellMoving, level());
+                }
+            }
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public boolean isSoundPlaying(SoundInstance sound) {
+        if (sound == null) {
+            return false;
+        }
+        return Minecraft.getInstance().getSoundManager().isActive(sound);
     }
 }

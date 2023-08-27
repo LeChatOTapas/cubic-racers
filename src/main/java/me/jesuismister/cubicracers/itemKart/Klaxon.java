@@ -16,7 +16,7 @@ public class Klaxon {
 
         for (Entity entity : nearbyEntities) {
             if (entity instanceof Kart k) {
-                if (k.getCanMove()) Kart.stunKart(k);
+                if (k.getCanMove()) Kart.stunKart(k, "Klaxon");
             }
         }
     }

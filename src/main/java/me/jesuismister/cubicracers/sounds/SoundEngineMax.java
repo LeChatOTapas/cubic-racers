@@ -16,6 +16,7 @@ public class SoundEngineMax extends SoundLoopKart {
 
     @Override
     public void tick() {
+        Kart kart = (Kart) entity;
         if (volume < volumeToReach) {
             volume = Math.min(volume + volumeToReach / 2.5F, volumeToReach);
         }
@@ -27,6 +28,7 @@ public class SoundEngineMax extends SoundLoopKart {
 
     @Override
     public boolean shouldStopSound() {
+        Kart kart = (Kart) entity;
         if (!kart.isOnRoadBlock() || kart.getDeltaOn() || kart.getIsInvinsible() || kart.getSpeed() == 0) {
             return true;
         }

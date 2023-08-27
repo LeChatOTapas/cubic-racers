@@ -17,7 +17,7 @@ public class SoundKartDrifting extends SoundLoopKart {
     @Override
     public void tick() {
         if (volume < volumeToReach) {
-            volume = Math.min(volume + volumeToReach / 2.5F, volumeToReach*0.2f);
+            volume = Math.min(volume + volumeToReach / 2.5F, volumeToReach*0.5f);
         }
 
         super.tick();
@@ -25,6 +25,7 @@ public class SoundKartDrifting extends SoundLoopKart {
 
     @Override
     public boolean shouldStopSound() {
+        Kart kart = (Kart) entity;
         if (!kart.getIsDrifting()) {
             return true;
         }

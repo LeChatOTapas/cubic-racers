@@ -27,8 +27,24 @@
     "subtitle": "sound.kart.kart_speed_boost",
     "sounds": [ "cubicracers:kart_speed_boost" ]
   },
-  "kart_stun_by_item": {
-    "subtitle": "sound.kart.kart_stun_by_item",
-    "sounds": [ "cubicracers:kart_stun_by_item" ]
+  "banana_hit_kart": {
+    "subtitle": "sound.kart.banana_hit_kart",
+    "sounds": [ "cubicracers:banana_hit_kart" ]
+  },
+  "bob_omb_explosion": {
+    "subtitle": "sound.kart.bob_omb_explosion",
+    "sounds": [ "cubicracers:bob_omb_explosion" ]
+  },
+  "green_shell_death": {
+    "subtitle": "sound.kart.green_shell_death",
+    "sounds": [ "cubicracers:green_shell_death" ]
+  },
+  "green_shell_moving": {
+    "subtitle": "sound.kart.green_shell_moving",
+    "sounds": [ "cubicracers:green_shell_moving" ]
+  },
+  "green_shell_hit_kart": {
+    "subtitle": "sound.kart.green_shell_hit_kart",
+    "sounds": [ "cubicracers:green_shell_hit_kart" ]
   }
 }

@@ -8,17 +8,19 @@ import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+
 
 public abstract class SoundLoopKart extends AbstractTickableSoundInstance {
     private Vec3 prevPlayerPos;
     private Vec3 prevSoundPos;
-    protected Kart kart;
+    protected Entity entity;
     public float default_volume;
 
-    public SoundLoopKart(Kart kart, SoundEvent event, SoundSource category) {
+    public SoundLoopKart(Entity entity, SoundEvent event, SoundSource category) {
         super(event, category, SoundInstance.createUnseededRandom());
-        this.kart = kart;
+        this.entity = entity;
         this.looping = true;
         this.delay = 0;
         this.default_volume = CubicRacers.CLIENT_CONFIG.kartVolume.get().floatValue();
@@ -36,9 +38,9 @@ public abstract class SoundLoopKart extends AbstractTickableSoundInstance {
         }
 
         prevSoundPos = new Vec3(x, y, z);
-        this.x = (float) kart.getX();
-        this.y = (float) kart.getY();
-        this.z = (float) kart.getZ();
+        this.x = (float) entity.getX();
+        this.y = (float) entity.getY();
+        this.z = (float) entity.getZ();
     }
 
     @Override
@@ -47,7 +49,7 @@ public abstract class SoundLoopKart extends AbstractTickableSoundInstance {
             return;
         }
 
-        if (!kart.isAlive()) {
+        if (!entity.isAlive()) {
             setDonePlaying();
             return;
         }

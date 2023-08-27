@@ -113,11 +113,11 @@ public abstract class ItemKartAbstract extends Entity {
     /**
      * Stun tous les karts proches
      */
-    public void stun(float range) {
+    public void stun(float range, String motif) {
         List<Entity> nearbyEntities = this.level().getEntities(this, this.getBoundingBox().inflate(range));
         for (Entity entity : nearbyEntities) {
             if (entity instanceof Kart kart) {
-                if (kart.getCanMove()) Kart.stunKart(kart);
+                if (kart.getCanMove()) Kart.stunKart(kart, motif);
             }
         }
     }

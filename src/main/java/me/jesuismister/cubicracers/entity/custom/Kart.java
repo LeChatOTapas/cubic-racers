@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.block.BoosterBlock;
 import me.jesuismister.cubicracers.block.KartController;
 import me.jesuismister.cubicracers.block.RoadBlock;
 import me.jesuismister.cubicracers.init.BlockInit;
@@ -58,6 +59,7 @@ public class Kart extends KartAbstract implements GeoEntity {
     public final float PLAYER_POS_Y;
     //OTHERS
     public float speedToShow = 0;
+    public String stunMotif = "None";
 
     public Kart(EntityType<?> entityType, Level level, String texture, String model, String animation, float maxSpeed,
                 float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY, float hitboxX, float hitboxY) {
@@ -103,6 +105,7 @@ public class Kart extends KartAbstract implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
+        updateSounds();
 
         // ON MET LES BINDS A FALSE SI PAS DE JOUEUR DANS LE VEHICULE
         Player player = (Player) getFirstPassenger();
@@ -141,7 +144,6 @@ public class Kart extends KartAbstract implements GeoEntity {
         }
 
         move(MoverType.SELF, new Vec3(getDeltaMovement().x, calculateFallSpeed(), getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
-        updateSounds();
     }
 
     private void resetBindValue() {
@@ -437,6 +439,8 @@ public class Kart extends KartAbstract implements GeoEntity {
             return true;
         } else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock() instanceof RoadBlock){
             return true;
+        } else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock() instanceof BoosterBlock){
+            return true;
         }
         return false;
     }
@@ -463,7 +467,7 @@ public class Kart extends KartAbstract implements GeoEntity {
             for (Entity entity : nearbyEntities) {
                 if (entity instanceof Kart kart) {
                     if (kart.getCanMove()) {
-                        Kart.stunKart(kart);
+                        Kart.stunKart(kart, "Star");
                     }
                 }
             }
@@ -635,8 +639,10 @@ public class Kart extends KartAbstract implements GeoEntity {
      *
      * @param kart
      */
-    public static void stunKart(Kart kart) {
+    public static void stunKart(Kart kart, String motif) {
         if (kart.getIsInvinsible()) return;
+
+        kart.stunMotif = motif;
 
         kart.setCanMove(false);
         kart.setStunRotation(720.f);
@@ -719,9 +725,7 @@ public class Kart extends KartAbstract implements GeoEntity {
     // SOUNDS //
     ////////////
 
-    //public float previousSpeed = 0;
     public boolean boostFini = true;
-    public boolean stunFini = true;
     @OnlyIn(Dist.CLIENT)
     private SoundEngineIdle engineIdleLoop;
     @OnlyIn(Dist.CLIENT)
@@ -734,69 +738,75 @@ public class Kart extends KartAbstract implements GeoEntity {
     private SoundKartDrifting kartDrifting;
     @OnlyIn(Dist.CLIENT)
     private SoundKartOffRoad kartOffRoad;
-    //@OnlyIn(Dist.CLIENT)
-    //private SoundKartStunByItem kartStunByItem;
 
     @OnlyIn(Dist.CLIENT)
     public void updateSounds() {
+        if(!level().isClientSide) return;
+
         if(getIsInvinsible()) {
             if (!isSoundPlaying(starModeLoop)) {
                 starModeLoop = new SoundStarMode(this, SoundsInit.STAR_MODE.get(), SoundSource.RECORDS);
                 SoundsInit.playSoundLoop(starModeLoop, level());
             }
         }else if(getDeltaOn()){
-            kartGliding = new SoundKartGliding(this, SoundsInit.KART_GLIDING.get(), SoundSource.RECORDS);
-            SoundsInit.playSoundLoop(kartGliding, level());
+            if (!isSoundPlaying(kartGliding)) {
+                kartGliding = new SoundKartGliding(this, SoundsInit.KART_GLIDING.get(), SoundSource.RECORDS);
+                SoundsInit.playSoundLoop(kartGliding, level());
+            }
         }else{
             //ARRET OU EN MOUVEMENT
-            if(!isOnRoadBlock()){
-                kartOffRoad = new SoundKartOffRoad(this, SoundsInit.KART_OFF_ROAD.get(), SoundSource.RECORDS);
-                SoundsInit.playSoundLoop(kartOffRoad, level());
-            } else if (getSpeed() > -MAX_SPEED*0.2f && getSpeed() < MAX_SPEED*0.2f) {
+            }if (getSpeed() > -MAX_SPEED*0.2f && getSpeed() < MAX_SPEED*0.2f) {
                 if (!isSoundPlaying(engineIdleLoop)) {
                     engineIdleLoop = new SoundEngineIdle(this, SoundsInit.ENGINE_IDLE.get(), SoundSource.RECORDS);
                     SoundsInit.playSoundLoop(engineIdleLoop, level());
                 }
-            }else if(getSpeed() != 0){
-                if (!isSoundPlaying(engineMaxLoop)) {
-                    engineMaxLoop = new SoundEngineMax(this, SoundsInit.ENGINE_MAX.get(), SoundSource.RECORDS);
-                    SoundsInit.playSoundLoop(engineMaxLoop, level());
+            }else if(!isOnRoadBlock()){
+                if (!isSoundPlaying(kartOffRoad)) {
+                    kartOffRoad = new SoundKartOffRoad(this, SoundsInit.KART_OFF_ROAD.get(), SoundSource.RECORDS);
+                    SoundsInit.playSoundLoop(kartOffRoad, level());
                 }
+            } else if(getSpeed() != 0){
+            if (!isSoundPlaying(engineMaxLoop)) {
+                engineMaxLoop = new SoundEngineMax(this, SoundsInit.ENGINE_MAX.get(), SoundSource.RECORDS);
+                SoundsInit.playSoundLoop(engineMaxLoop, level());
             }
 
             //DRIFTING OU PAS DRIFTING
             if(getIsDrifting()){
-                kartDrifting = new SoundKartDrifting(this, SoundsInit.KART_DRIFTING.get(), SoundSource.RECORDS);
-                SoundsInit.playSoundLoop(kartDrifting, level());
-            }
-
-            //BOOST DE VITESSE
-            if(boostFini==true && (getTimeBoost()>0)){
-                boostFini = false;
-                int blockX = (int) Math.floor(getX());
-                int blockY = (int) Math.floor(getY());
-                int blockZ = (int) Math.floor(getZ());
-
-                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                    SoundsInit.playSound(SoundsInit.KART_SPEED_BOOST.get(), level(), new BlockPos(blockX, blockY, blockZ), player, SoundSource.RECORDS, 1.2f);
-            }else if(!boostFini && getTimeBoost()<=0){
-                boostFini = true;
-            }
-
-            //SOUND EFFECT STUN
-            if(stunFini && !getCanMove()){
-                stunFini = false;
-                int blockX = (int) Math.floor(getX());
-                int blockY = (int) Math.floor(getY());
-                int blockZ = (int) Math.floor(getZ());
-
-                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                    SoundsInit.playSound(SoundsInit.KART_STUN_BY_ITEM.get(), level(), new BlockPos(blockX, blockY, blockZ), player, SoundSource.RECORDS, 1.3f);
-            }else if(!stunFini && getCanMove()){
-                stunFini = true;
+                if (!isSoundPlaying(kartDrifting)) {
+                    kartDrifting = new SoundKartDrifting(this, SoundsInit.KART_DRIFTING.get(), SoundSource.RECORDS);
+                    SoundsInit.playSoundLoop(kartDrifting, level());
+                }
             }
         }
-        //previousSpeed = getSpeed();
+
+        //BOOST DE VITESSE
+        if(boostFini && getTimeBoost()>0){
+            boostFini = false;
+            if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                SoundsInit.playSound(SoundsInit.KART_SPEED_BOOST.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+        }else if(!boostFini && getTimeBoost()<=0){
+            boostFini = true;
+        }
+
+        //STUN MOTIF
+        if(!stunMotif.equals("None")){
+            System.out.println(stunMotif);
+            if(stunMotif.equals("Banana")){
+                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                    SoundsInit.playSound(SoundsInit.BANANA_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+            }else if(stunMotif.equals("Fake_box")){
+                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                    SoundsInit.playSound(SoundsInit.BANANA_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+            }else if(stunMotif.equals("Green_shell")){
+                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                    SoundsInit.playSound(SoundsInit.GREEN_SHELL_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+            }else if(stunMotif.equals("Star")){
+                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                    SoundsInit.playSound(SoundsInit.BANANA_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+            }
+            stunMotif = "None";
+        }
     }
 
     @OnlyIn(Dist.CLIENT)

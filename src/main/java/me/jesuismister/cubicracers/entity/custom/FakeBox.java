@@ -77,7 +77,7 @@ public class FakeBox extends ItemKartAbstract implements GeoEntity {
                 //ON CHECK QUE LES ENTITES "KART"
                 if (entity instanceof Kart kart) {
                     //Network.CHANNEL.sendToServer(new ItemBoxConsumeMessage(""));
-                    Kart.stunKart(kart);
+                    Kart.stunKart(kart, "Fake_box");
                     if(!level().isClientSide()) this.remove(RemovalReason.KILLED);
                 }
             }

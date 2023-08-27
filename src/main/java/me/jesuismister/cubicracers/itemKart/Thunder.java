@@ -20,7 +20,7 @@ public class Thunder {
             if(entity instanceof Kart){
                 LightningBolt lightningBolt = createThunderBolt(entity);
                 kart.level().addFreshEntity(lightningBolt);
-                Kart.stunKart((Kart) entity);
+                Kart.stunKart((Kart) entity, "Thunder");
             }
         }
     }

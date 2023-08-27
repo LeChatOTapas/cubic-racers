@@ -1,17 +1,23 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.itemsKart.particles.ExplosionParticleMessage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PacketDistributor;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -77,15 +83,15 @@ public class BobOmb extends ItemKartAbstract implements GeoEntity {
             propulsionY += 0.3f;
         }else{
             if (getShouldExplode()) {
-                stun(RANGE);
-                if(!level().isClientSide()){
+                stun(RANGE, "Bob_omb");
+                if(!level().isClientSide()) {
                     sendExplosionParticle();
                     this.remove(RemovalReason.KILLED);
                 }
                 return;
             }
 
-            //RECUPERER TOUTES LES ENTITES PROCHES DE LA BOB OMB
+            //RECUPERER TOUTES LES ENTITES PROCHES DE LA BOB OM
             List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
             for (Entity entity : nearbyEntities) {
                 if (entity instanceof Kart) {
@@ -98,7 +104,6 @@ public class BobOmb extends ItemKartAbstract implements GeoEntity {
             if (tickAlive > TICK_TO_DESPAWN) {
                 setShouldExplode(true);
             }
-            this.move(MoverType.SELF, new Vec3(0, -1, 0));
 
             if (getIsPropulsing()) setIsPropulsing(false);
             this.move(MoverType.SELF, new Vec3(0, -1, 0));

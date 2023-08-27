@@ -25,7 +25,10 @@ public class SoundsInit {
     public static RegistryObject<SoundEvent> KART_DRIFTING = addSound("kart_drifting");
     public static RegistryObject<SoundEvent> KART_OFF_ROAD = addSound("kart_off_road");
     public static RegistryObject<SoundEvent> KART_SPEED_BOOST = addSound("kart_speed_boost");
-    public static RegistryObject<SoundEvent> KART_STUN_BY_ITEM = addSound("kart_stun_by_item");
+    public static RegistryObject<SoundEvent> BANANA_HIT_KART = addSound("banana_hit_kart");
+    public static RegistryObject<SoundEvent> BOB_OMB_EXPLOSION = addSound("bob_omb_explosion");
+    public static RegistryObject<SoundEvent> GREEN_SHELL_MOVING = addSound("green_shell_moving");
+    public static RegistryObject<SoundEvent> GREEN_SHELL_HIT_KART = addSound("green_shell_hit_kart");
 
     public static RegistryObject<SoundEvent> addSound(String soundName) {
         return SOUND_REGISTER.register(soundName, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(CubicRacers.MODID, soundName)));

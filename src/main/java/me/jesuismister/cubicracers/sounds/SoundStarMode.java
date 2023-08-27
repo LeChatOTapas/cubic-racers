@@ -23,6 +23,7 @@ public class SoundStarMode extends SoundLoopKart {
 
     @Override
     public boolean shouldStopSound() {
+        Kart kart = (Kart) entity;
         if (!kart.getIsInvinsible()) {
             return true;
         }
