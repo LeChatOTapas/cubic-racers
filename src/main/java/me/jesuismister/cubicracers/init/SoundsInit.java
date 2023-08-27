@@ -31,6 +31,7 @@ public class SoundsInit {
     public static RegistryObject<SoundEvent> GREEN_SHELL_HIT_KART = addSound("green_shell_hit_kart");
     public static RegistryObject<SoundEvent> SPAWN_ITEM_BELOW = addSound("spawn_item_below");
     public static RegistryObject<SoundEvent> THROWING_ITEM = addSound("throwing_item");
+    public static RegistryObject<SoundEvent> ITEM_BOX_CONSUME = addSound("item_box_consume");
 
     public static RegistryObject<SoundEvent> addSound(String soundName) {
         return SOUND_REGISTER.register(soundName, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(CubicRacers.MODID, soundName)));

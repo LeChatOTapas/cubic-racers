@@ -49,7 +49,10 @@ public class ClientPacketHandlerClass {
         if(Minecraft.getInstance()!=null && Minecraft.getInstance().player!=null){
             Player player = Minecraft.getInstance().player;
             if(player.getVehicle()!=null && player.getVehicle() instanceof Kart kart){
+                System.out.println(message.item);
                 kart.setKartItem(message.item);
+                BlockPos block = new BlockPos((int)player.getX(), (int)player.getY(), (int)player.getZ());
+                SoundsInit.playSound(SoundsInit.ITEM_BOX_CONSUME.get(), player.level(), block, player, SoundSource.RECORDS, 1f);
             }
         }
     }

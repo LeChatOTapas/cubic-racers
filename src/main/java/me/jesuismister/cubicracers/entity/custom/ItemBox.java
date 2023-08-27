@@ -99,8 +99,8 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
             for (Entity entity : nearbyEntities) {
                 //ON CHECK QUE LES ENTITES "KART"
                 if (entity instanceof Kart kart) {
-                    if (!level().isClientSide() && giveRandomItem(kart)) {
 
+                    if (!level().isClientSide() && giveRandomItem(kart)) {
                         setHasItem(false);
                         setTickDisabled(0);
                         break;
@@ -138,7 +138,7 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
             } else if (MUSHROOM_DROP_RATE <= rand && rand < FAKE_BOX_DROP_RATE) {
                 kart.setKartItem("Fake_box");
             } else if (FAKE_BOX_DROP_RATE <= rand && rand < BOMB_OMB_DROP_RATE) {
-                kart.setKartItem("Bomb_omb");
+                kart.setKartItem("Bob_omb");
             } else if (BOMB_OMB_DROP_RATE <= rand && rand < STAR_DROP_RATE) {
                 kart.setKartItem("Star");
             } else if (STAR_DROP_RATE <= rand && rand < THUNDER_DROP_RATE) {

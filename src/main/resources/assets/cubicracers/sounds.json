@@ -54,5 +54,9 @@
   "throwing_item": {
     "subtitle": "sound.kart.throwing_item",
     "sounds": [ "cubicracers:throwing_item" ]
+  },
+  "item_box_consume": {
+    "subtitle": "sound.kart.item_box_consume",
+    "sounds": [ "cubicracers:item_box_consume" ]
   }
 }
