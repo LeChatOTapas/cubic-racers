@@ -46,5 +46,13 @@
   "green_shell_hit_kart": {
     "subtitle": "sound.kart.green_shell_hit_kart",
     "sounds": [ "cubicracers:green_shell_hit_kart" ]
+  },
+  "spawn_item_below": {
+    "subtitle": "sound.kart.spawn_item_below",
+    "sounds": [ "cubicracers:spawn_item_below" ]
+  },
+  "throwing_item": {
+    "subtitle": "sound.kart.throwing_item",
+    "sounds": [ "cubicracers:throwing_item" ]
   }
 }

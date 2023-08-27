@@ -76,7 +76,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         HITBOX_X = hitboxX;
         HITBOX_Y = hitboxY;
         setInvulnerable(false);
-        useItem(); //je sais pas pourquoi mais si je fais pas ça, ça veut pas mettre bien l'item à vide
+        //useItem(); //je sais pas pourquoi mais si je fais pas ça, ça veut pas mettre bien l'item à vide
     }
 
     public Kart(Level level, double x, double y, double z, String name, String texture, String model, String animation,
@@ -87,6 +87,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         xo = x;
         yo = y;
         zo = z;
+        setKartItem("Banana");
     }
 
     @Override
@@ -244,34 +245,50 @@ public class Kart extends KartAbstract implements GeoEntity {
      */
     private void useItem() {
         if (getKartItem().equals("Banana")) {
-            if (level().isClientSide()) Network.CHANNEL.sendToServer(new BananaUseMessage(getIsPressingKeyForward()));
-            sendConductorMessage("BANANE !!!!!");
+            if (level().isClientSide())
+                Network.CHANNEL.sendToServer(new BananaUseMessage(getIsPressingKeyForward()));
+            if(!getIsPressingKeyForward()){
+                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                    SoundsInit.playSound(SoundsInit.SPAWN_ITEM_BELOW.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+            }else{
+                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                    SoundsInit.playSound(SoundsInit.THROWING_ITEM.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+            }
         } else if (getKartItem().equals("Mushroom")) {
             setTimeBoost(5.f);
             setSpeed(MAX_SPEED + BOOST);
-            sendConductorMessage("MUSHROOM !!!!!");
         } else if (getKartItem().equals("Star")) {
             setTimeStar(20f);
             setStarSpeedBoost(1.5f);
             setIsInvinsible(true);
             setSpeed(MAX_SPEED * getStarSpeedBoost());
-            sendConductorMessage("STAR !!!!!");
         } else if (getKartItem().equals("Thunder")) {
             if (level().isClientSide()) Network.CHANNEL.sendToServer(new ThunderUseMessage());
-            sendConductorMessage("THUNDER !!!!!");
         } else if (getKartItem().equals("Klaxon")) {
             if (level().isClientSide()) Network.CHANNEL.sendToServer(new KlaxonUseMessage(getX(), getY(), getZ()));
-            sendConductorMessage("KLAXON !!!!!");
         } else if (getKartItem().equals("Bob_omb")) {
-            if (level().isClientSide()) Network.CHANNEL.sendToServer(new BobOmbUseMessage(getIsPressingKeyForward()));
-            sendConductorMessage("BOB_OMB !!!!!");
+            if (level().isClientSide())
+                Network.CHANNEL.sendToServer(new BobOmbUseMessage(getIsPressingKeyForward()));
+            if(!getIsPressingKeyForward()){
+                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                    SoundsInit.playSound(SoundsInit.SPAWN_ITEM_BELOW.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+            }else{
+                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                    SoundsInit.playSound(SoundsInit.THROWING_ITEM.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+            }
         } else if (getKartItem().equals("Fake_box")) {
-            if (level().isClientSide()) Network.CHANNEL.sendToServer(new FakeBoxUseMessage(getIsPressingKeyForward()));
-            sendConductorMessage("FAKE_BOX !!!!!");
+            if (level().isClientSide())
+                Network.CHANNEL.sendToServer(new FakeBoxUseMessage(getIsPressingKeyForward()));
+            if(!getIsPressingKeyForward()){
+                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                    SoundsInit.playSound(SoundsInit.SPAWN_ITEM_BELOW.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+            }else{
+                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                    SoundsInit.playSound(SoundsInit.THROWING_ITEM.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+            }
         } else if (getKartItem().equals("Green_shell")) {
             if (level().isClientSide())
                 Network.CHANNEL.sendToServer(new GreenShellUseMessage(getIsPressingKeyBackward()));
-            sendConductorMessage("GREEN_SHELL !!!!!");
         }
         setKartItem("None");
     }
@@ -791,19 +808,11 @@ public class Kart extends KartAbstract implements GeoEntity {
 
         //STUN MOTIF
         if(!stunMotif.equals("None")){
-            System.out.println(stunMotif);
-            if(stunMotif.equals("Banana")){
-                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                    SoundsInit.playSound(SoundsInit.BANANA_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
-            }else if(stunMotif.equals("Fake_box")){
-                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                    SoundsInit.playSound(SoundsInit.BANANA_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
-            }else if(stunMotif.equals("Green_shell")){
+            if(stunMotif.equals("Green_shell")){
                 if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
                     SoundsInit.playSound(SoundsInit.GREEN_SHELL_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
-            }else if(stunMotif.equals("Star")){
-                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                    SoundsInit.playSound(SoundsInit.BANANA_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
+            }else if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player){
+                SoundsInit.playSound(SoundsInit.BANANA_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
             }
             stunMotif = "None";
         }
