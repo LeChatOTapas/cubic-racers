@@ -34,11 +34,6 @@
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.5,
 			"bones": {
-				"engine": {
-					"scale": {
-						"vector": [1, 1, 1]
-					}
-				},
 				"propeller": {
 					"position": {
 						"0.0": {
@@ -255,22 +250,6 @@
 				"kart": {
 					"position": {
 						"vector": [0, 0.1, 0]
-					}
-				}
-			}
-		},
-		"engine": {
-			"loop": true,
-			"animation_length": 0.33333,
-			"bones": {
-				"engine": {
-					"scale": {
-						"0.0": {
-							"vector": [1, 1.29, 1]
-						},
-						"0.25": {
-							"vector": [1, 0.87, 1]
-						}
 					}
 				}
 			}
@@ -622,6 +601,23 @@
 				"drift_v_l2": {
 					"scale": {
 						"vector": [0, 0, 0]
+					}
+				}
+			}
+		},
+		"engine": {
+			"loop": true,
+			"animation_length": 0.25,
+			"bones": {
+				"engines": {
+					"scale": {
+						"0.0": {
+							"vector": [1, 1.29, 1]
+						},
+						"0.25": {
+							"vector": [1, 0.87, 1],
+							"easing": "easeOutCirc"
+						}
 					}
 				}
 			}
