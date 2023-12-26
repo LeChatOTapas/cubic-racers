@@ -58,5 +58,9 @@
   "item_box_consume": {
     "subtitle": "sound.kart.item_box_consume",
     "sounds": [ "cubicracers:item_box_consume" ]
+  },
+  "klaxon": {
+    "subtitle": "sound.kart.klaxon",
+    "sounds": [ "cubicracers:klaxon" ]
   }
 }

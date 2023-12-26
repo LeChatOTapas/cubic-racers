@@ -38,6 +38,7 @@ import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.awt.*;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = CubicRacers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -87,7 +88,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         xo = x;
         yo = y;
         zo = z;
-        setKartItem("Banana");
+        setKartItem("None");
     }
 
     @Override
@@ -379,12 +380,21 @@ public class Kart extends KartAbstract implements GeoEntity {
      * @param player
      */
     private void deltaplane(Player player) {
-        if (player == null) return;
+        if (player == null) {
+            setDeltaOn(false);
+            return;
+        }
+
+        double playerX = player.getX();
+        double playerY = player.getY();
+        double playerZ = player.getZ();
+        BlockPos blockPos = new BlockPos((int) playerX, (int) playerY - 1, (int) playerZ);
+        BlockState blockState = this.getCommandSenderWorld().getBlockState(blockPos);
 
         //ACTIVATION DU DELTA PLANE
-        if (!getDeltaOn() && !onGround() && (getIsPressingKeyDelta() && !getPreviousPressingKeyDelta()))
+        if (!getDeltaOn() && blockState.isAir() && (getIsPressingKeyDelta() && !getPreviousPressingKeyDelta())) {
             setDeltaOn(true);
-        else if (getDeltaOn() && ((getIsPressingKeyDelta() && !getPreviousPressingKeyDelta()) || onGround()))
+        }else if (getDeltaOn() && ((getIsPressingKeyDelta() && !getPreviousPressingKeyDelta()) || !blockState.isAir()))
             setDeltaOn(false);
 
         setPreviousPressingKeyDelta(getIsPressingKeyDelta());

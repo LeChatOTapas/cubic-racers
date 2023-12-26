@@ -114,7 +114,7 @@ public class KartModel extends GeoModel<Kart> {
                 if (kart.getIsPressingKeyLeft() && !kart.getIsPressingKeyRight()) {
                     rotYDroit = (WHEELS_TURN_DEGREE) * Mth.DEG_TO_RAD;
                 } else if (kart.getIsPressingKeyRight() && !kart.getIsPressingKeyLeft()) {
-                    rotYDroit = (-WHEELS_TURN_DEGREE - 180) * Mth.DEG_TO_RAD;
+                    rotYDroit = (-WHEELS_TURN_DEGREE) * Mth.DEG_TO_RAD;
                 }
             }
 

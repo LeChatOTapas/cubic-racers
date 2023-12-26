@@ -41,7 +41,7 @@ public class ClientPacketHandlerClass {
             int playerY = (int)player.getY();
             int playerZ = (int)player.getZ();
             double distance = Math.sqrt(Math.pow(block.getX() - playerX, 2) + Math.pow(block.getY() - playerY, 2) + Math.pow(block.getZ() - playerZ, 2));
-            SoundsInit.playSound(SoundsInit.BOB_OMB_EXPLOSION.get(), player.level(), block, player, SoundSource.RECORDS, (float) Math.max(1-distance/10, 0.1f));
+            SoundsInit.playSound(SoundsInit.KLAXON.get(), player.level(), block, player, SoundSource.RECORDS, (float) Math.max(1-distance/10, 0.1f));
         }
     }
 
