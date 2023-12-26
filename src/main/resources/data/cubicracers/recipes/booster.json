@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#G",
+        "G#"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:amethyst_shard"
+        },
+        "G": {
+            "item": "minecraft:glowstone_dust"
+        }
+    },
+    "result": {
+        "item": "cubicracers:booster",
+        "count": 2
+    }
+}

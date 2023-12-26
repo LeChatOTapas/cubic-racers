@@ -33,7 +33,7 @@ public class BlockInit {
     }
 
     //BLOCKS
-    public static final RegistryObject<Block> BOOSTER = registerBlock("booster", () ->
+    public static final RegistryObject<Block> BOOSTER = registerBlock("booster.json", () ->
             new BoosterBlock(BlockBehaviour.Properties.copy(Blocks.PINK_GLAZED_TERRACOTTA).sound(SoundType.AMETHYST)));
 
     public static final RegistryObject<Block> ROAD_BLOCK = registerBlock("road_block", () ->

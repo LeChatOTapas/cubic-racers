@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#C",
+    "C#"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:black_concrete_powder"
+    },
+    "C": {
+      "item": "minecraft:snow_block"
+    }
+  },
+  "result": {
+    "item": "cubicracers:road_block_snow",
+    "count": 4
+  }
+}
