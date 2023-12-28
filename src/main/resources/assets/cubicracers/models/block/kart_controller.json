@@ -1,6 +1,23 @@
 {
-  "parent": "minecraft:block/template_glazed_terracotta",
+  "parent": "block/block",
   "textures": {
-    "pattern": "cubicracers:block/kart_controller"
-  }
+    "bottom": "cubicracers:block/kart_controller_bottom",
+    "side": "cubicracers:block/kart_controller_side",
+    "top": "cubicracers:block/kart_controller_top_off",
+    "front": "cubicracers:block/kart_controller_side",
+    "particle": "cubicracers:block/kart_controller_bottom"
+  },
+  "elements": [
+    {   "from": [ 0, 0, 0 ],
+      "to": [ 16, 16, 16 ],
+      "faces": {
+        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#bottom", "cullface": "down" },
+        "up":    { "uv": [ 0, 16, 16, 0 ], "texture": "#top", "cullface": "up" },
+        "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#front", "cullface": "north" },
+        "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#side", "cullface": "south" },
+        "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#side", "cullface": "west" },
+        "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#side", "cullface": "east" }
+      }
+    }
+  ]
 }

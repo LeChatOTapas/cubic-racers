@@ -17,6 +17,6 @@ public class ModCreativeModeTabs {
             Registries.CREATIVE_MODE_TAB, CubicRacers.MODID);
 
     public static RegistryObject<CreativeModeTab> CUBIC_RACERS_TAB = CREATIVE_MODE_TABS.register("cubic_racers", () ->
-            CreativeModeTab.builder().icon(() -> new ItemStack(ItemInit.KARTS_SPAWN_ITEM.get(1).get()))
+            CreativeModeTab.builder().icon(() -> new ItemStack(ItemInit.KARTS_SPAWN_ITEM.get(0).get()))
                     .title(Component.translatable("creativemodetab.cubicracers_tab")).build());
 }

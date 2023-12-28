@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:block/template_glazed_terracotta",
+  "parent": "cubicracers:block/kart_controller",
   "textures": {
-    "pattern": "cubicracers:block/kart_controller_on"
+    "top": "cubicracers:block/kart_controller_top_on"
   }
 }

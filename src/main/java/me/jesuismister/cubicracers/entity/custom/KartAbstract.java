@@ -321,7 +321,7 @@ public abstract class KartAbstract extends Entity {
         entityData.define(canMove, true);
         entityData.define(stunRotation, 0.f);
 
-        setKartItem("Star");
+        setKartItem("None");
         entityData.define(isInvinsible, false);
         entityData.define(starSpeedBoost, 1f); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
         entityData.define(timeStar, 0.f);

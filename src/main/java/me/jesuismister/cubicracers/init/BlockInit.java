@@ -4,15 +4,10 @@ import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.block.BoosterBlock;
 import me.jesuismister.cubicracers.block.KartController;
 import me.jesuismister.cubicracers.block.RoadBlock;
-import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
-import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -33,7 +28,7 @@ public class BlockInit {
     }
 
     //BLOCKS
-    public static final RegistryObject<Block> BOOSTER = registerBlock("booster.json", () ->
+    public static final RegistryObject<Block> BOOSTER = registerBlock("booster", () ->
             new BoosterBlock(BlockBehaviour.Properties.copy(Blocks.PINK_GLAZED_TERRACOTTA).sound(SoundType.AMETHYST)));
 
     public static final RegistryObject<Block> ROAD_BLOCK = registerBlock("road_block", () ->
