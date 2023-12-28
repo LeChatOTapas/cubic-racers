@@ -2,10 +2,13 @@ package me.jesuismister.cubicracers.init;
 
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.KartData;
+import me.jesuismister.cubicracers.entity.custom.ItemKartAbstract;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -32,16 +35,18 @@ public class KartInit {
         KARTS_DATA.add(new KartData("mach_celere",   0.70f, 0.045f, 0.3f, 3.0f, -0.8f, 2.3f, 1.0f));
         KARTS_DATA.add(new KartData("rally_romper",  1.00f, 0.015f, 0.1f, 3.0f, -0.3f, 2.5f, 1.8f));
         */
-        KARTS_DATA.add(new KartData("standard_kart", "Maxmos", 1.20f, 0.025f, 0.5f, 2.5f, -1.0f, 2.2f, 1.3f));
-        KARTS_DATA.add(new KartData("flame_flyer",   "TurboMooze3000", 1.20f, 0.025f, 0.5f, 2.5f, -0.9f, 2.1f, 1.4f));
-        KARTS_DATA.add(new KartData("b_dasher",      "Maxmos", 1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 2.3f, 1.0f));
-        KARTS_DATA.add(new KartData("zipper",        "TurboMooze3000",1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 1.7f, 1.2f));
-        KARTS_DATA.add(new KartData("mach_celere",   "Maxmos", 1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 2.3f, 1.0f));
-        KARTS_DATA.add(new KartData("rally_romper",  "TurboMooze3000",1.20f, 0.025f, 0.5f, 2.5f, -0.7f, 2.5f, 1.8f));
-        KARTS_DATA.add(new KartData("trash_kart",    "JeSuisMister",1.20f, 0.025f, 0.5f, 2.5f, -0.6f, 1.8f, 1.8f));
+        int i = 0;
+        KARTS_DATA.add(new KartData(i++,"standard_kart", "Maxmos", 1.20f, 0.025f, 0.5f, 2.5f, -1.0f, 2.2f, 1.3f));
+        KARTS_DATA.add(new KartData(i++,"flame_flyer",   "TurboMooze3000", 1.20f, 0.025f, 0.5f, 2.5f, -0.9f, 2.1f, 1.4f));
+        KARTS_DATA.add(new KartData(i++,"b_dasher",      "Maxmos", 1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 2.3f, 1.0f));
+        KARTS_DATA.add(new KartData(i++,"zipper",        "TurboMooze3000",1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 1.7f, 1.2f));
+        KARTS_DATA.add(new KartData(i++,"mach_celere",   "Maxmos", 1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 2.3f, 1.0f));
+        KARTS_DATA.add(new KartData(i++,"rally_romper",  "TurboMooze3000",1.20f, 0.025f, 0.5f, 2.5f, -0.7f, 2.5f, 1.8f));
+        KARTS_DATA.add(new KartData(i++,"trash_kart",    "JeSuisMister",1.20f, 0.025f, 0.5f, 2.5f, -0.6f, 1.8f, 1.8f));
 
+        int u = 0;
         for (KartData d : KARTS_DATA) {
-            addNewKart(d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY, d.hitboxX, d.hitboxY);
+            addNewKart(u++, d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY, d.hitboxX, d.hitboxY);
         }
     }
 
@@ -55,11 +60,11 @@ public class KartInit {
      * @param maniabiliteCoeff  = coeff de maniabilité (+ il est élevé + le kart tourne facilement)
      * @param playerPosY        = position en Y du joueur dans le kart (0 = position initial en Y)
      */
-    public static void addNewKart(String name, String texture, String model, String animation, float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff,
+    public static void addNewKart(int id, String name, String texture, String model, String animation, float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff,
                                   float playerPosY, float hitboxX, float hitboxY) {
 
         KARTS.put(name, ENTITY_TYPES.register(name, () -> EntityType.Builder.<Kart>of((type, level) ->
-                        new Kart(type, level, texture, model, animation, maxSpeed, accelerationBoost, boost,
+                        new Kart(type, level, id, texture, model, animation, maxSpeed, accelerationBoost, boost,
                                 maniabiliteCoeff, playerPosY, hitboxX, hitboxY), MobCategory.MISC)
                 .sized(hitboxX, hitboxY)
                 .build(new ResourceLocation(CubicRacers.MODID, name).toString())));

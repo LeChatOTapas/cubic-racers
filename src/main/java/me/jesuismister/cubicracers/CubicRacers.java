@@ -14,6 +14,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 
 @Mod(CubicRacers.MODID)
 public class CubicRacers {
@@ -30,12 +31,12 @@ public class CubicRacers {
         KartInit.initAllKarts(); //IMPORTANT DE LE METTRE AVANT LE "KartInit.ENTITY_TYPES.register(bus)"
         KartInit.ENTITY_TYPES.register(bus);
 
+        ItemInit.initSpawnKartItem(); //IMPORTANT DE LE METTRE AVANT LE "ItemInit.ITEMS.register(bus)"
+        ItemInit.ITEMS.register(bus);
+
         KartItemsInit.ENTITY_TYPES.register(bus);
 
         BlockInit.BLOCKS.register(bus);
-
-        ItemInit.initSpawnKartItem(); //IMPORTANT DE LE METTRE AVANT LE "ItemInit.ITEMS.register(bus)"
-        ItemInit.ITEMS.register(bus);
 
         ParticlesInit.PARTICLE_TYPES.register(bus);
 

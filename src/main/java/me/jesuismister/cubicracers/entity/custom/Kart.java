@@ -4,7 +4,9 @@ import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.block.BoosterBlock;
 import me.jesuismister.cubicracers.block.KartController;
 import me.jesuismister.cubicracers.block.RoadBlock;
+import me.jesuismister.cubicracers.entity.KartData;
 import me.jesuismister.cubicracers.init.BlockInit;
+import me.jesuismister.cubicracers.init.ItemInit;
 import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.network.Network;
@@ -23,7 +25,11 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -43,6 +49,7 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid = CubicRacers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class Kart extends KartAbstract implements GeoEntity {
+    public final int id;
     public static float HITBOX_X;
     public static float HITBOX_Y;
     //CACHE
@@ -62,9 +69,10 @@ public class Kart extends KartAbstract implements GeoEntity {
     public float speedToShow = 0;
     public String stunMotif = "None";
 
-    public Kart(EntityType<?> entityType, Level level, String texture, String model, String animation, float maxSpeed,
+    public Kart(EntityType<?> entityType, Level level, int id, String texture, String model, String animation, float maxSpeed,
                 float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY, float hitboxX, float hitboxY) {
         super(entityType, level);
+        this.id = id;
         TEXTURE = texture;
         MODEL = model;
         ANIMATION = animation;
@@ -80,9 +88,9 @@ public class Kart extends KartAbstract implements GeoEntity {
         //useItem(); //je sais pas pourquoi mais si je fais pas ça, ça veut pas mettre bien l'item à vide
     }
 
-    public Kart(Level level, double x, double y, double z, String name, String texture, String model, String animation,
+    public Kart(Level level, int id, double x, double y, double z, String name, String texture, String model, String animation,
                 float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY, float hitboxX, float hitboxY) {
-        this(KartInit.KARTS.get(name).get(), level, texture, model, animation, maxSpeed, accelerationBoost, boost,
+        this(KartInit.KARTS.get(name).get(), level, id, texture, model, animation, maxSpeed, accelerationBoost, boost,
                 maniabiliteCoeff, playerPosY, hitboxX, hitboxY);
         setPos(x, y, z);
         xo = x;
@@ -653,8 +661,12 @@ public class Kart extends KartAbstract implements GeoEntity {
      */
     public boolean hurt(DamageSource damage, float p_19947_) {
         if (damage.getEntity() instanceof Player player) {
-            if (player.getVehicle() == null) {
+            if (this.getFirstPassenger() == null) {
                 remove(RemovalReason.KILLED);
+                if(!player.isCreative() && !level().isClientSide()){
+                    Item spawn_item = ItemInit.KARTS_SPAWN_ITEM.get(id).get();
+                    player.level().addFreshEntity(new ItemEntity(player.level(), getX(), getY(), getZ(), new ItemStack(spawn_item)));
+                }
                 return true;
             }
         }

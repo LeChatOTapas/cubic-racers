@@ -106,7 +106,7 @@ public class KartSpawnItem extends Item {
     private Kart getKart(Level level, HitResult hitResult) {
         KartData d = KartData.getKartData(KartInit.KARTS_DATA, this.kartName);
         assert d != null;
-        return new Kart(level, hitResult.getLocation().x, hitResult.getLocation().y, hitResult.getLocation().z, d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY, d.hitboxX, d.hitboxY);
+        return new Kart(level, d.id, hitResult.getLocation().x, hitResult.getLocation().y, hitResult.getLocation().z, d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY, d.hitboxX, d.hitboxY);
     }
 
     @Override
