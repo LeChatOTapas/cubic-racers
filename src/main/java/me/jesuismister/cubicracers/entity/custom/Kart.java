@@ -37,6 +37,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -653,6 +654,12 @@ public class Kart extends KartAbstract implements GeoEntity {
         minecraft.particleEngine.createParticle(particle, x - x1, y - y1, z - z1, x2, y2, z2);
         //SPAWN PARTICULES DROITES
         minecraft.particleEngine.createParticle(particle, x + x1, y + y1, z + z1, x2, y2, z2);
+    }
+
+    @Nullable
+    @Override
+    public ItemStack getPickResult() {
+        return new ItemStack(ItemInit.KARTS_SPAWN_ITEM.get(id).get());
     }
 
     @Override

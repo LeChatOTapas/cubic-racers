@@ -24,7 +24,7 @@ public class ItemInit {
 
     public static void initSpawnKartItem() {
         for (KartData d : KartInit.KARTS_DATA) {
-            KARTS_SPAWN_ITEM.add(ITEMS.register(d.name, () -> new KartSpawnItem(new Item.Properties(), d.name, d.creatorName)));
+            KARTS_SPAWN_ITEM.add(ITEMS.register(d.name, () -> new KartSpawnItem(new Item.Properties().stacksTo(1), d.name, d.creatorName)));
         }
     }
 
