@@ -4,6 +4,7 @@ import java.util.List;
 
 public class KartData {
     public final String name;
+    public final String creatorName;
     public final String texture;
     public final String model;
     public final String animation;
@@ -15,8 +16,9 @@ public class KartData {
     public float hitboxX;
     public float hitboxY;
 
-    public KartData(String name, float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY, float hitboxX, float hitboxY) {
+    public KartData(String name, String creatorName, float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY, float hitboxX, float hitboxY) {
         this.name = name;
+        this.creatorName = creatorName;
         this.maxSpeed = maxSpeed;
         this.accelerationBoost = accelerationBoost;
         this.boost = boost;
