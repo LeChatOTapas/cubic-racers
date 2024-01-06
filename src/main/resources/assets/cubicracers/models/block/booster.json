@@ -1,6 +1,22 @@
 {
-  "parent": "minecraft:block/template_glazed_terracotta",
+  "parent": "block/block",
   "textures": {
-    "pattern": "cubicracers:block/booster"
-  }
+    "booster": "cubicracers:block/booster",
+    "side": "cubicracers:block/kart_controller_side",
+    "booster_down": "cubicracers:block/booster_down",
+    "particle": "cubicracers:block/booster"
+  },
+  "elements": [
+    {   "from": [ 0, 0, 0 ],
+      "to": [ 16, 16, 16 ],
+      "faces": {
+        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#booster_down", "cullface": "down" },
+        "up":    { "uv": [ 0, 16, 16, 0 ], "texture": "#booster_down", "cullface": "up" },
+        "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#booster_down", "cullface": "north" },
+        "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#booster", "cullface": "south" },
+        "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#side", "cullface": "west" },
+        "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#side", "cullface": "east" }
+      }
+    }
+  ]
 }

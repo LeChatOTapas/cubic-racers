@@ -1,5 +1,6 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.init.ItemInit;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.ItemToClientMessage;
@@ -9,11 +10,16 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -151,6 +157,30 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
         Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new ItemToClientMessage(kart.getKartItem()));
 
         return true;
+    }
+
+    @Nullable
+    @Override
+    public ItemStack getPickResult() {
+        return new ItemStack(ItemInit.ITEM_BOX_SPAWN_ITEM.get());
+    }
+
+    @Override
+    /**
+     * Méthode qui fait en sorte de détruire le cube quand il prend des dégats
+     */
+    public boolean hurt(DamageSource damage, float p_19947_) {
+        if (damage.getEntity() instanceof Player player) {
+            if (this.getFirstPassenger() == null) {
+                remove(RemovalReason.KILLED);
+                if(!player.isCreative() && !level().isClientSide()){
+                    Item spawn_item = ItemInit.ITEM_BOX_SPAWN_ITEM.get();
+                    player.level().addFreshEntity(new ItemEntity(player.level(), getX(), getY(), getZ(), new ItemStack(spawn_item)));
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean getHasItem() {

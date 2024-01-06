@@ -38,7 +38,7 @@ public class BlockInit {
             new RoadBlock(BlockBehaviour.Properties.copy(Blocks.DIRT)));
 
     public static final RegistryObject<Block> ROAD_BLOCK_SAND = registerBlock("road_block_sand", () ->
-            new RoadBlock(BlockBehaviour.Properties.copy(Blocks.SNOW_BLOCK).sound(SoundType.SAND)));
+            new RoadBlock(BlockBehaviour.Properties.copy(Blocks.SAND)));
 
     public static final RegistryObject<Block> ROAD_BLOCK_SNOW = registerBlock("road_block_snow", () ->
             new RoadBlock(BlockBehaviour.Properties.copy(Blocks.SNOW_BLOCK)));

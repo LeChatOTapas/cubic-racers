@@ -31,4 +31,5 @@ public class ItemInit {
     //ITEM SPAWN ITEM BOX
     public static final RegistryObject<Item> ITEM_BOX_SPAWN_ITEM = ITEMS.register(
             "item_box_spawn_item", () -> new ItemBoxSpawnItem(new Item.Properties()));
+
 }
