@@ -4,7 +4,6 @@ import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.block.BoosterBlock;
 import me.jesuismister.cubicracers.block.KartController;
 import me.jesuismister.cubicracers.block.RoadBlock;
-import me.jesuismister.cubicracers.entity.KartData;
 import me.jesuismister.cubicracers.init.BlockInit;
 import me.jesuismister.cubicracers.init.ItemInit;
 import me.jesuismister.cubicracers.init.KartInit;
@@ -29,9 +28,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -45,7 +43,6 @@ import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.awt.*;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = CubicRacers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -424,16 +421,46 @@ public class Kart extends KartAbstract implements GeoEntity {
         int blockX = (int) Math.floor(getX());
         int blockY = (int) Math.floor(getY());
         int blockZ = (int) Math.floor(getZ());
+        BlockState blockState = this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ));
+        Block block = blockState.getBlock();
 
-        if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.AIR)){
-            return false;
-        }else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.WATER)){
-            return false;
-        }else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.LAVA)){
-            return false;
-        }else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock().getName().toString().contains("slab")){
-            return false;
-        }
+        //HORRIBLE...
+        if(blockState.isAir()) return false;
+        else if(blockState.is(Blocks.LAVA)) return false;
+        else if(blockState.is(Blocks.WATER)) return false;
+        else if(blockState.is(Blocks.POWDER_SNOW)) return false;
+        else if(block instanceof SlabBlock) return false;
+        else if(block instanceof BushBlock) return false;
+        else if(block instanceof ButtonBlock) return false;
+        else if(block instanceof LeverBlock) return false;
+        else if(block instanceof BaseRailBlock) return false;
+        else if(block instanceof TorchBlock) return false;
+        else if(block instanceof VineBlock) return false;
+        else if(block instanceof RepeaterBlock) return false;
+        else if(block instanceof ComparatorBlock) return false;
+        else if(block instanceof PressurePlateBlock) return false;
+        else if(block instanceof WeightedPressurePlateBlock) return false;
+        else if(block instanceof TripWireBlock) return false;
+        else if(block instanceof TripWireHookBlock) return false;
+        else if(block instanceof TrapDoorBlock) return false;
+        else if(block instanceof CarpetBlock) return false;
+        else if(block instanceof FlowerPotBlock) return false;
+        else if(block instanceof CoralFanBlock) return false;
+        else if(block instanceof CoralPlantBlock) return false;
+        else if(block instanceof RedStoneWireBlock) return false;
+        else if(block instanceof SignBlock) return false;
+        else if(block instanceof BannerBlock) return false;
+        else if(block instanceof BonemealableBlock) return false;
+        else if(block instanceof SugarCaneBlock) return false;
+        else if(block instanceof WebBlock) return false;
+        else if(block instanceof AmethystBlock) return false;
+        else if(block instanceof PlayerHeadBlock) return false;
+        else if(block instanceof SkullBlock) return false;
+        else if(block instanceof CampfireBlock) return false;
+        else if(block instanceof ScaffoldingBlock) return false;
+        else if(block instanceof LadderBlock) return false;
+        else if(block instanceof ChainBlock) return false;
+
         return true;
     }
 
