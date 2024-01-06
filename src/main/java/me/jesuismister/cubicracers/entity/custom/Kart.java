@@ -854,11 +854,11 @@ public class Kart extends KartAbstract implements GeoEntity {
         }
 
         //BOOST DE VITESSE
-        if(boostFini && getTimeBoost()>0){
+        if(boostFini && (getTimeBoost()>0 || getDriftTimeBoost()>0)){
             boostFini = false;
             if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
                 SoundsInit.playSound(SoundsInit.KART_SPEED_BOOST.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
-        }else if(!boostFini && getTimeBoost()<=0){
+        }else if(!boostFini && (getTimeBoost()<=0 && getDriftTimeBoost()<=0)){
             boostFini = true;
         }
 
