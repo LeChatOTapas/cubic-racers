@@ -27,23 +27,23 @@ public class KeyBinds {
     public static final String KEY_ITEM = "key.cubicracers.item";
 
     public static final KeyMapping KART_ACCELERATE_KEY = new KeyMapping(KEY_ACCELERATE, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_A, KEY_KART_CATEOGRY);
+            GLFW.GLFW_KEY_UNKNOWN, KEY_KART_CATEOGRY);
     public static final KeyMapping KART_DECCELERATE_KEY = new KeyMapping(KEY_DECCELERATE, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_E, KEY_KART_CATEOGRY);
+            GLFW.GLFW_KEY_UNKNOWN, KEY_KART_CATEOGRY);
 
     public static final KeyMapping KART_FORWARD_KEY = new KeyMapping(KEY_FORMWARD, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_Z, KEY_KART_CATEOGRY);
+            GLFW.GLFW_KEY_UNKNOWN, KEY_KART_CATEOGRY);
     public static final KeyMapping KART_BACKWARD_KEY = new KeyMapping(KEY_BACKWARD, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_S, KEY_KART_CATEOGRY);
+            GLFW.GLFW_KEY_UNKNOWN, KEY_KART_CATEOGRY);
     public static final KeyMapping KART_LEFT_KEY = new KeyMapping(KEY_LEFT, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_Q, KEY_KART_CATEOGRY);
+            GLFW.GLFW_KEY_UNKNOWN, KEY_KART_CATEOGRY);
     public static final KeyMapping KART_RIGHT_KEY = new KeyMapping(KEY_RIGHT, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_D, KEY_KART_CATEOGRY);
+            GLFW.GLFW_KEY_UNKNOWN, KEY_KART_CATEOGRY);
 
     public static final KeyMapping KART_DELTA_KEY = new KeyMapping(KEY_DELTA, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_SPACE, KEY_KART_CATEOGRY);
+            GLFW.GLFW_KEY_UNKNOWN, KEY_KART_CATEOGRY);
     public static final KeyMapping KART_DRIFT_KEY = new KeyMapping(KEY_DRIFT, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_B, KEY_KART_CATEOGRY);
+            GLFW.GLFW_KEY_UNKNOWN, KEY_KART_CATEOGRY);
     public static final KeyMapping KART_ITEM_KEY = new KeyMapping(KEY_ITEM, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_G, KEY_KART_CATEOGRY);
+            GLFW.GLFW_KEY_UNKNOWN, KEY_KART_CATEOGRY);
 }
