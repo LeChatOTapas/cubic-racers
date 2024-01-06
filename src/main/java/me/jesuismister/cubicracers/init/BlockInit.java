@@ -29,7 +29,9 @@ public class BlockInit {
 
     //BLOCKS
     public static final RegistryObject<Block> BOOSTER = registerBlock("booster", () ->
-            new BoosterBlock(BlockBehaviour.Properties.copy(Blocks.PINK_GLAZED_TERRACOTTA).sound(SoundType.AMETHYST)));
+            new BoosterBlock(BlockBehaviour.Properties.copy(Blocks.MAGMA_BLOCK).lightLevel((p_152684_) -> {
+                return 3;
+            }).sound(SoundType.AMETHYST)));
 
     public static final RegistryObject<Block> ROAD_BLOCK = registerBlock("road_block", () ->
             new RoadBlock(BlockBehaviour.Properties.copy(Blocks.STONE)));
