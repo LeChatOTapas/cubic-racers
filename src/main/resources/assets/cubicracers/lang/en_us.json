@@ -27,8 +27,19 @@
   "item.cubicracers.flame_flyer": "Flame Flyer",
   "item.cubicracers.b_dasher": "B-Dasher",
   "item.cubicracers.zipper": "Zipper",
-  "item.cubicracers.mach_celere": "Mach-celere",
+  "item.cubicracers.mach_celere": "Special Circuit",
   "item.cubicracers.rally_romper": "Rally Romper",
 
-  "item.cubicracers.item_box_spawn_item": "Item Box"
+  "item.cubicracers.item_box_spawn_item": "Item Box",
+
+  "key.cubicracers.drift": "Drift",
+  "key.cubicracers.accelerate": "Drive Forwards",
+  "key.cubicracers.deccelerate": "Drive Backwards/Brake",
+  "key.cubicracers.right": "Drive Right",
+  "key.cubicracers.left": "Drive Left",
+  "key.cubicracers.delta": "Activate Glider",
+  "key.cubicracers.forward": "Throw Item Forward",
+  "key.cubicracers.backward": "Throw Item Backward",
+  "key.cubicracers.item": "Use Item"
+
 }
