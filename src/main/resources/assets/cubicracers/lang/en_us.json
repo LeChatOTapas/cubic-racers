@@ -1,7 +1,7 @@
 {
-  "creativemodetab.cubicracers_tab": "MC Kart",
+  "creativemodetab.cubicracers_tab": "Cubic Racers",
 
-  "block.cubicracers.booster": "Booster",
+  "block.cubicracers.booster": "Booster Panel",
   "block.cubicracers.kart_controller": "Kart Controller",
   "block.cubicracers.road_block": "Road Block (Normal)",
   "block.cubicracers.road_block_dirt": "Road Block (Dirt)",
@@ -9,7 +9,7 @@
   "block.cubicracers.road_block_snow": "Road Block (Snow)",
 
   "entity.cubicracers.banana": "Banana",
-  "entity.cubicracers.bob_omb": "Bob Omb",
+  "entity.cubicracers.bob_omb": "Bob-Omb",
   "entity.cubicracers.fake_box": "Fake Box",
   "entity.cubicracers.green_shell": "Green Shell",
   "entity.cubicracers.item_box": "Item Box",
