@@ -113,7 +113,7 @@ public class Kart extends KartAbstract implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        updateSounds();
+        if(level().isClientSide) updateSounds();
 
         // ON MET LES BINDS A FALSE SI PAS DE JOUEUR DANS LE VEHICULE
         Player player = (Player) getFirstPassenger();
