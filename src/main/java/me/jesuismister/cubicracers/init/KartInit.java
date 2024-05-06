@@ -42,7 +42,7 @@ public class KartInit {
         KARTS_DATA.add(new KartData(i++,"zipper",        "TurboMooze3000",1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 1.7f, 1.2f));
         KARTS_DATA.add(new KartData(i++,"mach_celere",   "Maxmos", 1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 2.3f, 1.0f));
         KARTS_DATA.add(new KartData(i++,"rally_romper",  "TurboMooze3000",1.20f, 0.025f, 0.5f, 2.5f, -0.7f, 2.5f, 1.8f));
-        KARTS_DATA.add(new KartData(i++,"trash_kart",    "JeSuisMister",1.20f, 0.025f, 0.5f, 2.5f, -0.6f, 1.8f, 1.8f));
+        //KARTS_DATA.add(new KartData(i++,"trash_kart", "JeSuisMister",1.20f, 0.025f, 0.5f, 2.5f, -0.6f, 1.8f, 1.8f));
 
         int u = 0;
         for (KartData d : KARTS_DATA) {
