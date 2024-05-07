@@ -36,12 +36,12 @@ public class KartInit {
         KARTS_DATA.add(new KartData("rally_romper",  1.00f, 0.015f, 0.1f, 3.0f, -0.3f, 2.5f, 1.8f));
         */
         int i = 0;
-        KARTS_DATA.add(new KartData(i++,"standard_kart", "Maxmos", 1.20f, 0.025f, 0.5f, 2.5f, -1.0f, 2.2f, 1.3f));
-        KARTS_DATA.add(new KartData(i++,"flame_flyer",   "TurboMooze3000", 1.20f, 0.025f, 0.5f, 2.5f, -0.9f, 2.1f, 1.4f));
-        KARTS_DATA.add(new KartData(i++,"b_dasher",      "Maxmos", 1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 2.3f, 1.0f));
-        KARTS_DATA.add(new KartData(i++,"zipper",        "TurboMooze3000",1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 1.7f, 1.2f));
-        KARTS_DATA.add(new KartData(i++,"mach_celere",   "Maxmos", 1.20f, 0.025f, 0.5f, 2.5f, -0.8f, 2.3f, 1.0f));
-        KARTS_DATA.add(new KartData(i++,"rally_romper",  "TurboMooze3000",1.20f, 0.025f, 0.5f, 2.5f, -0.7f, 2.5f, 1.8f));
+        KARTS_DATA.add(new KartData(i++,"standard_kart", "Maxmos",         1.20f, 0.025f, 0.50f, 2.5f, -1.0f, 2.2f, 1.3f));
+        KARTS_DATA.add(new KartData(i++,"flame_flyer",   "TurboMooze3000", 1.40f, 0.025f, 0.35f, 2.5f, -0.9f, 2.1f, 1.4f));
+        KARTS_DATA.add(new KartData(i++,"b_dasher",      "Maxmos",         1.05f, 0.025f, 0.75f, 2.5f, -0.8f, 2.3f, 1.0f));
+        KARTS_DATA.add(new KartData(i++,"zipper",        "TurboMooze3000", 1.15f, 0.035f, 0.60f, 3.0f, -0.8f, 1.7f, 1.2f));
+        KARTS_DATA.add(new KartData(i++,"mach_celere",   "Maxmos",         1.60f, 0.030f, 0.20f, 2.5f, -0.8f, 2.3f, 1.0f));
+        KARTS_DATA.add(new KartData(i++,"rally_romper",  "TurboMooze3000", 1.70f, 0.020f, 0.20f, 2.0f, -0.7f, 2.5f, 1.8f));
         //KARTS_DATA.add(new KartData(i++,"trash_kart", "JeSuisMister",1.20f, 0.025f, 0.5f, 2.5f, -0.6f, 1.8f, 1.8f));
 
         int u = 0;
