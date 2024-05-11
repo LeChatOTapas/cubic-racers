@@ -148,7 +148,9 @@ public class Kart extends KartAbstract implements GeoEntity {
 
         //ENVOIE LES POSITIONS AU SERVEUR
         if (level().isClientSide() && player!=null && player.getVehicle()!=null && player.getVehicle().equals(this)) {
-            Network.CHANNEL.sendToServer(new KartPositionMessage(getX(), getY(), getZ()));
+            //System.out.println("=> " + Minecraft.getInstance().player.getVehicle() + " / " + this + " / " + (Minecraft.getInstance().player.getVehicle().equals(this)));
+            if(Minecraft.getInstance().player.getVehicle().equals(this))
+                Network.CHANNEL.sendToServer(new KartPositionMessage(getX(), getY(), getZ()));
         }
 
         move(MoverType.SELF, new Vec3(getDeltaMovement().x, calculateFallSpeed(), getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
