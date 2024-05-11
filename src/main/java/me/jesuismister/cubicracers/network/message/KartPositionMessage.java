@@ -33,9 +33,7 @@ public class KartPositionMessage {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
-                //System.out.println(player.getName().getString() + " / " + kart.getFirstPassenger().getName().getString() + " " + (player.getName().getString().equals(kart.getFirstPassenger().getName().getString())));
                 if(player.getName().getString().equals(kart.getFirstPassenger().getName().getString())) {
-                    System.out.println(player.getName().getString() + " => " + kart.getPickResult().getDisplayName().getString() + " / " + message.xPos + " " + message.yPos + " " + message.zPos);
                     kart.setPos(message.xPos, Math.floor(message.yPos), message.zPos);
                 }
             }
