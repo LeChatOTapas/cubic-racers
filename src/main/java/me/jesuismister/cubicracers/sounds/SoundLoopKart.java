@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers.sounds;
 
 import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.config.Config;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -23,8 +24,8 @@ public abstract class SoundLoopKart extends AbstractTickableSoundInstance {
         this.entity = entity;
         this.looping = true;
         this.delay = 0;
-        this.default_volume = CubicRacers.CLIENT_CONFIG.kartVolume.get().floatValue();
-        this.volume = CubicRacers.CLIENT_CONFIG.kartVolume.get().floatValue();
+        this.default_volume = Config.CLIENT_CONFIG.kartVolume.get().floatValue();
+        this.volume = Config.CLIENT_CONFIG.kartVolume.get().floatValue();
         this.pitch = 1F;
         this.relative = true;
         this.attenuation = Attenuation.LINEAR;

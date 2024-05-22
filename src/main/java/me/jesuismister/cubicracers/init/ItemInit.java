@@ -2,6 +2,7 @@ package me.jesuismister.cubicracers.init;
 
 
 import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.config.KartConfig;
 import me.jesuismister.cubicracers.entity.ItemBoxSpawnItem;
 import me.jesuismister.cubicracers.entity.KartData;
 import me.jesuismister.cubicracers.entity.KartSpawnItem;
@@ -23,7 +24,7 @@ public class ItemInit {
     public static final List<RegistryObject<Item>> KARTS_SPAWN_ITEM = new ArrayList<>();
 
     public static void initSpawnKartItem() {
-        for (KartData d : KartInit.KARTS_DATA) {
+        for (KartData d : CubicRacers.KARTS_DATA) {
             KARTS_SPAWN_ITEM.add(ITEMS.register(d.name, () -> new KartSpawnItem(new Item.Properties().stacksTo(1), d.name, d.creatorName)));
         }
     }

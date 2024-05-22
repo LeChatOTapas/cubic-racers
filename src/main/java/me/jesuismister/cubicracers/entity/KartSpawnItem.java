@@ -1,5 +1,7 @@
 package me.jesuismister.cubicracers.entity;
 
+import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.config.KartConfig;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import me.jesuismister.cubicracers.init.KartInit;
 import net.minecraft.network.chat.Component;
@@ -104,9 +106,9 @@ public class KartSpawnItem extends Item {
      * @return
      */
     private Kart getKart(Level level, HitResult hitResult) {
-        KartData d = KartData.getKartData(KartInit.KARTS_DATA, this.kartName);
+        KartData d = KartData.getKartData(CubicRacers.KARTS_DATA, this.kartName);
         assert d != null;
-        return new Kart(level, d.id, hitResult.getLocation().x, hitResult.getLocation().y, hitResult.getLocation().z, d.name, d.texture, d.model, d.animation, d.maxSpeed, d.accelerationBoost, d.boost, d.maniabiliteCoeff, d.playerPosY, d.hitboxX, d.hitboxY);
+        return new Kart(level, d.id, hitResult.getLocation().x, hitResult.getLocation().y, hitResult.getLocation().z, d.name, d.texture, d.model, d.animation, d.playerPosY, d.hitboxX, d.hitboxY);
     }
 
     @Override

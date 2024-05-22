@@ -11,23 +11,15 @@ public class KartData {
     public final String texture;
     public final String model;
     public final String animation;
-    public final float maxSpeed;
-    public final float accelerationBoost;
-    public final float boost;
-    public final float maniabiliteCoeff;
     public final float playerPosY;
     public float hitboxX;
     public float hitboxY;
     public Item spawn_item;
 
-    public KartData(int id, String name, String creatorName, float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY, float hitboxX, float hitboxY) {
+    public KartData(int id, String name, String creatorName, float playerPosY, float hitboxX, float hitboxY) {
         this.id = id;
         this.name = name;
         this.creatorName = creatorName;
-        this.maxSpeed = maxSpeed;
-        this.accelerationBoost = accelerationBoost;
-        this.boost = boost;
-        this.maniabiliteCoeff = maniabiliteCoeff;
         this.playerPosY = playerPosY;
         this.hitboxX = hitboxX;
         this.hitboxY = hitboxY;

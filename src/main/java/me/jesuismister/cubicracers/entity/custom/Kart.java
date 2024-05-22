@@ -4,6 +4,7 @@ import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.block.BoosterBlock;
 import me.jesuismister.cubicracers.block.KartController;
 import me.jesuismister.cubicracers.block.RoadBlock;
+import me.jesuismister.cubicracers.config.KartConfig;
 import me.jesuismister.cubicracers.init.BlockInit;
 import me.jesuismister.cubicracers.init.ItemInit;
 import me.jesuismister.cubicracers.init.KartInit;
@@ -47,7 +48,7 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid = CubicRacers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class Kart extends KartAbstract implements GeoEntity {
-    public final int id;
+    public int id;
     public static float HITBOX_X;
     public static float HITBOX_Y;
     //CACHE
@@ -57,39 +58,31 @@ public class Kart extends KartAbstract implements GeoEntity {
     public final String MODEL;
     public final String ANIMATION;
     //ATTRIBUTS DU KART
-    public final float MAX_SPEED;
-    public final float DELTA_SPEED;
-    public final float ACCELERATION_BOOST;
-    public final float BOOST;
-    public final float MANIABILITE_COEEF;
+    public float MAX_SPEED;
+    public float DELTA_SPEED;
+    public float ACCELERATION_BOOST;
+    public float BOOST;
+    public float MANIABILITE_COEEF;
     public final float PLAYER_POS_Y;
     //OTHERS
     public float speedToShow = 0;
     public String stunMotif = "None";
 
-    public Kart(EntityType<?> entityType, Level level, int id, String texture, String model, String animation, float maxSpeed,
-                float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY, float hitboxX, float hitboxY) {
+    public Kart(EntityType<?> entityType, Level level, int id, String texture, String model, String animation, float playerPosY, float hitboxX, float hitboxY) {
         super(entityType, level);
         this.id = id;
         TEXTURE = texture;
         MODEL = model;
         ANIMATION = animation;
-        MAX_SPEED = maxSpeed;
-        DELTA_SPEED = MAX_SPEED;
-        ACCELERATION_BOOST = accelerationBoost;
-        BOOST = boost;
-        MANIABILITE_COEEF = maniabiliteCoeff;
         PLAYER_POS_Y = playerPosY;
         HITBOX_X = hitboxX;
         HITBOX_Y = hitboxY;
         setInvulnerable(false);
-        //useItem(); //je sais pas pourquoi mais si je fais pas ça, ça veut pas mettre bien l'item à vide
     }
 
     public Kart(Level level, int id, double x, double y, double z, String name, String texture, String model, String animation,
-                float maxSpeed, float accelerationBoost, float boost, float maniabiliteCoeff, float playerPosY, float hitboxX, float hitboxY) {
-        this(KartInit.KARTS.get(name).get(), level, id, texture, model, animation, maxSpeed, accelerationBoost, boost,
-                maniabiliteCoeff, playerPosY, hitboxX, hitboxY);
+                float playerPosY, float hitboxX, float hitboxY) {
+        this(KartInit.KARTS.get(name).get(), level, id, texture, model, animation, playerPosY, hitboxX, hitboxY);
         setPos(x, y, z);
         xo = x;
         yo = y;
@@ -114,6 +107,14 @@ public class Kart extends KartAbstract implements GeoEntity {
     public void tick() {
         super.tick();
         if(level().isClientSide) updateSounds();
+
+        if(level().isClientSide) {
+            MAX_SPEED = KartConfig.MAX_SPEED.get(id).get().floatValue();
+            DELTA_SPEED  = KartConfig.MAX_SPEED.get(id).get().floatValue();
+            ACCELERATION_BOOST = KartConfig.ACCELERATION_BOOST.get(id).get().floatValue();
+            BOOST = KartConfig.BOOST.get(id).get().floatValue();
+            MANIABILITE_COEEF = KartConfig.HANDLING.get(id).get().floatValue();
+        }
 
         // ON MET LES BINDS A FALSE SI PAS DE JOUEUR DANS LE VEHICULE
         Player player = (Player) getFirstPassenger();
@@ -418,7 +419,6 @@ public class Kart extends KartAbstract implements GeoEntity {
         }
     }
 
-    /*
     private boolean isValidBlockCollision(){
         int blockX = (int) Math.floor(getX());
         int blockY = (int) Math.floor(getY());
@@ -464,7 +464,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         else if(block instanceof ChainBlock) return false;
 
         return true;
-    }*/
+    }
 
     private boolean isOnKartController(){
         int blockX = (int) Math.floor(getX());
@@ -515,11 +515,11 @@ public class Kart extends KartAbstract implements GeoEntity {
      */
     private void collision() {
         //SI LE KART A UN PASSAGER ET QUE LE KART EST DANS UN BLOCK, ALORS ON LE REMONTE D'UN BLOC
-        /*if (getFirstPassenger() != null) {
+        if (getFirstPassenger() != null) {
             if (isValidBlockCollision()){
                 setPos(getX(), getY() + 1, getZ());
             }
-        }*/
+        }
 
         //SI COLLISION, ON RESET LE BOOST DU DRIFT
         if (horizontalCollision) {

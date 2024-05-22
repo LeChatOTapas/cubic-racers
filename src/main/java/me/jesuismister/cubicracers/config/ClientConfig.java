@@ -1,4 +1,4 @@
-package me.jesuismister.cubicracers;
+package me.jesuismister.cubicracers.config;
 
 import de.maxhenkel.corelib.config.ConfigBase;
 import net.minecraftforge.common.ForgeConfigSpec;
