@@ -85,7 +85,7 @@ public class GreenShell extends ItemKartAbstract implements GeoEntity {
 
         //DETRUIRE LA CARAPACE AU BOUT D'UN MOMENT
         tickAlive++;
-        playMovingSound();
+        if(level().isClientSide()) playMovingSound();
         if (tickAlive > TICK_TO_DESPAWN) {
             this.remove(RemovalReason.DISCARDED);
         }
