@@ -418,6 +418,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         }
     }
 
+    /*
     private boolean isValidBlockCollision(){
         int blockX = (int) Math.floor(getX());
         int blockY = (int) Math.floor(getY());
@@ -463,7 +464,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         else if(block instanceof ChainBlock) return false;
 
         return true;
-    }
+    }*/
 
     private boolean isOnKartController(){
         int blockX = (int) Math.floor(getX());
@@ -514,11 +515,11 @@ public class Kart extends KartAbstract implements GeoEntity {
      */
     private void collision() {
         //SI LE KART A UN PASSAGER ET QUE LE KART EST DANS UN BLOCK, ALORS ON LE REMONTE D'UN BLOC
-        if (getFirstPassenger() != null) {
+        /*if (getFirstPassenger() != null) {
             if (isValidBlockCollision()){
                 setPos(getX(), getY() + 1, getZ());
             }
-        }
+        }*/
 
         //SI COLLISION, ON RESET LE BOOST DU DRIFT
         if (horizontalCollision) {

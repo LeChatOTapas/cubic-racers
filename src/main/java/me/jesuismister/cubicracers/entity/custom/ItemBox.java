@@ -53,8 +53,8 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
     private static final double KLAXON_DROP_RATE = 100;
 
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 4; //4s
-    public static final EntityDataAccessor<Boolean> hasItem = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Integer> tickDisabled = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Boolean> hasItem = SynchedEntityData.defineId(ItemBox.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> tickDisabled = SynchedEntityData.defineId(ItemBox.class, EntityDataSerializers.INT);
 
     public ItemBox(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
@@ -92,7 +92,6 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
 
     @Override
     protected void defineSynchedData() {
-        super.defineSynchedData();
         this.entityData.define(hasItem, true);
         this.entityData.define(tickDisabled, 0);
     }

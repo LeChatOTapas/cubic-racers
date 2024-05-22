@@ -14,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public abstract class ItemKartAbstract extends Entity {
-    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(Banana.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> isPropulsing = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(ItemKartAbstract.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> isPropulsing = SynchedEntityData.defineId(ItemKartAbstract.class, EntityDataSerializers.BOOLEAN);
     public float propulsionY = -1f;
 
     public ItemKartAbstract(EntityType<?> p_19870_, Level p_19871_) {

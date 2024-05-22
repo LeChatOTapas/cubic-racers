@@ -17,19 +17,19 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class KartAbstract extends Entity {
-    public static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.FLOAT);
 
     //KEYS POUR LE KART
-    public static final EntityDataAccessor<Boolean> isPressingKeyAccelerate = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> isPressingKeyDeccelerate = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> isPressingKeyForward = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> isPressingKeyBackward = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> isPressingKeyLeft = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> isPressingKeyRight = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> isPressingKeyDrift = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> isPressingKeyItem = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> isPressingKeyDelta = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> previousPressingKeyDelta = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyAccelerate = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyDeccelerate = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyForward = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyBackward = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyLeft = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyRight = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyDrift = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyItem = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isPressingKeyDelta = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> previousPressingKeyDelta = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
 
     //ATTRIBUTS GENERAUX DES KARTS
     public static final float MIN_SPEED = 0.075f;
@@ -40,29 +40,29 @@ public abstract class KartAbstract extends Entity {
 
     //ATTRIBUTS DU DRIFT
     public static final float DRIFT_ANGLE = 1.5f;
-    public static final EntityDataAccessor<Boolean> isDrifting = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<String> driftingSens = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.STRING);
-    public static final EntityDataAccessor<Float> driftingTime = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> driftTimeBoost = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> timeBoost = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Boolean> isDrifting = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<String> driftingSens = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<Float> driftingTime = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> driftTimeBoost = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> timeBoost = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.FLOAT);
 
     //ATTRIBUTS DE CONDUITE
-    public static final EntityDataAccessor<Boolean> deltaOn = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Float> pourcentage_inclinaison = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> actual_rotation_wheels = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Boolean> deltaOn = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Float> pourcentage_inclinaison = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> actual_rotation_wheels = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.FLOAT);
 
     //ANIMATION DEGATS
-    public static final EntityDataAccessor<Boolean> canMove = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Float> stunRotation = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Boolean> canMove = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Float> stunRotation = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.FLOAT);
 
     //KART ITEM
     private String kartItem;
-    public static final EntityDataAccessor<Boolean> isInvinsible = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Float> starSpeedBoost = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
-    public static final EntityDataAccessor<Float> timeStar = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Boolean> isInvinsible = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Float> starSpeedBoost = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.FLOAT); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
+    public static final EntityDataAccessor<Float> timeStar = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.FLOAT);
 
     //LOCK
-    public static final EntityDataAccessor<Boolean> isLock = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> isLock = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
 
     public KartAbstract(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
