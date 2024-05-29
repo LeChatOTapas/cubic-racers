@@ -1,5 +1,6 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.config.KartItemConfig;
 import me.jesuismister.cubicracers.init.ItemInit;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import me.jesuismister.cubicracers.network.Network;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -31,6 +33,7 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
+import java.util.Map;
 
 import static me.jesuismister.cubicracers.util.ClientUtil.spawnParticleForAll;
 
@@ -138,25 +141,7 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
             return false;
 
         if(kart.getKartItem().equals("None")){
-            double rand = ClientRandom.nextInt(100);
-
-            if (0 <= rand && rand < BANANA_DROP_RATE) {
-                kart.setKartItem("Banana");
-            } else if (BANANA_DROP_RATE <= rand && rand < GREEN_SHELL_DROP_RATE) {
-                kart.setKartItem("Green_shell");
-            } else if (GREEN_SHELL_DROP_RATE <= rand && rand < MUSHROOM_DROP_RATE) {
-                kart.setKartItem("Mushroom");
-            } else if (MUSHROOM_DROP_RATE <= rand && rand < FAKE_BOX_DROP_RATE) {
-                kart.setKartItem("Fake_box");
-            } else if (FAKE_BOX_DROP_RATE <= rand && rand < BOMB_OMB_DROP_RATE) {
-                kart.setKartItem("Bob_omb");
-            } else if (BOMB_OMB_DROP_RATE <= rand && rand < STAR_DROP_RATE) {
-                kart.setKartItem("Star");
-            } else if (STAR_DROP_RATE <= rand && rand < THUNDER_DROP_RATE) {
-                kart.setKartItem("Thunder");
-            } else if (THUNDER_DROP_RATE <= rand && rand <= KLAXON_DROP_RATE) {
-                kart.setKartItem("Klaxon");
-            }
+            kart.setKartItem(getRandomItem());
         }
         ServerPlayer player = (ServerPlayer) kart.getFirstPassenger();
         Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new ItemToClientMessage(kart.getKartItem()));
@@ -186,6 +171,24 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
             }
         }
         return false;
+    }
+
+    private String getRandomItem(){
+        //Determination de la borne maximal (car pas forcement 100)
+        int max = 0;
+        for(ForgeConfigSpec.DoubleValue v : KartItemConfig.ITEMS_DROP_RATES.values()){
+            max += v.get();
+        }
+
+        int rand = ClientRandom.nextInt(max);
+        int temp = 0;
+        for(Map.Entry<String, ForgeConfigSpec.DoubleValue> v : KartItemConfig.ITEMS_DROP_RATES.entrySet()){
+            temp += v.getValue().get();
+            if (rand <= temp) {
+                return v.getKey();
+            }
+        }
+        return "None";
     }
 
     public boolean getHasItem() {

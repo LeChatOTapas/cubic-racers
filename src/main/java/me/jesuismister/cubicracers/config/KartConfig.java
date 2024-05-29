@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KartConfig {
-    public static List<ForgeConfigSpec.DoubleValue> MAX_SPEED = new ArrayList<ForgeConfigSpec.DoubleValue>();
-    public static List<ForgeConfigSpec.DoubleValue> ACCELERATION_BOOST = new ArrayList<ForgeConfigSpec.DoubleValue>();
-    public static List<ForgeConfigSpec.DoubleValue> BOOST = new ArrayList<ForgeConfigSpec.DoubleValue>();
-    public static List<ForgeConfigSpec.DoubleValue> HANDLING = new ArrayList<ForgeConfigSpec.DoubleValue>();
+    public static List<ForgeConfigSpec.DoubleValue> MAX_SPEED = new ArrayList<>();
+    public static List<ForgeConfigSpec.DoubleValue> ACCELERATION_BOOST = new ArrayList<>();
+    public static List<ForgeConfigSpec.DoubleValue> BOOST = new ArrayList<>();
+    public static List<ForgeConfigSpec.DoubleValue> HANDLING = new ArrayList<>();
 
     public static void registerServerConfig(ForgeConfigSpec.Builder SERVER_BUILDER) {
+        SERVER_BUILDER.comment("Settings of all the karts").push("karts_settings");
         for(KartData d : CubicRacers.KARTS_DATA){
             SERVER_BUILDER.comment("Settings for the " + d.name).push(d.name);
 
@@ -32,5 +33,6 @@ public class KartConfig {
                     .defineInRange("handling", 2.5, 1.0, 5.0));
             SERVER_BUILDER.pop();
         }
+        SERVER_BUILDER.pop();
     }
 }

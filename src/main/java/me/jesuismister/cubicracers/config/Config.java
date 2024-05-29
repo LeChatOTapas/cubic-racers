@@ -16,8 +16,9 @@ public class Config {
 
     private static void registerServerConfigs() {
         ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
-        KartConfig.registerServerConfig(CLIENT_BUILDER);
         RoadBlockConfig.registerServerConfig(CLIENT_BUILDER);
+        KartItemConfig.registerServerConfig(CLIENT_BUILDER);
+        KartConfig.registerServerConfig(CLIENT_BUILDER);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, CLIENT_BUILDER.build());
     }
 
