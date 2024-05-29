@@ -1,5 +1,6 @@
 package me.jesuismister.cubicracers.sounds;
 
+import me.jesuismister.cubicracers.config.RoadBlockConfig;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -29,7 +30,7 @@ public class SoundEngineMax extends SoundLoopKart {
     @Override
     public boolean shouldStopSound() {
         Kart kart = (Kart) entity;
-        if (!kart.isOnRoadBlock() || kart.getDeltaOn() || kart.getIsInvinsible() || kart.getSpeed() == 0) {
+        if ((RoadBlockConfig.ROAD_BLOCK_REQUIRE.get() && !kart.isOnRoadBlock()) || kart.getDeltaOn() || kart.getIsInvinsible() || kart.getSpeed() == 0) {
             return true;
         }
         return false;

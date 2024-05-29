@@ -5,6 +5,7 @@ import me.jesuismister.cubicracers.block.BoosterBlock;
 import me.jesuismister.cubicracers.block.KartController;
 import me.jesuismister.cubicracers.block.RoadBlock;
 import me.jesuismister.cubicracers.config.KartConfig;
+import me.jesuismister.cubicracers.config.RoadBlockConfig;
 import me.jesuismister.cubicracers.init.BlockInit;
 import me.jesuismister.cubicracers.init.ItemInit;
 import me.jesuismister.cubicracers.init.KartInit;
@@ -309,7 +310,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
         if (getSpeed() != 0 && getCanMove()) {
             //SI LE JOUEUR APPUIE SUR LA TOUCHE DE DRIFT, QUE LE KART AVANCE ASSEZ VITE ET AUTRES CONDITIONS
-            if ((isOnRoadBlock() || getTimeBoost()>0 || getDriftTimeBoost()>0 || getIsInvinsible()) && getIsPressingKeyDrift() && !horizontalCollision && !getDeltaOn() && getSpeed() > MAX_SPEED * 0.25) {
+            if (((RoadBlockConfig.ROAD_BLOCK_REQUIRE.get() && isOnRoadBlock()) || getTimeBoost()>0 || getDriftTimeBoost()>0 || getIsInvinsible()) && getIsPressingKeyDrift() && !horizontalCollision && !getDeltaOn() && getSpeed() > MAX_SPEED * 0.25) {
                 //INIT DU DRIFT SI PAS ENCORE FAIT
                 if (getDriftingTime() == 0) {
                     if (getIsPressingKeyLeft() && !getIsPressingKeyRight()) {
@@ -570,7 +571,7 @@ public class Kart extends KartAbstract implements GeoEntity {
             clamped_speed = clamped_speed * getStarSpeedBoost();
 
         //SI PAS SUR UN BLOC DE ROUTE (SANS BOOST OU ETOILE), ON SLOW LE VEHICULE
-        if(!isOnRoadBlock() && (!getIsInvinsible() || getTimeBoost()<=0)){
+        if(RoadBlockConfig.ROAD_BLOCK_REQUIRE.get() && (!isOnRoadBlock() && (!getIsInvinsible() || getTimeBoost()<=0))){
             setSpeed(Mth.clamp(getSpeed(), -MAX_SPEED/2, MAX_SPEED/2));
         }
 
@@ -830,27 +831,28 @@ public class Kart extends KartAbstract implements GeoEntity {
             }
         }else{
             //ARRET OU EN MOUVEMENT
-            }if (getSpeed() > -MAX_SPEED*0.2f && getSpeed() < MAX_SPEED*0.2f) {
+            if (getSpeed() > -MAX_SPEED*0.2f && getSpeed() < MAX_SPEED*0.2f) {
                 if (!isSoundPlaying(engineIdleLoop)) {
                     engineIdleLoop = new SoundEngineIdle(this, SoundsInit.ENGINE_IDLE.get(), SoundSource.RECORDS);
                     SoundsInit.playSoundLoop(engineIdleLoop, level());
                 }
-            }else if(!isOnRoadBlock()){
+            }else if(RoadBlockConfig.ROAD_BLOCK_REQUIRE.get() && !isOnRoadBlock()){
                 if (!isSoundPlaying(kartOffRoad)) {
                     kartOffRoad = new SoundKartOffRoad(this, SoundsInit.KART_OFF_ROAD.get(), SoundSource.RECORDS);
                     SoundsInit.playSoundLoop(kartOffRoad, level());
                 }
             } else if(getSpeed() != 0){
-            if (!isSoundPlaying(engineMaxLoop)) {
-                engineMaxLoop = new SoundEngineMax(this, SoundsInit.ENGINE_MAX.get(), SoundSource.RECORDS);
-                SoundsInit.playSoundLoop(engineMaxLoop, level());
-            }
+                if (!isSoundPlaying(engineMaxLoop)) {
+                    engineMaxLoop = new SoundEngineMax(this, SoundsInit.ENGINE_MAX.get(), SoundSource.RECORDS);
+                    SoundsInit.playSoundLoop(engineMaxLoop, level());
+                }
 
-            //DRIFTING OU PAS DRIFTING
-            if(getIsDrifting()){
-                if (!isSoundPlaying(kartDrifting)) {
-                    kartDrifting = new SoundKartDrifting(this, SoundsInit.KART_DRIFTING.get(), SoundSource.RECORDS);
-                    SoundsInit.playSoundLoop(kartDrifting, level());
+                //DRIFTING OU PAS DRIFTING
+                if(getIsDrifting()) {
+                    if (!isSoundPlaying(kartDrifting)) {
+                        kartDrifting = new SoundKartDrifting(this, SoundsInit.KART_DRIFTING.get(), SoundSource.RECORDS);
+                        SoundsInit.playSoundLoop(kartDrifting, level());
+                    }
                 }
             }
         }

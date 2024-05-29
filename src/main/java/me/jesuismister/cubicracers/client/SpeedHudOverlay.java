@@ -8,7 +8,7 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 public class SpeedHudOverlay {
 
     public static final IGuiOverlay HUD_SPEED = (((gui, poseStack, partialTick, screenWidth, screenHeight) -> {
-        /*if (shouldPrint(gui.getMinecraft().player)) {
+        if (shouldPrint(gui.getMinecraft().player)) {
             Kart kart = (Kart) gui.getMinecraft().player.getVehicle();
             if (kart == null || !kart.level().isClientSide()) return;
 
@@ -18,7 +18,7 @@ public class SpeedHudOverlay {
 
             poseStack.drawCenteredString(Minecraft.getInstance().font, text, textX, 20, 0xFFFFFF);
 
-        }*/
+        }
     }));
 
     /**
