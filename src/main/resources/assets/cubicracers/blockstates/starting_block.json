@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "cubicracers:block/starting_block"
+    }
+  }
+}

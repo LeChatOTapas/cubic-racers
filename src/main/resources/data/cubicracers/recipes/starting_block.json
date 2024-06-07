@@ -1,0 +1,18 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "minecraft:black_dye"
+        },
+        {
+            "item": "cubicracers:road_block"
+        },
+        {
+            "item": "minecraft:white_dye"
+        }
+    ],
+    "result": {
+        "item": "cubicracers:starting_block",
+        "count": 1
+    }
+}

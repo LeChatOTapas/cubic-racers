@@ -46,6 +46,9 @@ public class BlockInit {
     public static final RegistryObject<Block> ROAD_BLOCK_SNOW = registerBlock("road_block_snow", () ->
             new RoadBlock(BlockBehaviour.Properties.copy(Blocks.SNOW_BLOCK)));
 
+    public static final RegistryObject<Block> STARTING_BLOCK = registerBlock("starting_block", () ->
+            new RoadBlock(BlockBehaviour.Properties.copy(Blocks.STONE)));
+
     public static final RegistryObject<Block> KART_CONTROLLER = registerBlock("kart_controller", () ->
             new KartController(BlockBehaviour.Properties.copy(Blocks.PINK_GLAZED_TERRACOTTA)));
 

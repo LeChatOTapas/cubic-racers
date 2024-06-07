@@ -68,6 +68,7 @@ public class CubicRacers {
             event.accept(BlockInit.BOOSTER.get());
             event.accept(BlockInit.KART_CONTROLLER.get());
 
+            event.accept(BlockInit.STARTING_BLOCK.get());
             event.accept(BlockInit.ROAD_BLOCK.get());
             event.accept(BlockInit.ROAD_BLOCK_DIRT.get());
             event.accept(BlockInit.ROAD_BLOCK_SAND.get());
