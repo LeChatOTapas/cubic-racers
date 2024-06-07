@@ -8,6 +8,7 @@ import me.jesuismister.cubicracers.init.*;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.ClientRandom;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -70,6 +71,8 @@ public class CubicRacers {
             event.accept(BlockInit.ROAD_BLOCK_DIRT.get());
             event.accept(BlockInit.ROAD_BLOCK_SAND.get());
             event.accept(BlockInit.ROAD_BLOCK_SNOW.get());
+            event.accept(BlockInit.HOLLOW_ROAD_BLOCK.get());
+
 
             for (RegistryObject<Item> r : ItemInit.KARTS_SPAWN_ITEM) {
                 event.accept(r.get());

@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "me.jesuismister.cubicracers.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "cubicracers.refmap.json",
+  "mixins": [
+    "ClientLevelMixin"
+  ],
+  "client": [
+  ],
+  "minVersion": "0.8"
+}

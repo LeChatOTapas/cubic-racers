@@ -5,6 +5,7 @@ import me.jesuismister.cubicracers.client.ItemHudOverlay;
 import me.jesuismister.cubicracers.client.SpeedHudOverlay;
 import me.jesuismister.cubicracers.entity.client.renderer.*;
 import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.init.BlockInit;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.InputMessage;
 import me.jesuismister.cubicracers.init.KartInit;
@@ -13,8 +14,11 @@ import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.particles.custom.DriftParticles;
 import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
@@ -24,6 +28,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.RegistryObject;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class ModEvents {
 
@@ -37,6 +44,13 @@ public class ModEvents {
 
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
+            /*event.enqueueWork(() -> {
+                Set<Item> set = new HashSet<>();
+                set.addAll(ClientLevel.MARKER_PARTICLE_ITEMS);
+                set.add(BlockInit.TRANSPARENT_ROAD_BLOCK.get().asItem());
+                ClientLevel.MARKER_PARTICLE_ITEMS = set;
+            });*/
+
             //REGISTER TOUS LES KARTS
             for (RegistryObject<EntityType<Kart>> kart : KartInit.KARTS.values()) {
                 EntityRenderers.register(kart.get(), KartRenderer::new);

@@ -2,6 +2,7 @@ package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.block.BoosterBlock;
+import me.jesuismister.cubicracers.block.HollowRoadBlock;
 import me.jesuismister.cubicracers.block.KartController;
 import me.jesuismister.cubicracers.block.RoadBlock;
 import me.jesuismister.cubicracers.config.KartConfig;
@@ -14,6 +15,7 @@ import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.KartPositionMessage;
 import me.jesuismister.cubicracers.network.message.itemsKart.use.*;
 import me.jesuismister.cubicracers.sounds.*;
+import me.jesuismister.cubicracers.tags.ModTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
@@ -310,7 +312,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         //ON INITIE LA ROTATION QUE SI LE VEHICULE EST EN MOUVEMENT
         if (getSpeed() != 0 && getCanMove()) {
             //SI LE JOUEUR APPUIE SUR LA TOUCHE DE DRIFT, QUE LE KART AVANCE ASSEZ VITE ET AUTRES CONDITIONS
-            if (((RoadBlockConfig.ROAD_BLOCK_REQUIRE.get() && isOnRoadBlock()) || getTimeBoost()>0 || getDriftTimeBoost()>0 || getIsInvinsible()) && getIsPressingKeyDrift() && !horizontalCollision && !getDeltaOn() && getSpeed() > MAX_SPEED * 0.25) {
+            if ((isOnRoadBlock() || getTimeBoost()>0 || getIsInvinsible()) && getIsPressingKeyDrift() && !horizontalCollision && !getDeltaOn() && getSpeed() > MAX_SPEED * 0.25) {
                 //INIT DU DRIFT SI PAS ENCORE FAIT
                 if (getDriftingTime() == 0) {
                     if (getIsPressingKeyLeft() && !getIsPressingKeyRight()) {
@@ -419,7 +421,7 @@ public class Kart extends KartAbstract implements GeoEntity {
             setStunRotation(0f);
         }
     }
-
+    /*
     private boolean isValidBlockCollision(){
         int blockX = (int) Math.floor(getX());
         int blockY = (int) Math.floor(getY());
@@ -465,7 +467,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         else if(block instanceof ChainBlock) return false;
 
         return true;
-    }
+    }*/
 
     private boolean isOnKartController(){
         int blockX = (int) Math.floor(getX());
@@ -493,22 +495,14 @@ public class Kart extends KartAbstract implements GeoEntity {
     }
 
     public boolean isOnRoadBlock(){
+        if(!RoadBlockConfig.ROAD_BLOCK_REQUIRE.get()) return true;
+
         int blockX = (int) Math.floor(getX());
-        int blockY = (int) Math.floor(getY()) - 1;
+        int blockY = (int) Math.floor(getY());
         int blockZ = (int) Math.floor(getZ());
 
-        if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.AIR)){
-            return true;
-        } else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.WATER)){
-            return true;
-        } else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).is(Blocks.LAVA)){
-            return true;
-        } else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock() instanceof RoadBlock){
-            return true;
-        } else if(this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock() instanceof BoosterBlock){
-            return true;
-        }
-        return false;
+        return this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY-1, blockZ)).is(ModTags.Blocks.ROAD_BLOCK_TAG) ||
+                this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock() instanceof HollowRoadBlock;
     }
 
     /**
@@ -516,11 +510,12 @@ public class Kart extends KartAbstract implements GeoEntity {
      */
     private void collision() {
         //SI LE KART A UN PASSAGER ET QUE LE KART EST DANS UN BLOCK, ALORS ON LE REMONTE D'UN BLOC
+        /*
         if (getFirstPassenger() != null) {
             if (isValidBlockCollision()){
                 setPos(getX(), getY() + 1, getZ());
             }
-        }
+        }*/
 
         //SI COLLISION, ON RESET LE BOOST DU DRIFT
         if (horizontalCollision) {
@@ -571,7 +566,7 @@ public class Kart extends KartAbstract implements GeoEntity {
             clamped_speed = clamped_speed * getStarSpeedBoost();
 
         //SI PAS SUR UN BLOC DE ROUTE (SANS BOOST OU ETOILE), ON SLOW LE VEHICULE
-        if(RoadBlockConfig.ROAD_BLOCK_REQUIRE.get() && (!isOnRoadBlock() && (!getIsInvinsible() || getTimeBoost()<=0))){
+        if(!isOnRoadBlock() && (!getIsInvinsible() || getTimeBoost()<=0)){
             setSpeed(Mth.clamp(getSpeed(), -MAX_SPEED/2, MAX_SPEED/2));
         }
 
@@ -836,7 +831,7 @@ public class Kart extends KartAbstract implements GeoEntity {
                     engineIdleLoop = new SoundEngineIdle(this, SoundsInit.ENGINE_IDLE.get(), SoundSource.RECORDS);
                     SoundsInit.playSoundLoop(engineIdleLoop, level());
                 }
-            }else if(RoadBlockConfig.ROAD_BLOCK_REQUIRE.get() && !isOnRoadBlock()){
+            }else if(!isOnRoadBlock()){
                 if (!isSoundPlaying(kartOffRoad)) {
                     kartOffRoad = new SoundKartOffRoad(this, SoundsInit.KART_OFF_ROAD.get(), SoundSource.RECORDS);
                     SoundsInit.playSoundLoop(kartOffRoad, level());
