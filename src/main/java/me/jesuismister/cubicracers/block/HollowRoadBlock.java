@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers.block;
 
 import me.jesuismister.cubicracers.init.BlockInit;
+import me.jesuismister.cubicracers.init.ItemInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -47,7 +48,7 @@ public class HollowRoadBlock extends Block implements SimpleWaterloggedBlock {
         }
 
         public VoxelShape getShape(BlockState p_153668_, BlockGetter p_153669_, BlockPos p_153670_, CollisionContext p_153671_) {
-            return (p_153671_.isHoldingItem(Items.STICK) || p_153671_.isHoldingItem(BlockInit.HOLLOW_ROAD_BLOCK.get().asItem())) ? Shapes.block() : Shapes.empty();
+            return (p_153671_.isHoldingItem(ItemInit.ROAD_MAKER.get()) || p_153671_.isHoldingItem(BlockInit.HOLLOW_ROAD_BLOCK.get().asItem())) ? Shapes.block() : Shapes.empty();
         }
 
         public boolean propagatesSkylightDown(BlockState p_153695_, BlockGetter p_153696_, BlockPos p_153697_) {

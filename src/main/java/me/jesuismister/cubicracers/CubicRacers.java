@@ -62,6 +62,7 @@ public class CubicRacers {
      */
     private void addCreativeTab(BuildCreativeModeTabContentsEvent event) {
         if (event.getTab() == ModCreativeModeTabs.CUBIC_RACERS_TAB.get()) {
+            event.accept(ItemInit.ROAD_MAKER);
             event.accept(ItemInit.ITEM_BOX_SPAWN_ITEM.get());
 
             event.accept(BlockInit.BOOSTER.get());
@@ -71,7 +72,6 @@ public class CubicRacers {
             event.accept(BlockInit.ROAD_BLOCK_DIRT.get());
             event.accept(BlockInit.ROAD_BLOCK_SAND.get());
             event.accept(BlockInit.ROAD_BLOCK_SNOW.get());
-            event.accept(BlockInit.HOLLOW_ROAD_BLOCK.get());
 
 
             for (RegistryObject<Item> r : ItemInit.KARTS_SPAWN_ITEM) {

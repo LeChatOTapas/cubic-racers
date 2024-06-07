@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " #D",
+        " /#",
+        "/  "
+    ],
+    "key": {
+        "#": {
+            "item": "cubicracers:road_block"
+        },
+        "D": {
+            "item": "minecraft:diamond"
+        },
+        "/": {
+            "item": "minecraft:stick"
+        }
+    },
+    "result": {
+        "item": "cubicracers:road_maker",
+        "count": 1
+    }
+}

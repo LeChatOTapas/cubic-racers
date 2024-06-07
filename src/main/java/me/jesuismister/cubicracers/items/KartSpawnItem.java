@@ -1,9 +1,8 @@
-package me.jesuismister.cubicracers.entity;
+package me.jesuismister.cubicracers.items;
 
 import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.config.KartConfig;
+import me.jesuismister.cubicracers.entity.KartData;
 import me.jesuismister.cubicracers.entity.custom.Kart;
-import me.jesuismister.cubicracers.init.KartInit;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;

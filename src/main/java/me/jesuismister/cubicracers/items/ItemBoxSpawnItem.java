@@ -1,4 +1,4 @@
-package me.jesuismister.cubicracers.entity;
+package me.jesuismister.cubicracers.items;
 
 import me.jesuismister.cubicracers.entity.custom.ItemBox;
 import net.minecraft.stats.Stats;

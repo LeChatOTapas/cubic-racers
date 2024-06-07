@@ -2,14 +2,12 @@ package me.jesuismister.cubicracers.init;
 
 
 import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.config.KartConfig;
-import me.jesuismister.cubicracers.entity.ItemBoxSpawnItem;
+import me.jesuismister.cubicracers.items.ItemBoxSpawnItem;
 import me.jesuismister.cubicracers.entity.KartData;
-import me.jesuismister.cubicracers.entity.KartSpawnItem;
-import net.minecraft.world.item.BlockItem;
+import me.jesuismister.cubicracers.items.KartSpawnItem;
+import me.jesuismister.cubicracers.items.RoadMaker;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.Rarity;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -32,5 +30,9 @@ public class ItemInit {
     //ITEM SPAWN ITEM BOX
     public static final RegistryObject<Item> ITEM_BOX_SPAWN_ITEM = ITEMS.register(
             "item_box_spawn_item", () -> new ItemBoxSpawnItem(new Item.Properties()));
+
+    //ITEM SPAWN ITEM BOX
+    public static final RegistryObject<Item> ROAD_MAKER = ITEMS.register(
+            "road_maker", () -> new RoadMaker(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
 }
