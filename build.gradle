@@ -140,6 +140,8 @@ dependencies {
     // If the group id is "net.minecraft" and the artifact id is one of ["client", "server", "joined"],
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.2.1')
 
     shadow fg.deobf("de.maxhenkel.corelib:corelib:${minecraft_version}-${corelib_version}:api")
@@ -228,6 +230,11 @@ publishing {
         }
     }
 }
+
+jar {
+    archiveFileName = "CubicRacers-${minecraft_version}-${mod_version}-forge.jar"
+}
+
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
