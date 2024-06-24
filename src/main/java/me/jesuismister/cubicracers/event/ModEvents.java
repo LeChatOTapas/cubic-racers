@@ -17,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
@@ -24,6 +25,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -91,11 +93,11 @@ public class ModEvents {
     }
 
     @Mod.EventBusSubscriber(modid = CubicRacers.MODID)
-    public class ClientForgeEvent {
+    public static class ClientForgeEvent {
         @SubscribeEvent
         public static void onKeyInput(InputEvent.Key event) {
-            if (Minecraft.getInstance()!=null && Minecraft.getInstance().player!=null && Minecraft.getInstance().player.getVehicle() != null && Minecraft.getInstance().player.getVehicle() instanceof Kart kart) {
-                if(kart.getCanMove()){
+            if (Minecraft.getInstance() != null && Minecraft.getInstance().player != null && Minecraft.getInstance().player.getVehicle() != null && Minecraft.getInstance().player.getVehicle() instanceof Kart kart) {
+                if (kart.getCanMove()) {
                     kart.setIsPressingKeyAccelerate(KeyBinds.KART_ACCELERATE_KEY.isDown());
                     kart.setIsPressingKeyDeccelerate(KeyBinds.KART_DECCELERATE_KEY.isDown());
 
@@ -113,10 +115,18 @@ public class ModEvents {
                             kart.getIsPressingKeyForward(), kart.getIsPressingKeyBackward(),
                             kart.getIsPressingKeyLeft(), kart.getIsPressingKeyRight(),
                             kart.getIsPressingKeyDelta(), kart.getIsPressingKeyDrift(), kart.getIsPressingKeyItem()));
-                }else{
+                } else {
                     Network.CHANNEL.sendToServer(new InputMessage(false, false, false, false, false, false, false, false, false));
                 }
             }
         }
+
+        // Ajoutez la méthode manquante et corrigez l'annotation
+        @SubscribeEvent
+        public static void cancelFallDamageInKart(LivingFallEvent event) {
+            if (event.getEntity() instanceof Player player && player.getVehicle() instanceof Kart) {
+                event.setCanceled(true);
+            }
+        }
     }
-}
+    }
