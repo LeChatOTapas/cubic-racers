@@ -71,6 +71,7 @@ public class Kart extends KartAbstract implements GeoEntity {
     //OTHERS
     public float speedToShow = 0;
     public String stunMotif = "None";
+    public int deltaTime = 0;
 
     public Kart(EntityType<?> entityType, Level level, int id, String texture, String model, String animation, float playerPosY, float hitboxX, float hitboxY) {
         super(entityType, level);
@@ -157,7 +158,7 @@ public class Kart extends KartAbstract implements GeoEntity {
                 Network.CHANNEL.sendToServer(new KartPositionMessage(getX(), getY(), getZ()));
         }
 
-        move(MoverType.SELF, new Vec3(getDeltaMovement().x, calculateFallSpeed(), getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
+        move(MoverType.SELF, new Vec3(getDeltaMovement().x, calculateFallSpeed().y, getDeltaMovement().z)); //ON APPLIQUE LE VECTEUR DE VITESSE
     }
 
     private void resetBindValue() {
@@ -180,21 +181,15 @@ public class Kart extends KartAbstract implements GeoEntity {
      *
      * @return
      */
-    private float calculateFallSpeed() {
-        //VITESSE DE CHUTE : EN DELTA
-        if (getDeltaOn()) {
-            return REDUCED_FALL_SPEED;
-        }
-        //VITESSE DE CHUTE : DANS l'EAU
-        else if(isInWater()){
-            return REDUCED_FALL_SPEED*2;
-        }
-        //VITESSE DE CHUTE : EN CHUTE LIBRE
-        else if (!onGround() && !getDeltaOn()) {
-            return BASE_FALL_SPEED;
-        }
-        //VITESSE DE CHUTE : SUR TERRE
-        return 0;
+    public Vec3 calculateFallSpeed() {
+        if(getDeltaOn()) return new Vec3(0, -KartAbstract.GRAVITY*2, 0);
+
+        double verticalSpeed = isInWater() ? KartAbstract.GRAVITY*3 : KartAbstract.GRAVITY * deltaTime;
+        verticalSpeed = Math.min(verticalSpeed, KartAbstract.TERMINAL_VELOCITY);
+
+        deltaTime = fallDistance!=0 ? deltaTime + 1 : 1;
+
+        return new Vec3(0, -verticalSpeed, 0);
     }
 
     /**
@@ -506,7 +501,8 @@ public class Kart extends KartAbstract implements GeoEntity {
         int blockY = (int) Math.floor(getY());
         int blockZ = (int) Math.floor(getZ());
 
-        if(getBlock(blockX, blockY-1, blockZ).getBlock().equals(Blocks.AIR) ||
+        if(getBlock(blockX, blockY-1, blockZ).isAir() || getBlock(blockX, blockY-1, blockZ).getBlock().equals(Blocks.WATER) ||
+                getBlock(blockX, blockY-1, blockZ).getBlock().equals(Blocks.LAVA) ||
                 getBlock(blockX, blockY-1, blockZ).is(ModTags.Blocks.ROAD_BLOCK_TAG) ||
                 getBlock(blockX, blockY, blockZ).getBlock() instanceof HollowRoadBlock){
             return true;
@@ -786,17 +782,17 @@ public class Kart extends KartAbstract implements GeoEntity {
         int blockY = (int) Math.floor(getY());
         int blockZ = (int) Math.floor(getZ());
 
-        if (!getBlock(blockX, blockY-1, blockZ).getBlock().equals(Blocks.AIR) && getDriftingTime() >= 3) {
+        if (!getBlock(blockX, blockY-1, blockZ).isAir() && getDriftingTime() >= 3) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_v", Animation.LoopType.LOOP));
         }
         //ANIMATION DES PARTICULES ORANGE
-        else if (!getBlock(blockX, blockY-1, blockZ).getBlock().equals(Blocks.AIR) && getDriftingTime() >= 2) {
+        else if (!getBlock(blockX, blockY-1, blockZ).isAir() && getDriftingTime() >= 2) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_o", Animation.LoopType.LOOP));
         }
         //ANIMATION DES PARTICULES BLEUES
-        else if (!getBlock(blockX, blockY-1, blockZ).getBlock().equals(Blocks.AIR) && getDriftingTime() >= 1) {
+        else if (!getBlock(blockX, blockY-1, blockZ).isAir() && getDriftingTime() >= 1) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_b", Animation.LoopType.LOOP));
         }

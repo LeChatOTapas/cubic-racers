@@ -34,9 +34,9 @@ public abstract class KartAbstract extends Entity {
     //ATTRIBUTS GENERAUX DES KARTS
     public static final float MIN_SPEED = 0.075f;
     public static final float FREINAGE_SPEED = 1.05f;
-    public static final float BASE_FALL_SPEED = -1.2f;
-    public static final float REDUCED_FALL_SPEED = -0.2f;
+    public static final float GRAVITY = 0.07f;
     public static final float COEFF_FROTTEMENT = 0.85f;
+    public static final double TERMINAL_VELOCITY = 3f;
 
     //ATTRIBUTS DU DRIFT
     public static final float DRIFT_ANGLE = 1.5f;
@@ -358,12 +358,12 @@ public abstract class KartAbstract extends Entity {
 
     @Override
     public boolean isPushable() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isPushedByFluid() {
-        return false;
+        return true;
     }
 
     @Override
