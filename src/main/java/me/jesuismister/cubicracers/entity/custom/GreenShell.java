@@ -3,6 +3,7 @@ package me.jesuismister.cubicracers.entity.custom;
 import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.sounds.SoundEngineIdle;
 import me.jesuismister.cubicracers.sounds.SoundGreenShellMoving;
+import me.jesuismister.cubicracers.util.ClientUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
@@ -125,6 +126,7 @@ public class GreenShell extends ItemKartAbstract implements GeoEntity {
 
         if (bounceTime > 4) {
             this.remove(RemovalReason.KILLED);
+            ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.GREEN_SHELL_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
         }
     }
 

@@ -11,9 +11,11 @@ import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.KartPositionMessage;
+import me.jesuismister.cubicracers.network.message.itemsKart.particles.KlaxonParticleMessage;
 import me.jesuismister.cubicracers.network.message.itemsKart.use.*;
 import me.jesuismister.cubicracers.sounds.*;
 import me.jesuismister.cubicracers.tags.ModTags;
+import me.jesuismister.cubicracers.util.ClientUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
@@ -183,6 +185,9 @@ public class Kart extends KartAbstract implements GeoEntity {
     public Vec3 calculateFallSpeed() {
         if(getDeltaOn()) return new Vec3(0, -KartAbstract.GRAVITY*2, 0);
         else if(getBouncingTime()!=0){
+            if(!level().isClientSide() && getBouncingTime()==BouncingMushroomBlock.TIME_BOUNCING){
+                ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.KART_BOUNCING.get(), SoundSource.RECORDS, 1f, 0.95f);
+            }
             float value = KartAbstract.BOUNCING_COEFF*(getBouncingTime() / BouncingMushroomBlock.TIME_BOUNCING);
             setBouncingTime(getBouncingTime()-1);
             return new Vec3(0, value, 0);
@@ -259,13 +264,6 @@ public class Kart extends KartAbstract implements GeoEntity {
         if (getKartItem().equals("Banana")) {
             if (level().isClientSide())
                 Network.CHANNEL.sendToServer(new BananaUseMessage(getIsPressingKeyForward()));
-            if(!getIsPressingKeyForward()){
-                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                    SoundsInit.playSound(SoundsInit.SPAWN_ITEM_BELOW.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
-            }else{
-                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                    SoundsInit.playSound(SoundsInit.THROWING_ITEM.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
-            }
         } else if (getKartItem().equals("Mushroom")) {
             setTimeBoost(5.f);
             setSpeed(MAX_SPEED + BOOST);
@@ -277,27 +275,16 @@ public class Kart extends KartAbstract implements GeoEntity {
         } else if (getKartItem().equals("Thunder")) {
             if (level().isClientSide()) Network.CHANNEL.sendToServer(new ThunderUseMessage());
         } else if (getKartItem().equals("Klaxon")) {
-            if (level().isClientSide()) Network.CHANNEL.sendToServer(new KlaxonUseMessage(getX(), getY(), getZ()));
+            if (level().isClientSide()) {
+                Network.CHANNEL.sendToServer(new KlaxonUseMessage(getX(), getY(), getZ()));
+                Network.CHANNEL.sendToServer(new KlaxonParticleMessage(getX(), getY(), getZ()));
+            }
         } else if (getKartItem().equals("Bob_omb")) {
             if (level().isClientSide())
                 Network.CHANNEL.sendToServer(new BobOmbUseMessage(getIsPressingKeyForward()));
-            if(!getIsPressingKeyForward()){
-                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                    SoundsInit.playSound(SoundsInit.SPAWN_ITEM_BELOW.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
-            }else{
-                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                    SoundsInit.playSound(SoundsInit.THROWING_ITEM.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
-            }
         } else if (getKartItem().equals("Fake_box")) {
             if (level().isClientSide())
                 Network.CHANNEL.sendToServer(new FakeBoxUseMessage(getIsPressingKeyForward()));
-            if(!getIsPressingKeyForward()){
-                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                    SoundsInit.playSound(SoundsInit.SPAWN_ITEM_BELOW.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
-            }else{
-                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                    SoundsInit.playSound(SoundsInit.THROWING_ITEM.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
-            }
         } else if (getKartItem().equals("Green_shell")) {
             if (level().isClientSide())
                 Network.CHANNEL.sendToServer(new GreenShellUseMessage(getIsPressingKeyBackward()));
@@ -417,6 +404,14 @@ public class Kart extends KartAbstract implements GeoEntity {
         if (getStunRotation() <= 0) {
             setCanMove(true);
             setStunRotation(0f);
+        }
+
+        if(!level().isClientSide && stunMotif.equals("Green_Shell")){
+            ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.GREEN_SHELL_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
+            stunMotif = "None";
+        }else if(!level().isClientSide && !stunMotif.equals("None")){
+            ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.BANANA_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
+            stunMotif = "None";
         }
     }
     /*
@@ -863,12 +858,6 @@ public class Kart extends KartAbstract implements GeoEntity {
             }
         }
 
-        //BLOCK CHAMPIGNON
-        if(getBouncingTime()==BouncingMushroomBlock.TIME_BOUNCING){
-            if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                SoundsInit.playSound(SoundsInit.KART_BOUNCING.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 0.5f, 0.95f);
-        }
-
         //BOOST DE VITESSE
         if(boostFini && (getTimeBoost()>0 || getDriftTimeBoost()>0)){
             boostFini = false;
@@ -876,17 +865,6 @@ public class Kart extends KartAbstract implements GeoEntity {
                 SoundsInit.playSound(SoundsInit.KART_SPEED_BOOST.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
         }else if(!boostFini && (getTimeBoost()<=0 && getDriftTimeBoost()<=0)){
             boostFini = true;
-        }
-
-        //STUN MOTIF
-        if(!stunMotif.equals("None")){
-            if(stunMotif.equals("Green_shell")){
-                if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                    SoundsInit.playSound(SoundsInit.GREEN_SHELL_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 1f);
-            }else if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player){
-                SoundsInit.playSound(SoundsInit.BANANA_HIT_KART.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 0.7f);
-            }
-            stunMotif = "None";
         }
     }
 

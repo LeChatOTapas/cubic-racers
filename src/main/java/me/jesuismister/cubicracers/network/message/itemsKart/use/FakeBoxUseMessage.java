@@ -3,8 +3,11 @@ package me.jesuismister.cubicracers.network.message.itemsKart.use;
 import me.jesuismister.cubicracers.entity.custom.FakeBox;
 import me.jesuismister.cubicracers.entity.custom.Kart;
 import me.jesuismister.cubicracers.init.KartItemsInit;
+import me.jesuismister.cubicracers.init.SoundsInit;
+import me.jesuismister.cubicracers.util.ClientUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -31,8 +34,10 @@ public class FakeBoxUseMessage {
             if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
                 if (message.isPressingKeyForward) {
                     FakeBox.spawnItemFront(kart, new FakeBox(KartItemsInit.FAKE_BOX.get(), kart.level()));
+                    ClientUtil.playSoundToAll(player.level(), player.getX(), player.getY(), player.getZ(), 8, SoundsInit.THROWING_ITEM.get(), SoundSource.RECORDS, 1f, 0.95f);
                 } else {
                     FakeBox.spawnItemBack(kart, new FakeBox(KartItemsInit.FAKE_BOX.get(), kart.level()));
+                    ClientUtil.playSoundToAll(player.level(), player.getX(), player.getY(), player.getZ(), 8, SoundsInit.SPAWN_ITEM_BELOW.get(), SoundSource.RECORDS, 1f, 0.95f);
                 }
             }
         });

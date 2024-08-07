@@ -3,6 +3,7 @@ package me.jesuismister.cubicracers.entity.custom;
 import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.itemsKart.particles.ExplosionParticleMessage;
+import me.jesuismister.cubicracers.util.ClientUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -86,6 +87,7 @@ public class BobOmb extends ItemKartAbstract implements GeoEntity {
                 stun(RANGE, "Bob_omb");
                 if(!level().isClientSide()) {
                     sendExplosionParticle();
+                    ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 48, SoundsInit.BOB_OMB_EXPLOSION.get(), SoundSource.RECORDS, 1f, 0.95f);
                     this.remove(RemovalReason.KILLED);
                 }
                 return;
