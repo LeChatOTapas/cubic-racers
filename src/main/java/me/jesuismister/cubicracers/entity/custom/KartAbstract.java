@@ -29,7 +29,7 @@ public abstract class KartAbstract extends Entity {
     public static final EntityDataAccessor<Boolean> isPressingKeyDrift = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> isPressingKeyItem = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> isPressingKeyDelta = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> previousPressingKeyDelta = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
+    //public static final EntityDataAccessor<Boolean> previousPressingKeyDelta = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
 
     //ATTRIBUTS GENERAUX DES KARTS
     public static final float MIN_SPEED = 0.075f;
@@ -157,13 +157,13 @@ public abstract class KartAbstract extends Entity {
         this.entityData.set(isPressingKeyDelta, value);
     }
 
-    public boolean getPreviousPressingKeyDelta() {
-        return this.entityData.get(previousPressingKeyDelta);
-    }
+    //public boolean getPreviousPressingKeyDelta() {
+    //    return this.entityData.get(previousPressingKeyDelta);
+    //}
 
-    public void setPreviousPressingKeyDelta(boolean value) {
-        this.entityData.set(previousPressingKeyDelta, value);
-    }
+    //public void setPreviousPressingKeyDelta(boolean value) {
+    //    this.entityData.set(previousPressingKeyDelta, value);
+    //}
 
     //
 
@@ -316,7 +316,7 @@ public abstract class KartAbstract extends Entity {
         entityData.define(isPressingKeyDrift, false);
         entityData.define(isPressingKeyItem, false);
         entityData.define(isPressingKeyDelta, false);
-        entityData.define(previousPressingKeyDelta, false);
+        //entityData.define(previousPressingKeyDelta, false);
 
         entityData.define(isDrifting, false);
         entityData.define(driftingSens, "None");

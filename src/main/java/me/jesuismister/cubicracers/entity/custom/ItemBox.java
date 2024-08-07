@@ -46,15 +46,6 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
     public static final float HITBOX_X = 1f;
     public static final float HITBOX_Y = 2f;
 
-    private static final double BANANA_DROP_RATE = 20;
-    private static final double GREEN_SHELL_DROP_RATE = 50;
-    private static final double MUSHROOM_DROP_RATE = 65;
-    private static final double FAKE_BOX_DROP_RATE = 75;
-    private static final double BOMB_OMB_DROP_RATE = 85;
-    private static final double STAR_DROP_RATE = 90;
-    private static final double THUNDER_DROP_RATE = 95;
-    private static final double KLAXON_DROP_RATE = 100;
-
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 4; //4s
     public static final EntityDataAccessor<Boolean> hasItem = SynchedEntityData.defineId(ItemBox.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> tickDisabled = SynchedEntityData.defineId(ItemBox.class, EntityDataSerializers.INT);

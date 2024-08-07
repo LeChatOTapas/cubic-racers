@@ -54,4 +54,9 @@ public class BlockInit {
 
     public static final RegistryObject<Block> RED_BOUNCING_MUSHROOM_BLOCK = registerBlock("red_bouncing_mushroom_block", () ->
             new BouncingMushroomBlock(BlockBehaviour.Properties.copy(Blocks.RED_MUSHROOM_BLOCK)));
+
+    public static final RegistryObject<Block> GLIDE_TRIGGER_BLOCK = registerBlock("glide_trigger_block", () ->
+            new BoosterBlock(BlockBehaviour.Properties.copy(Blocks.MAGMA_BLOCK).lightLevel((p_152684_) -> {
+                return 3;
+            }).sound(SoundType.AMETHYST)));
 }

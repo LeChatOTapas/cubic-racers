@@ -66,6 +66,7 @@ public class CubicRacers {
             event.accept(ItemInit.ITEM_BOX_SPAWN_ITEM.get());
 
             event.accept(BlockInit.BOOSTER.get());
+            event.accept(BlockInit.GLIDE_TRIGGER_BLOCK.get());
             event.accept(BlockInit.KART_CONTROLLER.get());
 
             event.accept(BlockInit.STARTING_BLOCK.get());

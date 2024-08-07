@@ -10,7 +10,7 @@
     {   "from": [ 0, 0, 0 ],
       "to": [ 16, 16, 16 ],
       "faces": {
-        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#booster_down", "cullface": "down" },
+        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#booster", "cullface": "down" },
         "up":    { "uv": [ 0, 16, 16, 0 ], "texture": "#booster_down", "cullface": "up" },
         "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#booster_down", "cullface": "north" },
         "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#booster", "cullface": "south" },

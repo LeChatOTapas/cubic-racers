@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "cubicracers:block/glide_trigger_block",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "cubicracers:block/glide_trigger_block",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "cubicracers:block/glide_trigger_block"
+    },
+    "facing=west": {
+      "model": "cubicracers:block/glide_trigger_block",
+      "y": 90
+    }
+  }
+}

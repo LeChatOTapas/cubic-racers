@@ -170,7 +170,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         setIsPressingKeyRight(false);
 
         setIsPressingKeyDelta(false);
-        setPreviousPressingKeyDelta(false);
+        //setPreviousPressingKeyDelta(false);
         setIsPressingKeyDrift(false);
         setIsPressingKeyItem(false);
     }
@@ -396,19 +396,17 @@ public class Kart extends KartAbstract implements GeoEntity {
             return;
         }
 
-        double playerX = player.getX();
-        double playerY = player.getY();
-        double playerZ = player.getZ();
-        BlockPos blockPos = new BlockPos((int) playerX, (int) playerY - 1, (int) playerZ);
-        BlockState blockState = this.getCommandSenderWorld().getBlockState(blockPos);
+        int blockX = (int) Math.floor(getX());
+        int blockY = (int) Math.floor(getY()-1);
+        int blockZ = (int) Math.floor(getZ());
+        BlockState blockState = getBlock(blockX, blockY, blockZ);
 
         //ACTIVATION DU DELTA PLANE
-        if (!getDeltaOn() && blockState.isAir() && (getIsPressingKeyDelta() && !getPreviousPressingKeyDelta())) {
+        if (!getDeltaOn() && blockState.getBlock().equals(BlockInit.GLIDE_TRIGGER_BLOCK.get())) {
             setDeltaOn(true);
-        }else if (getDeltaOn() && ((getIsPressingKeyDelta() && !getPreviousPressingKeyDelta()) || !blockState.isAir()))
+        } else if (getDeltaOn() && !(blockState.getBlock().equals(BlockInit.GLIDE_TRIGGER_BLOCK.get()) || blockState.isAir())){
             setDeltaOn(false);
-
-        setPreviousPressingKeyDelta(getIsPressingKeyDelta());
+        }
     }
 
     /**
@@ -867,9 +865,8 @@ public class Kart extends KartAbstract implements GeoEntity {
 
         //BLOCK CHAMPIGNON
         if(getBouncingTime()==BouncingMushroomBlock.TIME_BOUNCING){
-            System.out.println("SON");
             if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
-                SoundsInit.playSound(SoundsInit.KART_BOUNCING.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 0.5f);
+                SoundsInit.playSound(SoundsInit.KART_BOUNCING.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 0.5f, 0.95f);
         }
 
         //BOOST DE VITESSE

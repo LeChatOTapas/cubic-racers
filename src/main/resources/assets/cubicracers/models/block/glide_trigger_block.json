@@ -1,0 +1,22 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "glide_trigger_block": "cubicracers:block/glide_trigger_block",
+    "side": "cubicracers:block/kart_controller_side",
+    "glide_trigger_block_down": "cubicracers:block/glide_trigger_block_down",
+    "particle": "cubicracers:block/glide_trigger_block"
+  },
+  "elements": [
+    {   "from": [ 0, 0, 0 ],
+      "to": [ 16, 16, 16 ],
+      "faces": {
+        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#glide_trigger_block", "cullface": "down" },
+        "up":    { "uv": [ 0, 16, 16, 0 ], "texture": "#glide_trigger_block_down", "cullface": "up" },
+        "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#glide_trigger_block_down", "cullface": "north" },
+        "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#glide_trigger_block", "cullface": "south" },
+        "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#side", "cullface": "west" },
+        "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#side", "cullface": "east" }
+      }
+    }
+  ]
+}

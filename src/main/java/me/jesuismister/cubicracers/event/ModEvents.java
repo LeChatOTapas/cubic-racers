@@ -76,7 +76,7 @@ public class ModEvents {
             event.register(KeyBinds.KART_LEFT_KEY);
             event.register(KeyBinds.KART_RIGHT_KEY);
 
-            event.register(KeyBinds.KART_DELTA_KEY);
+            //event.register(KeyBinds.KART_DELTA_KEY);
             event.register(KeyBinds.KART_DRIFT_KEY);
             event.register(KeyBinds.KART_ITEM_KEY);
         }
@@ -106,7 +106,7 @@ public class ModEvents {
                     kart.setIsPressingKeyLeft(KeyBinds.KART_LEFT_KEY.isDown());
                     kart.setIsPressingKeyRight(KeyBinds.KART_RIGHT_KEY.isDown());
 
-                    kart.setIsPressingKeyDelta(KeyBinds.KART_DELTA_KEY.isDown());
+                    //kart.setIsPressingKeyDelta(KeyBinds.KART_DELTA_KEY.isDown());
                     kart.setIsPressingKeyDrift(KeyBinds.KART_DRIFT_KEY.isDown());
                     kart.setIsPressingKeyItem(KeyBinds.KART_ITEM_KEY.isDown());
 
