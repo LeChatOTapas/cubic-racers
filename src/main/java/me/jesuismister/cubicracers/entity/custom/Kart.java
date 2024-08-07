@@ -22,6 +22,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
@@ -184,7 +185,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         if (getDeltaOn()) {
             return REDUCED_FALL_SPEED;
         }
-        //VITESSE DE CHUTE : DANS l4EAU
+        //VITESSE DE CHUTE : DANS l'EAU
         else if(isInWater()){
             return REDUCED_FALL_SPEED*2;
         }
@@ -473,7 +474,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         int blockX = (int) Math.floor(getX());
         int blockY = (int) Math.floor(getY()) - 1;
         int blockZ = (int) Math.floor(getZ());
-        BlockState blockState = this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ));
+        BlockState blockState = getBlock(blockX, blockY, blockZ);
 
         if(blockState.is(BlockInit.KART_CONTROLLER.get())){
             if(blockState.getValue(KartController.LIT)){
@@ -494,6 +495,10 @@ public class Kart extends KartAbstract implements GeoEntity {
         return false;
     }
 
+    private BlockState getBlock(int x, int y, int z){
+        return this.getCommandSenderWorld().getBlockState(new BlockPos(x, y, z));
+    }
+
     public boolean isOnRoadBlock(){
         if(!RoadBlockConfig.ROAD_BLOCK_REQUIRE.get()) return true;
 
@@ -501,8 +506,15 @@ public class Kart extends KartAbstract implements GeoEntity {
         int blockY = (int) Math.floor(getY());
         int blockZ = (int) Math.floor(getZ());
 
-        return this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY-1, blockZ)).is(ModTags.Blocks.ROAD_BLOCK_TAG) ||
-                this.getCommandSenderWorld().getBlockState(new BlockPos(blockX, blockY, blockZ)).getBlock() instanceof HollowRoadBlock;
+        if(getBlock(blockX, blockY-1, blockZ).getBlock().equals(Blocks.AIR) ||
+                getBlock(blockX, blockY-1, blockZ).is(ModTags.Blocks.ROAD_BLOCK_TAG) ||
+                getBlock(blockX, blockY, blockZ).getBlock() instanceof HollowRoadBlock){
+            return true;
+        }else{
+            setDriftingTime(0);
+            setIsDrifting(false);
+            return false;
+        }
     }
 
     /**
@@ -770,17 +782,21 @@ public class Kart extends KartAbstract implements GeoEntity {
 
     private <T extends GeoAnimatable> PlayState predicate_drift(AnimationState<T> tAnimationState) {
         //ANIMATION DES PARTICULES VIOLETTES
-        if (getDriftingTime() >= 3) {
+        int blockX = (int) Math.floor(getX());
+        int blockY = (int) Math.floor(getY());
+        int blockZ = (int) Math.floor(getZ());
+
+        if (!getBlock(blockX, blockY-1, blockZ).getBlock().equals(Blocks.AIR) && getDriftingTime() >= 3) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_v", Animation.LoopType.LOOP));
         }
         //ANIMATION DES PARTICULES ORANGE
-        else if (getDriftingTime() >= 2) {
+        else if (!getBlock(blockX, blockY-1, blockZ).getBlock().equals(Blocks.AIR) && getDriftingTime() >= 2) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_o", Animation.LoopType.LOOP));
         }
         //ANIMATION DES PARTICULES BLEUES
-        else if (getDriftingTime() >= 1) {
+        else if (!getBlock(blockX, blockY-1, blockZ).getBlock().equals(Blocks.AIR) && getDriftingTime() >= 1) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_b", Animation.LoopType.LOOP));
         }
