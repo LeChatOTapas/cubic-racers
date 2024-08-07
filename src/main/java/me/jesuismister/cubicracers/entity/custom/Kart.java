@@ -3,6 +3,7 @@ package me.jesuismister.cubicracers.entity.custom;
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.block.*;
 import me.jesuismister.cubicracers.config.KartConfig;
+import me.jesuismister.cubicracers.config.KartItemConfig;
 import me.jesuismister.cubicracers.config.RoadBlockConfig;
 import me.jesuismister.cubicracers.init.BlockInit;
 import me.jesuismister.cubicracers.init.ItemInit;
@@ -37,6 +38,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -503,10 +505,7 @@ public class Kart extends KartAbstract implements GeoEntity {
         int blockY = (int) Math.floor(getY());
         int blockZ = (int) Math.floor(getZ());
 
-        if(getBlock(blockX, blockY-1, blockZ).isAir() || getBlock(blockX, blockY-1, blockZ).getBlock().equals(Blocks.WATER) ||
-                getBlock(blockX, blockY-1, blockZ).getBlock().equals(Blocks.LAVA) ||
-                getBlock(blockX, blockY-1, blockZ).is(ModTags.Blocks.ROAD_BLOCK_TAG) ||
-                getBlock(blockX, blockY, blockZ).getBlock() instanceof HollowRoadBlock){
+        if(getBlock(blockX, blockY-1, blockZ).is(ModTags.Blocks.ROAD_BLOCK_TAG) || RoadBlockConfig.ROAD_BLOCKS.get().contains(ForgeRegistries.BLOCKS.getKey(getBlock(blockX, blockY-1, blockZ).getBlock()).toString())){
             return true;
         }else{
             setDriftingTime(0);

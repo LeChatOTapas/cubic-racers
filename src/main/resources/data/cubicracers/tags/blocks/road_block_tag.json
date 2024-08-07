@@ -1,11 +1,10 @@
 {
   "values": [
+    "minecraft:air",
     "cubicracers:starting_block",
-    "cubicracers:road_block",
-    "cubicracers:road_block_dirt",
-    "cubicracers:road_block_sand",
-    "cubicracers:road_block_snow",
+    "cubicracers:booster",
     "cubicracers:kart_controller",
+    "cubicracers:hollow_road_block",
     "cubicracers:red_bouncing_mushroom_block"
   ]
 }
