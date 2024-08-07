@@ -25,6 +25,7 @@ public class SoundsInit {
     public static RegistryObject<SoundEvent> KART_DRIFTING = addSound("kart_drifting");
     public static RegistryObject<SoundEvent> KART_OFF_ROAD = addSound("kart_off_road");
     public static RegistryObject<SoundEvent> KART_SPEED_BOOST = addSound("kart_speed_boost");
+    public static RegistryObject<SoundEvent> KART_BOUNCING = addSound("kart_bouncing");
     public static RegistryObject<SoundEvent> BANANA_HIT_KART = addSound("banana_hit_kart");
     public static RegistryObject<SoundEvent> BOB_OMB_EXPLOSION = addSound("bob_omb_explosion");
     public static RegistryObject<SoundEvent> GREEN_SHELL_MOVING = addSound("green_shell_moving");

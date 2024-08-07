@@ -74,6 +74,8 @@ public class CubicRacers {
             event.accept(BlockInit.ROAD_BLOCK_SAND.get());
             event.accept(BlockInit.ROAD_BLOCK_SNOW.get());
 
+            event.accept(BlockInit.RED_BOUNCING_MUSHROOM_BLOCK.get());
+
 
             for (RegistryObject<Item> r : ItemInit.KARTS_SPAWN_ITEM) {
                 event.accept(r.get());

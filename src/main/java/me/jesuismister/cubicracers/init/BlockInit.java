@@ -1,10 +1,7 @@
 package me.jesuismister.cubicracers.init;
 
 import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.block.BoosterBlock;
-import me.jesuismister.cubicracers.block.HollowRoadBlock;
-import me.jesuismister.cubicracers.block.KartController;
-import me.jesuismister.cubicracers.block.RoadBlock;
+import me.jesuismister.cubicracers.block.*;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
@@ -54,4 +51,7 @@ public class BlockInit {
 
     public static final RegistryObject<Block> HOLLOW_ROAD_BLOCK = registerBlock("hollow_road_block", () ->
             new HollowRoadBlock(BlockBehaviour.Properties.copy(Blocks.SLIME_BLOCK).sound(SoundType.STONE)));
+
+    public static final RegistryObject<Block> RED_BOUNCING_MUSHROOM_BLOCK = registerBlock("red_bouncing_mushroom_block", () ->
+            new BouncingMushroomBlock(BlockBehaviour.Properties.copy(Blocks.RED_MUSHROOM_BLOCK)));
 }

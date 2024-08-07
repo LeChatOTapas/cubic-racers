@@ -1,10 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.block.BoosterBlock;
-import me.jesuismister.cubicracers.block.HollowRoadBlock;
-import me.jesuismister.cubicracers.block.KartController;
-import me.jesuismister.cubicracers.block.RoadBlock;
+import me.jesuismister.cubicracers.block.*;
 import me.jesuismister.cubicracers.config.KartConfig;
 import me.jesuismister.cubicracers.config.RoadBlockConfig;
 import me.jesuismister.cubicracers.init.BlockInit;
@@ -183,6 +180,11 @@ public class Kart extends KartAbstract implements GeoEntity {
      */
     public Vec3 calculateFallSpeed() {
         if(getDeltaOn()) return new Vec3(0, -KartAbstract.GRAVITY*2, 0);
+        else if(getBouncingTime()!=0){
+            float value = KartAbstract.BOUNCING_COEFF*(getBouncingTime() / BouncingMushroomBlock.TIME_BOUNCING);
+            setBouncingTime(getBouncingTime()-1);
+            return new Vec3(0, value, 0);
+        }
 
         double verticalSpeed = isInWater() ? KartAbstract.GRAVITY*3 : KartAbstract.GRAVITY * deltaTime;
         verticalSpeed = Math.min(verticalSpeed, KartAbstract.TERMINAL_VELOCITY);
@@ -862,6 +864,13 @@ public class Kart extends KartAbstract implements GeoEntity {
                     }
                 }
             }
+        }
+
+        //BLOCK CHAMPIGNON
+        if(getBouncingTime()==BouncingMushroomBlock.TIME_BOUNCING){
+            System.out.println("SON");
+            if(getFirstPassenger()!=null && getFirstPassenger() instanceof Player player)
+                SoundsInit.playSound(SoundsInit.KART_BOUNCING.get(), level(), new BlockPos((int)getX(), (int)getY(), (int)getZ()), player, SoundSource.RECORDS, 0.5f);
         }
 
         //BOOST DE VITESSE

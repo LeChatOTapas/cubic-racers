@@ -62,5 +62,9 @@
   "klaxon": {
     "subtitle": "sound.kart.klaxon",
     "sounds": [ "cubicracers:klaxon" ]
+  },
+  "kart_bouncing": {
+    "subtitle": "sound.kart.kart_bouncing",
+    "sounds": [ "cubicracers:kart_bouncing" ]
   }
 }

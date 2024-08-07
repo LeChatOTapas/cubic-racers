@@ -35,6 +35,7 @@ public abstract class KartAbstract extends Entity {
     public static final float MIN_SPEED = 0.075f;
     public static final float FREINAGE_SPEED = 1.05f;
     public static final float GRAVITY = 0.07f;
+    public static final float BOUNCING_COEFF = 1f;
     public static final float COEFF_FROTTEMENT = 0.85f;
     public static final double TERMINAL_VELOCITY = 3f;
 
@@ -54,6 +55,7 @@ public abstract class KartAbstract extends Entity {
     //ANIMATION DEGATS
     public static final EntityDataAccessor<Boolean> canMove = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> stunRotation = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> bouncingTime = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.FLOAT);
 
     //KART ITEM
     private String kartItem;
@@ -249,6 +251,14 @@ public abstract class KartAbstract extends Entity {
         this.entityData.set(stunRotation, value);
     }
 
+    public float getBouncingTime() {
+        return this.entityData.get(bouncingTime);
+    }
+
+    public void setBouncingTime(float value) {
+        this.entityData.set(bouncingTime, value);
+    }
+
     //
 
     public String getKartItem() {
@@ -320,6 +330,7 @@ public abstract class KartAbstract extends Entity {
 
         entityData.define(canMove, true);
         entityData.define(stunRotation, 0.f);
+        entityData.define(bouncingTime, 0.f);
 
         setKartItem("None");
         entityData.define(isInvinsible, false);
