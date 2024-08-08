@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " # ",
+        "RIR",
+        " # "
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:slime_block"
+        },
+        "R": {
+            "tag": "cubicracers:mushroom_blocks"
+        },
+        "I": {
+            "item": "minecraft:red_dye"
+        }
+    },
+    "result": {
+        "item": "cubicracers:red_bouncing_mushroom_block",
+        "count": 8
+    }
+}
