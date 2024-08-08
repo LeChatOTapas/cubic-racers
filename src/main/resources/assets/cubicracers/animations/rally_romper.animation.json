@@ -252,7 +252,7 @@
 		},
 		"glider_on": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 0.29167,
+			"animation_length": 0.2917,
 			"bones": {
 				"glider": {
 					"position": {
@@ -290,7 +290,7 @@
 		},
 		"glider_off": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 0.29167,
+			"animation_length": 0.2917,
 			"bones": {
 				"glider": {
 					"position": {
@@ -329,7 +329,7 @@
 		},
 		"drift_off": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 0.33333,
+			"animation_length": 0.3333,
 			"bones": {
 				"drift_b_r": {
 					"scale": {
