@@ -91,13 +91,13 @@ public class CubicRacers {
     public void initKartData(){
         int i = 0;
         //Les karts doivent faire <= 2.0f en hitboxX et = à 2.0f en hitboxY
-        KARTS_DATA.add(new KartData(i++,"standard_kart", "Maxmos",         -1.0f, 1.8f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"flame_flyer",   "TurboMooze3000", -0.9f, 1.6f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"b_dasher",      "Maxmos",         -0.8f, 1.9f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"zipper",        "TurboMooze3000", -0.8f, 1.6f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"mach_celere",   "Maxmos",         -0.8f, 1.9f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"rally_romper",  "TurboMooze3000", -0.7f, 2.0f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"wild_wiggler",  "Zitro",          -0.7f, 1.5f, 2.0f));
+        KARTS_DATA.add(new KartData(i++,"standard_kart", "Maxmos",         -1.5f, 1.8f, 2.0f));
+        KARTS_DATA.add(new KartData(i++,"flame_flyer",   "TurboMooze3000", -1.4f, 1.6f, 2.0f));
+        KARTS_DATA.add(new KartData(i++,"b_dasher",      "Maxmos",         -1.7f, 1.9f, 2.0f));
+        KARTS_DATA.add(new KartData(i++,"zipper",        "TurboMooze3000", -1.5f, 1.6f, 2.0f));
+        KARTS_DATA.add(new KartData(i++,"mach_celere",   "Maxmos",         -1.5f, 1.9f, 2.0f));
+        KARTS_DATA.add(new KartData(i++,"rally_romper",  "TurboMooze3000", -0.9f, 2.0f, 2.0f));
+        KARTS_DATA.add(new KartData(i++,"wild_wiggler",  "Zitro",          -0.9f, 1.5f, 2.0f));
         //KARTS_DATA.add(new KartData(i++,"trash_kart",    "JeSuisMister", -0.7f, 2.5f, 1.8f));
     }
 }
