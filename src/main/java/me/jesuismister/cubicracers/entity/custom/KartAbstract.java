@@ -40,7 +40,7 @@ public abstract class KartAbstract extends Entity {
     public static final double TERMINAL_VELOCITY = 3f;
 
     //ATTRIBUTS DU DRIFT
-    public static final float DRIFT_ANGLE = 1.5f;
+    public static final float DRIFT_ANGLE = 1.75f;
     public static final EntityDataAccessor<Boolean> isDrifting = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> driftingSens = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Float> driftingTime = SynchedEntityData.defineId(KartAbstract.class, EntityDataSerializers.FLOAT);
