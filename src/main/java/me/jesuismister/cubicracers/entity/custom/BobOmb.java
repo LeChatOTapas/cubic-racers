@@ -44,7 +44,7 @@ public class BobOmb extends ItemKartAbstract implements GeoEntity {
 
     private static final float TICK_TO_DESPAWN = 20f * 4f; //5s
 
-    public static final EntityDataAccessor<Boolean> shouldExplode = SynchedEntityData.defineId(Kart.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> shouldExplode = SynchedEntityData.defineId(BobOmb.class, EntityDataSerializers.BOOLEAN);
     private float tickAlive = 0;
 
     public BobOmb(EntityType<?> p_19870_, Level p_19871_) {
@@ -83,33 +83,34 @@ public class BobOmb extends ItemKartAbstract implements GeoEntity {
             this.move(MoverType.SELF, new Vec3(getDeltaMovement().x, (1-Math.sqrt(propulsionY))*3, getDeltaMovement().z));
             propulsionY += 0.3f;
         }else{
+            this.move(MoverType.SELF, new Vec3(0, -1, 0));
+        }
+
+        if(!level().isClientSide()) {
             if (getShouldExplode()) {
                 stun(RANGE, "Bob_omb");
-                if(!level().isClientSide()) {
-                    sendExplosionParticle();
-                    ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 48, SoundsInit.BOB_OMB_EXPLOSION.get(), SoundSource.RECORDS, 1f, 0.95f);
-                    this.remove(RemovalReason.KILLED);
-                }
+                sendExplosionParticle();
+                ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 48, SoundsInit.BOB_OMB_EXPLOSION.get(), SoundSource.RECORDS, 1f, 0.95f);
+                this.remove(RemovalReason.KILLED);
                 return;
             }
 
             //RECUPERER TOUTES LES ENTITES PROCHES DE LA BOB OM
             List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
             for (Entity entity : nearbyEntities) {
-                if (entity instanceof Kart) {
+                if (entity instanceof TestKart) {
                     setShouldExplode(true);
                     break;
                 }
             }
-
-            tickAlive++;
-            if (tickAlive > TICK_TO_DESPAWN) {
-                setShouldExplode(true);
-            }
-
-            if (getIsPropulsing()) setIsPropulsing(false);
-            this.move(MoverType.SELF, new Vec3(0, -1, 0));
         }
+
+        tickAlive++;
+        if (tickAlive > TICK_TO_DESPAWN) {
+            setShouldExplode(true);
+        }
+
+        if (getIsPropulsing()) setIsPropulsing(false);
     }
 
     private void sendExplosionParticle() {

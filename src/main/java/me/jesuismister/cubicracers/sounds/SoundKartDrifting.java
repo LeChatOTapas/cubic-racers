@@ -1,6 +1,6 @@
 package me.jesuismister.cubicracers.sounds;
 
-import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.entity.custom.TestKartAbstract;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 
@@ -8,7 +8,7 @@ public class SoundKartDrifting extends SoundLoopKart {
 
     private float volumeToReach;
 
-    public SoundKartDrifting(Kart kart, SoundEvent event, SoundSource category) {
+    public SoundKartDrifting(TestKartAbstract kart, SoundEvent event, SoundSource category) {
         super(kart, event, category);
         volumeToReach = volume;
         volume = volume / 2.5F;
@@ -25,8 +25,8 @@ public class SoundKartDrifting extends SoundLoopKart {
 
     @Override
     public boolean shouldStopSound() {
-        Kart kart = (Kart) entity;
-        if (!kart.getIsDrifting()) {
+        TestKartAbstract kart = (TestKartAbstract) entity;
+        if (!kart.isDrifting()) {
             return true;
         }
         return false;

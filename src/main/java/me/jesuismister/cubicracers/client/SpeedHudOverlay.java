@@ -1,7 +1,6 @@
 package me.jesuismister.cubicracers.client;
 
-import me.jesuismister.cubicracers.entity.custom.Kart;
-import net.minecraft.client.Minecraft;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
@@ -29,6 +28,6 @@ public class SpeedHudOverlay {
      * @return
      */
     private static boolean shouldPrint(LocalPlayer player) {
-        return player != null && player.getVehicle() != null && player.getVehicle() instanceof Kart;
+        return player != null && player.getVehicle() != null && player.getVehicle() instanceof TestKart;
     }
 }

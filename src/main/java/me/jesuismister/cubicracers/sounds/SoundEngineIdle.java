@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers.sounds;
 
-import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
+import me.jesuismister.cubicracers.entity.custom.TestKartAbstract;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 
@@ -8,7 +9,7 @@ public class SoundEngineIdle extends SoundLoopKart {
 
     private float volumeToReach;
 
-    public SoundEngineIdle(Kart kart, SoundEvent event, SoundSource category) {
+    public SoundEngineIdle(TestKart kart, SoundEvent event, SoundSource category) {
         super(kart, event, category);
         volumeToReach = volume;
         volume = volume / 2.5F;
@@ -16,20 +17,20 @@ public class SoundEngineIdle extends SoundLoopKart {
 
     @Override
     public void tick() {
-        Kart kart = (Kart) entity;
+        TestKart kart = (TestKart) entity;
         if (volume < volumeToReach) {
             volume = Math.min(volume + volumeToReach / 2.5F, volumeToReach);
         }
 
-        this.volume = Math.max(0.0F, default_volume * Math.min(0.9f, 1f - Math.abs(kart.getSpeed()/kart.MAX_SPEED)));
+        this.volume = Math.max(0.0F, default_volume * Math.min(0.9f, 1f - Math.abs(kart.getSpeed()/kart.getMAX_SPEED())));
 
         super.tick();
     }
 
     @Override
     public boolean shouldStopSound() {
-        Kart kart = (Kart) entity;
-        if (kart.getDeltaOn() || kart.getIsInvinsible() || kart.getSpeed() > kart.MAX_SPEED*0.2f || kart.getSpeed() < -kart.MAX_SPEED*0.2f) {
+        TestKart kart = (TestKart) entity;
+        if (kart.isDeltaOn() || kart.isInvinsible() || kart.getSpeed() > kart.getMAX_SPEED()*0.2f || kart.getSpeed() < -kart.getMAX_SPEED()*0.2f) {
             return true;
         }
         return false;

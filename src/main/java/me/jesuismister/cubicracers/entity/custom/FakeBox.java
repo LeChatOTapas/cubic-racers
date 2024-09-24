@@ -1,6 +1,9 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.init.KartItemsInit;
+import me.jesuismister.cubicracers.init.SoundsInit;
+import me.jesuismister.cubicracers.util.ClientUtil;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
@@ -68,27 +71,31 @@ public class FakeBox extends ItemKartAbstract implements GeoEntity {
             setDeltaMovement(vec3);
             this.move(MoverType.SELF, new Vec3(getDeltaMovement().x, (1 - Math.sqrt(propulsionY)) * 3, getDeltaMovement().z));
             propulsionY += 0.3f;
-        } else {
-            //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
-            List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
+        }else{
+            this.move(MoverType.SELF, new Vec3(0, -1, 0));
+        }
 
+        //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
+        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
+
+        if(!level().isClientSide()) {
             //PARCOURIR LA LISTE DES ENTITES PROCHES
             for (Entity entity : nearbyEntities) {
                 //ON CHECK QUE LES ENTITES "KART"
-                if (entity instanceof Kart kart) {
+                if (entity instanceof TestKart kart) {
                     //Network.CHANNEL.sendToServer(new ItemBoxConsumeMessage(""));
-                    Kart.stunKart(kart, "Fake_box");
-                    if(!level().isClientSide()) this.remove(RemovalReason.KILLED);
+                    TestKart.stunKart(kart, "Fake_box");
+                    ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.BANANA_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
+                    this.remove(RemovalReason.KILLED);
                 }
             }
-
-            //LE CUBE DESPAWN AU BOUT DE X SECS
-            tickAlive++;
-            if (tickAlive > TICK_TO_DESPAWN) {
-                this.remove(RemovalReason.KILLED);
-            }
-            if (getIsPropulsing()) setIsPropulsing(false);
-            this.move(MoverType.SELF, new Vec3(0, -1, 0));
         }
+
+        //LE CUBE DESPAWN AU BOUT DE X SECS
+        tickAlive++;
+        if (tickAlive > TICK_TO_DESPAWN) {
+            this.remove(RemovalReason.KILLED);
+        }
+        if (getIsPropulsing()) setIsPropulsing(false);
     }
 }

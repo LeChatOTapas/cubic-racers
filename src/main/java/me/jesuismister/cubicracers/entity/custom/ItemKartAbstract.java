@@ -1,9 +1,12 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+import me.jesuismister.cubicracers.init.SoundsInit;
+import me.jesuismister.cubicracers.util.ClientUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -86,7 +89,7 @@ public abstract class ItemKartAbstract extends Entity {
      *
      * @param kart
      */
-    public static void spawnItemFront(Kart kart, ItemKartAbstract item) {
+    public static void spawnItemFront(TestKart kart, ItemKartAbstract item) {
         if (kart.level() != null) {
             double angle = Math.toRadians(kart.getYRot());
             item.setPos(kart.getX() + (-Math.sin(angle) * kart.HITBOX_X*2f), kart.getY() + 0.2, kart.getZ() + (Math.cos(angle) * kart.HITBOX_X*2f));
@@ -101,7 +104,7 @@ public abstract class ItemKartAbstract extends Entity {
      *
      * @param kart
      */
-    public static void spawnItemBack(Kart kart, ItemKartAbstract item) {
+    public static void spawnItemBack(TestKart kart, ItemKartAbstract item) {
         if (kart.level() != null) {
             double angle = Math.toRadians(kart.getYRot());
             item.setPos(kart.getX() + (Math.sin(angle) * kart.HITBOX_X*1.5f), kart.getY(), kart.getZ() + (-Math.cos(angle) * kart.HITBOX_X*1.5f));
@@ -116,8 +119,11 @@ public abstract class ItemKartAbstract extends Entity {
     public void stun(float range, String motif) {
         List<Entity> nearbyEntities = this.level().getEntities(this, this.getBoundingBox().inflate(range));
         for (Entity entity : nearbyEntities) {
-            if (entity instanceof Kart kart) {
-                if (kart.getCanMove()) Kart.stunKart(kart, motif);
+            if (entity instanceof TestKart kart) {
+                if (kart.getCanMove()){
+                    TestKart.stunKart(kart, motif);
+                    ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.BANANA_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
+                }
             }
         }
     }

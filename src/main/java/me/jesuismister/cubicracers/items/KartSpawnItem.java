@@ -2,7 +2,7 @@ package me.jesuismister.cubicracers.items;
 
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.KartData;
-import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -69,7 +69,7 @@ public class KartSpawnItem extends Item {
 
             //SI LE TARGET DU CLIQUE DU JOUEUR EST UN BLOCK
             if (hitresult.getType() == HitResult.Type.BLOCK) {
-                Kart kart = this.getKart(level, hitresult);
+                TestKart kart = this.getKart(level, hitresult);
                 kart.setYRot(player.getYRot());
                 //SI LE KART N'A PAS ASSEZ DE PLACE POUR SPAWN, ON ARRETE
                 if (!level.noCollision(kart, kart.getBoundingBox())) {
@@ -104,10 +104,10 @@ public class KartSpawnItem extends Item {
      * @param hitResult
      * @return
      */
-    private Kart getKart(Level level, HitResult hitResult) {
+    private TestKart getKart(Level level, HitResult hitResult) {
         KartData d = KartData.getKartData(CubicRacers.KARTS_DATA, this.kartName);
         assert d != null;
-        return new Kart(level, d.id, hitResult.getLocation().x, hitResult.getLocation().y, hitResult.getLocation().z, d.name, d.texture, d.model, d.animation, d.playerPosY, d.hitboxX, d.hitboxY);
+        return new TestKart(level, d.id, hitResult.getLocation().x, hitResult.getLocation().y, hitResult.getLocation().z, d.name, d.texture, d.model, d.animation, d.playerPosY, d.hitboxX, d.hitboxY);
     }
 
     @Override

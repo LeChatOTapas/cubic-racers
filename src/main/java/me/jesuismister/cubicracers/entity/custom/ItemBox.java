@@ -3,15 +3,14 @@ package me.jesuismister.cubicracers.entity.custom;
 import me.jesuismister.cubicracers.config.KartItemConfig;
 import me.jesuismister.cubicracers.init.ItemInit;
 import me.jesuismister.cubicracers.init.KartItemsInit;
-import me.jesuismister.cubicracers.network.Network;
-import me.jesuismister.cubicracers.network.message.ItemToClientMessage;
+import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.util.ClientRandom;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -23,7 +22,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -102,14 +100,17 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
             //PARCOURIR LA LISTE DES ENTITES PROCHES
             for (Entity entity : nearbyEntities) {
                 //ON CHECK QUE LES ENTITES "KART"
-                if (entity instanceof Kart kart) {
+                if (entity instanceof TestKart kart) {
 
-                    if (!level().isClientSide() && giveRandomItem(kart)) {
+                    if (level().isClientSide() && kart.getFirstPassenger()!=null && kart.getFirstPassenger() instanceof Player player){
+                        giveRandomItem(kart);
+                        SoundsInit.playSound(SoundsInit.ITEM_BOX_CONSUME.get(), player.level(), getOnPos(), player, SoundSource.RECORDS, 1f);
+                        spawnParticleForAll(this.level(), 20, new BlockParticleOption(ParticleTypes.BLOCK, state), true, this.getX() , this.getY() + 2,  this.getZ() , 0.6f, 0f, 0.6f, 0.8f, 40);
+                    } else {
                         setHasItem(false);
                         setTickDisabled(0);
-                        spawnParticleForAll(this.level(), 20, new BlockParticleOption(ParticleTypes.BLOCK, state), true, this.getX() , this.getY() + 2,  this.getZ() , 0.6f, 0f, 0.6f, 0.8f, 40);
-                        break;
                     }
+                    break;
                 }
             }
         }
@@ -127,15 +128,16 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
      *
      * @param kart
      */
-    public boolean giveRandomItem(Kart kart) {
+    public boolean giveRandomItem(TestKart kart) {
         if (kart.getFirstPassenger()== null || !(kart.getFirstPassenger() instanceof Player))
             return false;
 
         if(kart.getKartItem().equals("None")){
             kart.setKartItem(getRandomItem());
+        }else{
         }
-        ServerPlayer player = (ServerPlayer) kart.getFirstPassenger();
-        Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new ItemToClientMessage(kart.getKartItem()));
+        //ServerPlayer player = (ServerPlayer) kart.getFirstPassenger();
+        //Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new ItemToClientMessage(kart.getKartItem()));
 
         return true;
     }

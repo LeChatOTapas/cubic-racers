@@ -2,7 +2,7 @@ package me.jesuismister.cubicracers.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +31,7 @@ public class ItemHudOverlay {
 
     public static final IGuiOverlay HUD_ITEM_BOX = (((gui, poseStack, partialTick, screenWidth, screenHeight) -> {
         if (shouldPrint(gui.getMinecraft().player)) {
-            Kart kart = (Kart) gui.getMinecraft().player.getVehicle();
+            TestKart kart = (TestKart) gui.getMinecraft().player.getVehicle();
             if (kart == null) return;
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -61,6 +61,6 @@ public class ItemHudOverlay {
      * @return
      */
     private static boolean shouldPrint(LocalPlayer player) {
-        return player != null && player.getVehicle() != null && player.getVehicle() instanceof Kart;
+        return player != null && player.getVehicle() != null && player.getVehicle() instanceof TestKart;
     }
 }

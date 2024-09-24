@@ -4,8 +4,7 @@ import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.client.ItemHudOverlay;
 import me.jesuismister.cubicracers.client.SpeedHudOverlay;
 import me.jesuismister.cubicracers.entity.client.renderer.*;
-import me.jesuismister.cubicracers.entity.custom.Kart;
-import me.jesuismister.cubicracers.init.BlockInit;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.InputMessage;
 import me.jesuismister.cubicracers.init.KartInit;
@@ -14,12 +13,9 @@ import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.particles.custom.DriftParticles;
 import me.jesuismister.cubicracers.util.KeyBinds;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
@@ -30,9 +26,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.RegistryObject;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class ModEvents {
 
@@ -54,8 +47,8 @@ public class ModEvents {
             });*/
 
             //REGISTER TOUS LES KARTS
-            for (RegistryObject<EntityType<Kart>> kart : KartInit.KARTS.values()) {
-                EntityRenderers.register(kart.get(), KartRenderer::new);
+            for (RegistryObject<EntityType<TestKart>> kart : KartInit.KARTS.values()) {
+                EntityRenderers.register(kart.get(), TestKartRenderer::new);
             }
 
             //REGISTER TOUS LES KART_ITEMS
@@ -96,25 +89,25 @@ public class ModEvents {
     public static class ClientForgeEvent {
         @SubscribeEvent
         public static void onKeyInput(InputEvent.Key event) {
-            if (Minecraft.getInstance() != null && Minecraft.getInstance().player != null && Minecraft.getInstance().player.getVehicle() != null && Minecraft.getInstance().player.getVehicle() instanceof Kart kart) {
+            if (Minecraft.getInstance() != null && Minecraft.getInstance().player != null && Minecraft.getInstance().player.getVehicle() != null && Minecraft.getInstance().player.getVehicle() instanceof TestKart kart) {
                 if (kart.getCanMove()) {
-                    kart.setIsPressingKeyAccelerate(KeyBinds.KART_ACCELERATE_KEY.isDown());
-                    kart.setIsPressingKeyDeccelerate(KeyBinds.KART_DECCELERATE_KEY.isDown());
+                    kart.setPressingKeyAccelerate(KeyBinds.KART_ACCELERATE_KEY.isDown());
+                    kart.setPressingKeyDeccelerate(KeyBinds.KART_DECCELERATE_KEY.isDown());
 
-                    kart.setIsPressingKeyFoward(KeyBinds.KART_FORWARD_KEY.isDown());
-                    kart.setIsPressingKeyBackward(KeyBinds.KART_BACKWARD_KEY.isDown());
-                    kart.setIsPressingKeyLeft(KeyBinds.KART_LEFT_KEY.isDown());
-                    kart.setIsPressingKeyRight(KeyBinds.KART_RIGHT_KEY.isDown());
+                    kart.setPressingKeyForward(KeyBinds.KART_FORWARD_KEY.isDown());
+                    kart.setPressingKeyBackward(KeyBinds.KART_BACKWARD_KEY.isDown());
+                    kart.setPressingKeyLeft(KeyBinds.KART_LEFT_KEY.isDown());
+                    kart.setPressingKeyRight(KeyBinds.KART_RIGHT_KEY.isDown());
 
-                    //kart.setIsPressingKeyDelta(KeyBinds.KART_DELTA_KEY.isDown());
-                    kart.setIsPressingKeyDrift(KeyBinds.KART_DRIFT_KEY.isDown());
-                    kart.setIsPressingKeyItem(KeyBinds.KART_ITEM_KEY.isDown());
+                    //kart.setPressingKeyDelta(KeyBinds.KART_DELTA_KEY.isDown());
+                    kart.setPressingKeyDrift(KeyBinds.KART_DRIFT_KEY.isDown());
+                    kart.setPressingKeyItem(KeyBinds.KART_ITEM_KEY.isDown());
 
                     Network.CHANNEL.sendToServer(new InputMessage(
-                            kart.getIsPressingKeyAccelerate(), kart.getIsPressingKeyDeccelerate(),
-                            kart.getIsPressingKeyForward(), kart.getIsPressingKeyBackward(),
-                            kart.getIsPressingKeyLeft(), kart.getIsPressingKeyRight(),
-                            kart.getIsPressingKeyDelta(), kart.getIsPressingKeyDrift(), kart.getIsPressingKeyItem()));
+                            kart.isPressingKeyAccelerate(), kart.isPressingKeyDeccelerate(),
+                            kart.isPressingKeyForward(), kart.isPressingKeyBackward(),
+                            kart.isPressingKeyLeft(), kart.isPressingKeyRight(),
+                            kart.isPressingKeyDelta(), kart.isPressingKeyDrift(), kart.isPressingKeyItem()));
                 } else {
                     Network.CHANNEL.sendToServer(new InputMessage(false, false, false, false, false, false, false, false, false));
                 }
@@ -124,7 +117,7 @@ public class ModEvents {
         // Ajoutez la méthode manquante et corrigez l'annotation
         @SubscribeEvent
         public static void cancelFallDamageInKart(LivingFallEvent event) {
-            if (event.getEntity() instanceof Player player && player.getVehicle() instanceof Kart) {
+            if (event.getEntity() instanceof Player player && player.getVehicle() instanceof TestKart) {
                 event.setCanceled(true);
             }
         }

@@ -1,7 +1,7 @@
 package me.jesuismister.cubicracers.event;
 
 import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -16,7 +16,7 @@ public class PlayerRenderEventHandler {
     @SubscribeEvent
     public static void onPlayerRenderPre(RenderLivingEvent.Pre<Player, PlayerModel<Player>> event) {
         if(event.getEntity() instanceof Player player){
-            if (player.isPassenger() && player.getVehicle() instanceof Kart) {
+            if (player.isPassenger() && player.getVehicle() instanceof TestKart) {
                 //Kart kart = (Kart) player.getVehicle();
 
                 //TO DO
@@ -41,7 +41,7 @@ public class PlayerRenderEventHandler {
     @SubscribeEvent
     public static void onPlayerRenderPost(RenderLivingEvent.Post<Player, PlayerModel<Player>> event) {
         if(event.getEntity() instanceof Player player) {
-            if (player.isPassenger() && player.getVehicle() instanceof Kart) {
+            if (player.isPassenger() && player.getVehicle() instanceof TestKart) {
                 event.getPoseStack().popPose();
             }
         }

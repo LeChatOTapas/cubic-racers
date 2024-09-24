@@ -1,6 +1,6 @@
 package me.jesuismister.cubicracers.network.message.itemsKart.use;
 
-import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
 import me.jesuismister.cubicracers.itemKart.Thunder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +25,7 @@ public class ThunderUseMessage {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
-            if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
+            if (player.getVehicle() != null && player.getVehicle() instanceof TestKart kart) {
                 Thunder.applyThunderToOthersKarts(kart);
             }
         });

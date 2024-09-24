@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers.network.message;
 
-import me.jesuismister.cubicracers.entity.custom.Kart;
+import de.maxhenkel.corelib.net.Message;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -55,16 +56,16 @@ public class InputMessage {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
-            if (player!=null && player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
-                kart.setIsPressingKeyAccelerate(message.keyAccelerate);
-                kart.setIsPressingKeyDeccelerate(message.keyDeccelerate);
-                kart.setIsPressingKeyFoward(message.keyForward);
-                kart.setIsPressingKeyBackward(message.keyBackward);
-                kart.setIsPressingKeyLeft(message.keyLeft);
-                kart.setIsPressingKeyRight(message.keyRight);
-                kart.setIsPressingKeyDelta(message.keyDelta);
-                kart.setIsPressingKeyDrift(message.keyDrift);
-                kart.setIsPressingKeyItem(message.keyItem);
+            if (player!=null && player.getVehicle() != null && player.getVehicle() instanceof TestKart kart) {
+                kart.setPressingKeyAccelerate(message.keyAccelerate);
+                kart.setPressingKeyDeccelerate(message.keyDeccelerate);
+                kart.setPressingKeyForward(message.keyForward);
+                kart.setPressingKeyBackward(message.keyBackward);
+                kart.setPressingKeyLeft(message.keyLeft);
+                kart.setPressingKeyRight(message.keyRight);
+                kart.setPressingKeyDelta(message.keyDelta);
+                kart.setPressingKeyDrift(message.keyDrift);
+                kart.setPressingKeyItem(message.keyItem);
             }
         });
         context.setPacketHandled(true);

@@ -1,7 +1,7 @@
 package me.jesuismister.cubicracers.network.message.itemsKart.use;
 
 import me.jesuismister.cubicracers.entity.custom.FakeBox;
-import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.util.ClientUtil;
@@ -31,7 +31,7 @@ public class FakeBoxUseMessage {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
-            if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
+            if (player.getVehicle() != null && player.getVehicle() instanceof TestKart kart) {
                 if (message.isPressingKeyForward) {
                     FakeBox.spawnItemFront(kart, new FakeBox(KartItemsInit.FAKE_BOX.get(), kart.level()));
                     ClientUtil.playSoundToAll(player.level(), player.getX(), player.getY(), player.getZ(), 8, SoundsInit.THROWING_ITEM.get(), SoundSource.RECORDS, 1f, 0.95f);

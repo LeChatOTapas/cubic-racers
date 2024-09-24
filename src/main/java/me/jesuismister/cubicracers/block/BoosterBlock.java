@@ -1,6 +1,6 @@
 package me.jesuismister.cubicracers.block;
 
-import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -19,7 +19,7 @@ public class BoosterBlock extends GlazedTerracottaBlock {
 
     @Override
     public void stepOn(Level level, BlockPos blockPos, BlockState blockState, Entity entity) {
-        if (entity instanceof Kart kart) {
+        if (entity instanceof TestKart kart) {
             if (kart.getFirstPassenger() == null) return;
 
             //RETOURNER LE KART A 180 SI IL VA A CONTRE SENS DU BOOSTER
@@ -36,7 +36,7 @@ public class BoosterBlock extends GlazedTerracottaBlock {
             }
             //APPLIQUE LE BOOST
             kart.setTimeBoost(5.f);
-            kart.setSpeed(kart.MAX_SPEED + kart.BOOST);
+            kart.setSpeed(kart.getMAX_SPEED() + kart.getBOOST());
         }
 
         super.stepOn(level, blockPos, blockState, entity);

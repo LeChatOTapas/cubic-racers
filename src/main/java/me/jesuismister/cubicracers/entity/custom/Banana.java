@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.init.SoundsInit;
+import me.jesuismister.cubicracers.util.ClientUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -63,30 +64,35 @@ public class Banana extends ItemKartAbstract implements GeoEntity {
             setDeltaMovement(vec3);
             this.move(MoverType.SELF, new Vec3(getDeltaMovement().x, (1-Math.sqrt(propulsionY))*3, getDeltaMovement().z));
             propulsionY += 0.3f;
-        } else {
-            //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
-            List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
+        }else{
+            this.move(MoverType.SELF, new Vec3(0, -1, 0));
+        }
 
+        //RECUPERER TOUTES LES ENTITES PROCHES DE LA BANANE
+        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
+
+        if(!level().isClientSide()){
             for (Entity entity : nearbyEntities) {
-                if (entity instanceof Kart kart) {
+                if (entity instanceof TestKart kart) {
                     if (kart.getFirstPassenger() != null) {
                         if (kart.getCanMove()) {
-                            Kart.stunKart(kart, "Banana");
+                            TestKart.stunKart(kart, "Banana");
+                            ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.BANANA_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
                         }
-                        if(!level().isClientSide()) this.remove(RemovalReason.KILLED);
+                        this.remove(RemovalReason.KILLED);
                         return;
                     }
                 }
             }
-
-            //DETRUIRE LA BANANE AU BOUT D'UN MOMENT
-            tickAlive++;
-            if (tickAlive > TICK_TO_DESPAWN) {
-                this.remove(RemovalReason.DISCARDED);
-            }
-
-            if (getIsPropulsing()) setIsPropulsing(false);
-            this.move(MoverType.SELF, new Vec3(0, -1, 0));
         }
+
+        //DETRUIRE LA BANANE AU BOUT D'UN MOMENT
+        tickAlive++;
+        if (tickAlive > TICK_TO_DESPAWN) {
+            this.remove(RemovalReason.DISCARDED);
+        }
+
+        if (getIsPropulsing()) setIsPropulsing(false);
+
     }
 }

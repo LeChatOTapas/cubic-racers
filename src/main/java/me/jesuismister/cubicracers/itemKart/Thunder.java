@@ -1,6 +1,6 @@
 package me.jesuismister.cubicracers.itemKart;
 
-import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
@@ -11,16 +11,16 @@ import java.util.List;
 public class Thunder {
     private static final float RANGE = 1000;
 
-    public static void applyThunderToOthersKarts(Kart kart){
+    public static void applyThunderToOthersKarts(TestKart kart){
         if(!(kart.getFirstPassenger() instanceof Player)) return;
 
         List<Entity> nearbyEntities = kart.level().getEntities(kart, kart.getBoundingBox().inflate(RANGE));
 
         for (Entity entity : nearbyEntities) {
-            if(entity instanceof Kart){
+            if(entity instanceof TestKart){
                 LightningBolt lightningBolt = createThunderBolt(entity);
                 kart.level().addFreshEntity(lightningBolt);
-                Kart.stunKart((Kart) entity, "Thunder");
+                TestKart.stunKart((TestKart) entity, "Thunder");
             }
         }
     }

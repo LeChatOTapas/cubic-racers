@@ -1,8 +1,6 @@
 package me.jesuismister.cubicracers.sounds;
 
-import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.config.Config;
-import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;

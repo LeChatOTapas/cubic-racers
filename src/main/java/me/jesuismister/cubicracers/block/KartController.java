@@ -35,23 +35,6 @@ public class KartController extends Block {
 
     @Override
     public void stepOn(Level level, BlockPos blockPos, BlockState blockState, Entity entity) {
-        /*
-        if (blockState.getValue(LIT)) {
-            if (entity instanceof Kart kart) {
-                kart.setisLock(true);
-                if (blockState.getValue(FACING).getOpposite().equals(Direction.NORTH)) {
-                    kart.setYRot(180);
-                } else if (blockState.getValue(FACING).getOpposite().equals(Direction.WEST)) {
-                    kart.setYRot(90);
-                } else if (blockState.getValue(FACING).getOpposite().equals(Direction.EAST)) {
-                    kart.setYRot(-90);
-                } else if (blockState.getValue(FACING).getOpposite().equals(Direction.SOUTH)) {
-                    kart.setYRot(0);
-                }
-                kart.setPos(blockPos.getX() + 0.5d, blockPos.getY() + 1d, blockPos.getZ() + 0.5d);
-            }
-        }*/
-
         super.stepOn(level, blockPos, blockState, entity);
     }
 

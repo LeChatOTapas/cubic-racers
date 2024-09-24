@@ -30,7 +30,7 @@ public class KartConfig {
                     .defineInRange("boost", 0.5, 0.1, 10.0));
             HANDLING.add(SERVER_BUILDER
                     .comment("The handling rate of the kart")
-                    .defineInRange("handling", 2.5, 1.0, 5.0));
+                    .defineInRange("handling", 3.5, 1.0, 5.0));
             SERVER_BUILDER.pop();
         }
         SERVER_BUILDER.pop();

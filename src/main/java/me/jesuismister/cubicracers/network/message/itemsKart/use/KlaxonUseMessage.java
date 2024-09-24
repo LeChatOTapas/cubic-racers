@@ -1,16 +1,13 @@
 package me.jesuismister.cubicracers.network.message.itemsKart.use;
 
-import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
 import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.itemKart.Klaxon;
-import me.jesuismister.cubicracers.network.Network;
-import me.jesuismister.cubicracers.network.message.itemsKart.particles.KlaxonParticleMessage;
 import me.jesuismister.cubicracers.util.ClientUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.function.Supplier;
 
@@ -39,7 +36,7 @@ public class KlaxonUseMessage {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
-            if (player.getVehicle() != null && player.getVehicle() instanceof Kart kart) {
+            if (player.getVehicle() != null && player.getVehicle() instanceof TestKart kart) {
                 Klaxon.applyKlaxonToOthersKarts(kart);
                 ClientUtil.playSoundToAll(player.level(), player.getX(), player.getY(), player.getZ(), 32, SoundsInit.KLAXON.get(), SoundSource.RECORDS, 1f, 0.95f);
             }

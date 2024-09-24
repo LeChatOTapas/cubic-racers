@@ -1,6 +1,6 @@
 package me.jesuismister.cubicracers.itemKart;
 
-import me.jesuismister.cubicracers.entity.custom.Kart;
+import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.Entity;
@@ -10,13 +10,13 @@ import java.util.List;
 public class Klaxon {
     private static final float RANGE = 6;
 
-    public static void applyKlaxonToOthersKarts(Kart kart) {
+    public static void applyKlaxonToOthersKarts(TestKart kart) {
         //APPLY DES STUNS
         List<Entity> nearbyEntities = kart.level().getEntities(kart, kart.getBoundingBox().inflate(RANGE));
 
         for (Entity entity : nearbyEntities) {
-            if (entity instanceof Kart k) {
-                if (k.getCanMove()) Kart.stunKart(k, "Klaxon");
+            if (entity instanceof TestKart k) {
+                if (k.getCanMove()) TestKart.stunKart(k, "Klaxon");
             }
         }
     }

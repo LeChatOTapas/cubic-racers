@@ -1,7 +1,6 @@
 package me.jesuismister.cubicracers.sounds;
 
 import me.jesuismister.cubicracers.entity.custom.GreenShell;
-import me.jesuismister.cubicracers.entity.custom.Kart;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 

@@ -65,15 +65,18 @@ public class GreenShell extends ItemKartAbstract implements GeoEntity {
     public void tick() {
         super.tick();
         //RECUPERER TOUTES LES ENTITES PROCHES DE LA CARAPACE
-        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
+        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.1));
 
-        for (Entity entity : nearbyEntities) {
-            if (entity instanceof Kart kart) {
-                if (kart.getCanMove()) {
-                    Kart.stunKart(kart, "Green_shell");
+        if(!level().isClientSide){
+            for (Entity entity : nearbyEntities) {
+                if (entity instanceof TestKart kart) {
+                    if (kart.getCanMove()) {
+                        TestKart.stunKart(kart, "Green_shell");
+                        ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.GREEN_SHELL_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
+                    }
+                    if(!level().isClientSide()) this.remove(RemovalReason.KILLED);
+                    return;
                 }
-                if(!level().isClientSide()) this.remove(RemovalReason.KILLED);
-                return;
             }
         }
 
