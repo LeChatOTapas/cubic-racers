@@ -97,7 +97,8 @@ public class CubicRacers {
         KARTS_DATA.add(new KartData(i++,"zipper",        "TurboMooze3000", -1.5f, 1.6f, 2.0f));
         KARTS_DATA.add(new KartData(i++,"mach_celere",   "Maxmos",         -1.5f, 1.9f, 2.0f));
         KARTS_DATA.add(new KartData(i++,"rally_romper",  "TurboMooze3000", -0.9f, 2.0f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"wild_wiggler",  "Zitro",          -0.9f, 1.5f, 2.0f));
+        KARTS_DATA.add(new KartData(i++,"wild_wiggler",  "Zitro & Maxmos", -0.9f, 1.5f, 2.0f));
+        KARTS_DATA.add(new KartData(i++,"wild_wing",     "Maxmos",         -1.4f, 1.7f, 2.0f));
         //KARTS_DATA.add(new KartData(i++,"trash_kart",    "JeSuisMister", -0.7f, 2.5f, 1.8f));
     }
 }
