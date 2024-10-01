@@ -498,7 +498,9 @@ public class Kart extends KartAbstract implements GeoEntity {
         int blockY = (int) Math.floor(getY());
         int blockZ = (int) Math.floor(getZ());
 
-        if(getBlock(blockX, blockY-1, blockZ).is(ModTags.Blocks.ROAD_BLOCK_TAG) || RoadBlockConfig.ROAD_BLOCKS.get().contains(ForgeRegistries.BLOCKS.getKey(getBlock(blockX, blockY-1, blockZ).getBlock()).toString())){
+        if(getBlock(blockX, blockY, blockZ).is(BlockInit.HOLLOW_ROAD_BLOCK.get()) ||
+                getBlock(blockX, blockY-1, blockZ).is(ModTags.Blocks.ROAD_BLOCK_TAG) ||
+                RoadBlockConfig.ROAD_BLOCKS.get().contains(ForgeRegistries.BLOCKS.getKey(getBlock(blockX, blockY-1, blockZ).getBlock()).toString())){
             return true;
         }else{
             setDriftingTime(0);

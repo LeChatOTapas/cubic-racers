@@ -332,7 +332,7 @@ public abstract class KartAbstract extends Entity {
         entityData.define(stunRotation, 0.f);
         entityData.define(bouncingTime, 0.f);
 
-        setKartItem("Klaxon");
+        setKartItem("None");
         entityData.define(isInvinsible, false);
         entityData.define(starSpeedBoost, 1f); //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
         entityData.define(timeStar, 0.f);
