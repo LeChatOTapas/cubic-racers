@@ -17,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
@@ -27,6 +28,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.util.GeckoLibUtil;
@@ -79,12 +81,6 @@ public class TestKart extends TestKartAbstract {
 
     @Override
     public void tick() {
-        if(level().isClientSide && Minecraft.getInstance().player != null){
-            Minecraft.getInstance().player.sendSystemMessage(Component.literal("==============="));
-            Minecraft.getInstance().player.sendSystemMessage(Component.literal("SPEED = " + getSpeed() + " (" + level() + ")"));
-            Minecraft.getInstance().player.sendSystemMessage(Component.literal(Math.round(getX()*100)/100 + " / " + Math.round(getY()*100)/100 + " / " + Math.round(getZ()*100)/100));
-        }
-
         if(level().isClientSide) updateSounds();
         else{
             setMAX_SPEED(KartConfig.MAX_SPEED.get(id).get().floatValue());
@@ -106,6 +102,12 @@ public class TestKart extends TestKartAbstract {
 
         Player player = (Player) getFirstPassenger();
 
+        if(!level().isClientSide){
+            xo = getX();
+            yo = getY();
+            zo = getZ();
+        }
+
         super.baseTick();
         this.tickLerp();
         if (player!=null) {
@@ -119,12 +121,15 @@ public class TestKart extends TestKartAbstract {
         move(MoverType.SELF, new Vec3(getDeltaMovement().x, calculateFallSpeed().y, getDeltaMovement().z));
 
         if (!level().isClientSide) {
-            // Côté serveur : envoie la position actualisée aux clients
             try {
-                Network.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new MessageSyncCarPosition(this.getId(), getX(), getY(), getZ()));
-            }catch (Exception e){
-                System.out.println("ALED ICI");
-            }
+                ServerPlayer driver = (ServerPlayer) this.getControllingPassenger();
+                for (ServerPlayer sp : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
+                    if (sp != driver) {
+                        Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
+                                new MessageSyncCarPosition(this.getId(), getX(), getY(), getZ(), getYRot()));
+                    }
+                }
+            }catch (Exception e){}
         }
     }
 

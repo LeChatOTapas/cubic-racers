@@ -25,6 +25,8 @@
   "entity.cubicracers.zipper": "Zipper",
   "entity.cubicracers.mach_celere": "Mach-celere",
   "entity.cubicracers.rally_romper": "Rally Romper",
+  "entity.cubicracers.wild_wiggler": "Wild Wiggler",
+  "entity.cubicracers.wild_wing": "Wild Wing",
 
   "item.cubicracers.trash_kart": "Trash Kart",
   "item.cubicracers.standard_kart": "Standard Kart",
@@ -34,6 +36,8 @@
   "item.cubicracers.mach_celere": "Special Circuit",
   "item.cubicracers.rally_romper": "Rally Romper",
   "item.cubicracers.road_maker": "Road Maker",
+  "item.cubicracers.wild_wiggler": "Wild Wiggler",
+  "item.cubicracers.wild_wing": "Wild Wing",
 
   "item.cubicracers.item_box_spawn_item": "Item Box",
 
