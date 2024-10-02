@@ -13,7 +13,7 @@ import java.util.List;
 public class SpeedHudOverlay {
 
     public static final IGuiOverlay HUD_SPEED = (((gui, poseStack, partialTick, screenWidth, screenHeight) -> {
-
+        /*
         if (Minecraft.getInstance().player!=null) {
             Player player = Minecraft.getInstance().player;
             if(!player.level().isClientSide()) return;
@@ -59,7 +59,7 @@ public class SpeedHudOverlay {
                 heightPos+=20;
             }
 
-        }
+        }*/
     }));
 
     /**
