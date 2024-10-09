@@ -80,6 +80,15 @@ public class TestKart extends TestKartAbstract {
     }
 
     @Override
+    protected void positionRider(Entity player, MoveFunction position) {
+        super.positionRider(player, position);
+        double x = player.getX();
+        double y = player.getY() + PLAYER_POS_Y;
+        double z = player.getZ();
+        player.setPos(x, y, z);
+    }
+
+    @Override
     public void tick() {
         if(level().isClientSide) updateSounds();
         else{
