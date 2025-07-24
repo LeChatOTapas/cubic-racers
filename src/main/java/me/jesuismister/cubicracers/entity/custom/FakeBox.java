@@ -27,11 +27,6 @@ public class FakeBox extends ItemKartAbstract implements GeoEntity {
     public static final float HITBOX_X = 1f;
     public static final float HITBOX_Y = 2f;
 
-    private static final float TICK_TO_DESPAWN = 20f * 90f; //5s
-    private float tickAlive = 0;
-
-    private float propulsionY = -1f;
-
     public FakeBox(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
     }
@@ -62,40 +57,32 @@ public class FakeBox extends ItemKartAbstract implements GeoEntity {
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        if (getIsPropulsing() && !onGround()) {
-            double x = Math.sin(Math.toRadians(-getYRot())) * 3.5;
-            double z = Math.cos(Math.toRadians(-getYRot())) * 3.5;
-            Vec3 vec3 = new Vec3(x, 0, z);
-            setDeltaMovement(vec3);
-            this.move(MoverType.SELF, new Vec3(getDeltaMovement().x, (1 - Math.sqrt(propulsionY)) * 3, getDeltaMovement().z));
-            propulsionY += 0.3f;
-        }else{
-            this.move(MoverType.SELF, new Vec3(0, -1, 0));
+    protected void checkEndOfLife() {
+        if (removeDelay <= 0) {
+            this.remove(RemovalReason.KILLED);
+            return;
         }
+        removeDelay--;
+    }
 
-        //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
-        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
-
-        if(!level().isClientSide()) {
-            //PARCOURIR LA LISTE DES ENTITES PROCHES
-            for (Entity entity : nearbyEntities) {
-                //ON CHECK QUE LES ENTITES "KART"
-                if (entity instanceof TestKart kart) {
-                    //Network.CHANNEL.sendToServer(new ItemBoxConsumeMessage(""));
-                    TestKart.stunKart(kart, "Fake_box");
-                    ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.BANANA_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
-                    this.remove(RemovalReason.KILLED);
+    @Override
+    protected void applyCollision() {
+        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
+        for (Entity entity : nearbyEntities) {
+            if (entity instanceof TestKart kart && kart.getFirstPassenger() != null) {
+                if (!kart.isStun()) {
+                    TestKart.stunKart(kart, "FakeBox");
+                    if (!level().isClientSide)
+                        ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.BANANA_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
                 }
+                removeDelay = 2;
+                break;
             }
         }
+    }
 
-        //LE CUBE DESPAWN AU BOUT DE X SECS
-        tickAlive++;
-        if (tickAlive > TICK_TO_DESPAWN) {
-            this.remove(RemovalReason.KILLED);
-        }
-        if (getIsPropulsing()) setIsPropulsing(false);
+    @Override
+    protected int getMaxTimeAlive() {
+        return 20 * 30; // 30s
     }
 }

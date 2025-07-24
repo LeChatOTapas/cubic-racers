@@ -22,7 +22,7 @@ public class TestKartRenderer extends GeoEntityRenderer<TestKart> {
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(TestKart animatable) {
-        if(animatable.isInvinsible()) return new ResourceLocation(CubicRacers.MODID, "textures/entity/star_model.png");
+        if (animatable.isInvinsible()) return new ResourceLocation(CubicRacers.MODID, "textures/entity/star_model.png");
         else return new ResourceLocation(CubicRacers.MODID, animatable.TEXTURE);
     }
 
@@ -32,20 +32,19 @@ public class TestKartRenderer extends GeoEntityRenderer<TestKart> {
 
         //TOURNE LE KART DANS LA DIRECTION OU IL REGARDE
         Quaternionf rotation = new Quaternionf();
-
-
-        if(entity.getCanMove()){
-            if(entity.isDrifting()){
-                if(entity.getDriftingSens().equals("Left")){
+        if (!entity.isStun()) {
+            if (entity.isDrifting()) {
+                if (entity.getDriftingSens().equals("Left")) {
                     rotation.rotateY((float) -Math.toRadians(entityYaw - 20));
-                }else{
+                } else {
                     rotation.rotateY((float) -Math.toRadians(entityYaw + 20));
                 }
-            }else{
+            } else {
                 rotation.rotateY((float) -Math.toRadians(entityYaw));
             }
+        } else {
+            rotation.rotateY((float) -Math.toRadians(entityYaw + entity.getStunRotation()));
         }
-        else rotation.rotateY((float) -Math.toRadians(entityYaw + entity.getStunRotation()));
         poseStack.mulPose(rotation);
 
         //RENDER LE KART

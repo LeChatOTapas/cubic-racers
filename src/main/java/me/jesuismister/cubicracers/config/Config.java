@@ -10,24 +10,16 @@ public class Config {
 
     public static void register() {
         registerServerConfigs();
-        //registerCommonConfigs();
         registerClientConfigs();
     }
 
     private static void registerServerConfigs() {
-        ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
-        RoadBlockConfig.registerServerConfig(CLIENT_BUILDER);
-        KartItemConfig.registerServerConfig(CLIENT_BUILDER);
-        KartConfig.registerServerConfig(CLIENT_BUILDER);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, CLIENT_BUILDER.build());
+        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        RoadBlockConfig.registerServerConfig(builder);
+        KartItemConfig.registerServerConfig(builder);
+        KartConfig.registerServerConfig(builder);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, builder.build());
     }
-
-    /*
-    private static void registerCommonConfigs() {
-        ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, COMMON_BUILDER.build());
-    }*/
-
     private static void registerClientConfigs() {
         ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
         CLIENT_CONFIG = CommonRegistry.registerConfig(ModConfig.Type.CLIENT, ClientConfig.class);

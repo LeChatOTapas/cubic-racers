@@ -41,7 +41,7 @@ import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public abstract class TestKartAbstract extends Boat  implements GeoEntity {
+public abstract class TestKartAbstract extends Boat implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public static final EntityDataAccessor<Float> Speed = SynchedEntityData.defineId(TestKartAbstract.class, EntityDataSerializers.FLOAT);
@@ -69,9 +69,8 @@ public abstract class TestKartAbstract extends Boat  implements GeoEntity {
     public static final float MIN_SPEED = 0.075f;
     public static final float FREINAGE_SPEED = 1.05f;
     public static final float GRAVITY = 0.07f;
-    public static final float BOUNCING_COEFF = 1f;
     public static final float COEFF_FROTTEMENT = 0.85f;
-    public static final double TERMINAL_VELOCITY = 3f;
+    public static final double TERMINAL_VELOCITY = 5f;
 
     //ATTRIBUTS DU DRIFT
     public static final float DRIFT_ANGLE = 1.5f;
@@ -90,7 +89,6 @@ public abstract class TestKartAbstract extends Boat  implements GeoEntity {
     //ANIMATION DEGATS
     public boolean canMove = true;
     public float stunRotation = 0;
-    public float bouncingTime = 0;
 
     //KART ITEM
     private String kartItem = "None";
@@ -142,7 +140,7 @@ public abstract class TestKartAbstract extends Boat  implements GeoEntity {
         if (damage.getEntity() instanceof Player player) {
             if (this.getFirstPassenger() == null) {
                 remove(RemovalReason.KILLED);
-                if(!player.isCreative() && !level().isClientSide()){
+                if (!player.isCreative() && !level().isClientSide()) {
                     Item spawn_item = ItemInit.KARTS_SPAWN_ITEM.get(id).get();
                     player.level().addFreshEntity(new ItemEntity(player.level(), getX(), getY(), getZ(), new ItemStack(spawn_item)));
                 }
@@ -157,51 +155,51 @@ public abstract class TestKartAbstract extends Boat  implements GeoEntity {
         return new ItemStack(ItemInit.KARTS_SPAWN_ITEM.get(id).get());
     }
 
-    public float getMAX_SPEED(){
+    public float getMAX_SPEED() {
         return this.entityData.get(MAX_SPEED);
     }
 
-    public void setMAX_SPEED(float value){
+    public void setMAX_SPEED(float value) {
         this.entityData.set(MAX_SPEED, value, true);
     }
 
-    public float getDELTA_SPEED(){
+    public float getDELTA_SPEED() {
         return this.entityData.get(DELTA_SPEED);
     }
 
-    public void setDELTA_SPEED(float value){
+    public void setDELTA_SPEED(float value) {
         this.entityData.set(DELTA_SPEED, value, true);
     }
 
-    public float getACCELERATION_BOOST(){
+    public float getACCELERATION_BOOST() {
         return this.entityData.get(ACCELERATION_BOOST);
     }
 
-    public void setACCELERATION_BOOST(float value){
+    public void setACCELERATION_BOOST(float value) {
         this.entityData.set(ACCELERATION_BOOST, value, true);
     }
 
-    public float getBOOST(){
+    public float getBOOST() {
         return this.entityData.get(BOOST);
     }
 
-    public void setBOOST(float value){
+    public void setBOOST(float value) {
         this.entityData.set(BOOST, value, true);
     }
 
-    public float getMANIABILITE_COEEF(){
+    public float getMANIABILITE_COEEF() {
         return this.entityData.get(MANIABILITE_COEEF);
     }
 
-    public void setMANIABILITE_COEEF(float value){
+    public void setMANIABILITE_COEEF(float value) {
         this.entityData.set(MANIABILITE_COEEF, value, true);
     }
 
-    public String getStunMotif(){
+    public String getStunMotif() {
         return this.entityData.get(stunMotif);
     }
 
-    public void setStunMotif(String value){
+    public void setStunMotif(String value) {
         this.entityData.set(stunMotif, value, true);
     }
 
@@ -210,11 +208,11 @@ public abstract class TestKartAbstract extends Boat  implements GeoEntity {
         return cache;
     }
 
-    public float getSpeed(){
+    public float getSpeed() {
         return this.entityData.get(Speed);
     }
 
-    public void setSpeed(float value){
+    public void setSpeed(float value) {
         this.entityData.set(Speed, value, true);
     }
 
@@ -370,14 +368,6 @@ public abstract class TestKartAbstract extends Boat  implements GeoEntity {
         this.stunRotation = stunRotation;
     }
 
-    public float getBouncingTime() {
-        return bouncingTime;
-    }
-
-    public void setBouncingTime(float bouncingTime) {
-        this.bouncingTime = bouncingTime;
-    }
-
     public String getKartItem() {
         return kartItem;
     }
@@ -504,7 +494,7 @@ public abstract class TestKartAbstract extends Boat  implements GeoEntity {
 
     public void sendAll(String msg) {
         try {
-            if (Minecraft.getInstance()!=null && Minecraft.getInstance().player!=null) {
+            if (Minecraft.getInstance() != null && Minecraft.getInstance().player != null) {
                 Minecraft.getInstance().player.sendSystemMessage(Component.literal(msg));
             }
         } catch (Exception e) {
@@ -559,17 +549,17 @@ public abstract class TestKartAbstract extends Boat  implements GeoEntity {
         int blockY = (int) Math.floor(getY());
         int blockZ = (int) Math.floor(getZ());
 
-        if (!getBlock(blockX, blockY-1, blockZ).isAir() && getDriftingTime() >= 3) {
+        if (getDriftingTime() >= 3) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_v", Animation.LoopType.LOOP));
         }
         //ANIMATION DES PARTICULES ORANGE
-        else if (!getBlock(blockX, blockY-1, blockZ).isAir() && getDriftingTime() >= 2) {
+        else if (getDriftingTime() >= 2) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_o", Animation.LoopType.LOOP));
         }
         //ANIMATION DES PARTICULES BLEUES
-        else if (!getBlock(blockX, blockY-1, blockZ).isAir() && getDriftingTime() >= 1) {
+        else if (getDriftingTime() >= 1) {
             tAnimationState.getController().setAnimation(RawAnimation.begin()
                     .then("drift_b", Animation.LoopType.LOOP));
         }
@@ -581,34 +571,32 @@ public abstract class TestKartAbstract extends Boat  implements GeoEntity {
         return PlayState.CONTINUE;
     }
 
-    public BlockState getBlock(int x, int y, int z){
+    public BlockState getBlock(int x, int y, int z) {
         return this.getCommandSenderWorld().getBlockState(new BlockPos(x, y, z));
     }
 
-    public boolean isOnRoadBlock(){
-        if(!RoadBlockConfig.ROAD_BLOCK_REQUIRE.get()) return true;
+    public boolean isOnRoadBlock() {
+        if (!RoadBlockConfig.ROAD_BLOCK_REQUIRE.get()) return true;
 
         int blockX = (int) Math.floor(getX());
         int blockY = (int) Math.floor(getY());
         int blockZ = (int) Math.floor(getZ());
 
-        if(getBlock(blockX, blockY-1, blockZ).is(ModTags.Blocks.ROAD_BLOCK_TAG) || RoadBlockConfig.ROAD_BLOCKS.get().contains(ForgeRegistries.BLOCKS.getKey(getBlock(blockX, blockY-1, blockZ).getBlock()).toString())){
+        if (getBlock(blockX, blockY - 1, blockZ).is(ModTags.Blocks.ROAD_BLOCK_TAG) || RoadBlockConfig.ROAD_BLOCKS.get().contains(ForgeRegistries.BLOCKS.getKey(getBlock(blockX, blockY - 1, blockZ).getBlock()).toString())) {
             return true;
-        }else{
-            setDriftingTime(0);
-            setDrifting(false);
+        } else {
             return false;
         }
     }
 
-    public boolean isOnKartController(){
+    public boolean isOnKartController() {
         int blockX = (int) Math.floor(getX());
         int blockY = (int) Math.floor(getY()) - 1;
         int blockZ = (int) Math.floor(getZ());
         BlockState blockState = getBlock(blockX, blockY, blockZ);
 
-        if(blockState.is(BlockInit.KART_CONTROLLER.get())){
-            if(blockState.getValue(KartController.LIT)){
+        if (blockState.is(BlockInit.KART_CONTROLLER.get())) {
+            if (blockState.getValue(KartController.LIT)) {
                 setSpeed(0);
                 if (blockState.getValue(KartController.FACING).getOpposite().equals(Direction.NORTH)) {
                     setYRot(180);

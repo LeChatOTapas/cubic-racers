@@ -3,6 +3,9 @@ package me.jesuismister.cubicracers.entity.custom;
 import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.util.ClientUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -10,44 +13,35 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public abstract class ItemKartAbstract extends Entity {
-    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(ItemKartAbstract.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> isPropulsing = SynchedEntityData.defineId(ItemKartAbstract.class, EntityDataSerializers.BOOLEAN);
-    public float propulsionY = -1f;
+    protected int tickAlive = 0;
+    protected int removeDelay = -1;
 
     public ItemKartAbstract(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
     }
 
     @Override
-    protected void defineSynchedData() {
-        entityData.define(SPEED, 0.0f);
-        entityData.define(isPropulsing, false);
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public boolean isPickable() {
-        return true;
+    protected void defineSynchedData() {
     }
 
     @Override
     public boolean isNoGravity() {
-        return false;
-    }
-
-    @Override
-    public boolean isPushable() {
-        return false;
-    }
-
-    @Override
-    protected boolean canRide(@NotNull Entity rider) {
         return false;
     }
 
@@ -62,7 +56,7 @@ public abstract class ItemKartAbstract extends Entity {
     @Override
     public boolean hurt(DamageSource damage, float p_19947_) {
         if (damage.getEntity() instanceof Player player) {
-            if(player.isCreative()){
+            if (player.isCreative()) {
                 if (player.getVehicle() == null) {
                     this.remove(RemovalReason.KILLED);
                     return true;
@@ -72,50 +66,35 @@ public abstract class ItemKartAbstract extends Entity {
         return false;
     }
 
-    public boolean getIsPropulsing() {
-        return this.entityData.get(isPropulsing);
+    @Override
+    public void tick() {
+        super.tick();
+
+        applyVelocity();
+
+        if (tickAlive < getMaxTimeAlive() && removeDelay < 0) {
+            applyCollision();
+        } else if (!level().isClientSide) {
+            checkEndOfLife();
+        }
+        tickAlive++;
     }
 
-    public void setIsPropulsing(boolean value) {
-        this.entityData.set(isPropulsing, value);
-    }
-
-    public void setSpeed(float new_speed) {
-        this.entityData.set(SPEED, new_speed);
-    }
-
-    /**
-     * Spawn l'item devant le kart
-     *
-     * @param kart
-     */
-    public static void spawnItemFront(TestKart kart, ItemKartAbstract item) {
-        if (kart.level() != null) {
-            double angle = Math.toRadians(kart.getYRot());
-            item.setPos(kart.getX() + (-Math.sin(angle) * kart.HITBOX_X*2f), kart.getY() + 0.2, kart.getZ() + (Math.cos(angle) * kart.HITBOX_X*2f));
-            item.setYRot(kart.getYRot());
-            item.setIsPropulsing(true);
-            kart.level().addFreshEntity(item);
+    protected void applyVelocity() {
+        if (!onGround()) {
+            Vec3 velocity = getDeltaMovement();
+            move(MoverType.SELF, velocity);
+            setDeltaMovement(velocity.x, velocity.y - 0.3, velocity.z);
         }
     }
 
-    /**
-     * Spawn l'item derrière le kart
-     *
-     * @param kart
-     */
-    public static void spawnItemBack(TestKart kart, ItemKartAbstract item) {
-        if (kart.level() != null) {
-            double angle = Math.toRadians(kart.getYRot());
-            item.setPos(kart.getX() + (Math.sin(angle) * kart.HITBOX_X*1.5f), kart.getY(), kart.getZ() + (-Math.cos(angle) * kart.HITBOX_X*1.5f));
-            item.setYRot(kart.getYRot() + 180);
-            kart.level().addFreshEntity(item);
-        }
-    }
+    abstract protected void checkEndOfLife();
 
-    /**
-     * Stun tous les karts proches
-     */
+    abstract protected void applyCollision();
+
+    abstract protected int getMaxTimeAlive();
+
+    /*
     public void stun(float range, String motif) {
         List<Entity> nearbyEntities = this.level().getEntities(this, this.getBoundingBox().inflate(range));
         for (Entity entity : nearbyEntities) {
@@ -127,4 +106,5 @@ public abstract class ItemKartAbstract extends Entity {
             }
         }
     }
+    */
 }

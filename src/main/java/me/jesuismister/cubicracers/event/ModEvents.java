@@ -6,12 +6,13 @@ import me.jesuismister.cubicracers.client.SpeedHudOverlay;
 import me.jesuismister.cubicracers.entity.client.renderer.*;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
 import me.jesuismister.cubicracers.network.Network;
-import me.jesuismister.cubicracers.network.message.InputMessage;
+import me.jesuismister.cubicracers.network.message.clientToServer.InputSynchMessage;
 import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.particles.custom.DriftParticles;
-import me.jesuismister.cubicracers.util.KeyBinds;
+import me.jesuismister.cubicracers.init.KeyBinds;
+import me.jesuismister.cubicracers.util.KartItemUseMethods;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.world.entity.EntityType;
@@ -21,11 +22,14 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.RegistryObject;
+
+import static me.jesuismister.cubicracers.init.KeyBinds.KART_ITEM_KEY;
 
 public class ModEvents {
 
@@ -71,7 +75,7 @@ public class ModEvents {
 
             //event.register(KeyBinds.KART_DELTA_KEY);
             event.register(KeyBinds.KART_DRIFT_KEY);
-            event.register(KeyBinds.KART_ITEM_KEY);
+            event.register(KART_ITEM_KEY);
         }
 
         @SubscribeEvent
@@ -89,7 +93,7 @@ public class ModEvents {
     public static class ClientForgeEvent {
         @SubscribeEvent
         public static void onKeyInput(InputEvent.Key event) {
-            if (Minecraft.getInstance() != null && Minecraft.getInstance().player != null && Minecraft.getInstance().player.getVehicle() != null && Minecraft.getInstance().player.getVehicle() instanceof TestKart kart) {
+            if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.getVehicle() != null && Minecraft.getInstance().player.getVehicle() instanceof TestKart kart) {
                 if (kart.getCanMove()) {
                     kart.setPressingKeyAccelerate(KeyBinds.KART_ACCELERATE_KEY.isDown());
                     kart.setPressingKeyDeccelerate(KeyBinds.KART_DECCELERATE_KEY.isDown());
@@ -99,17 +103,16 @@ public class ModEvents {
                     kart.setPressingKeyLeft(KeyBinds.KART_LEFT_KEY.isDown());
                     kart.setPressingKeyRight(KeyBinds.KART_RIGHT_KEY.isDown());
 
-                    //kart.setPressingKeyDelta(KeyBinds.KART_DELTA_KEY.isDown());
                     kart.setPressingKeyDrift(KeyBinds.KART_DRIFT_KEY.isDown());
-                    kart.setPressingKeyItem(KeyBinds.KART_ITEM_KEY.isDown());
+                    kart.setPressingKeyItem(KART_ITEM_KEY.isDown());
 
-                    Network.CHANNEL.sendToServer(new InputMessage(
+                    Network.CHANNEL.sendToServer(new InputSynchMessage(
                             kart.isPressingKeyAccelerate(), kart.isPressingKeyDeccelerate(),
                             kart.isPressingKeyForward(), kart.isPressingKeyBackward(),
                             kart.isPressingKeyLeft(), kart.isPressingKeyRight(),
-                            kart.isPressingKeyDelta(), kart.isPressingKeyDrift(), kart.isPressingKeyItem()));
+                            kart.isPressingKeyDrift(), kart.isPressingKeyItem()));
                 } else {
-                    Network.CHANNEL.sendToServer(new InputMessage(false, false, false, false, false, false, false, false, false));
+                    Network.CHANNEL.sendToServer(new InputSynchMessage(false, false, false, false, false, false, false, false));
                 }
             }
         }
@@ -121,5 +124,28 @@ public class ModEvents {
                 event.setCanceled(true);
             }
         }
+
+        private static boolean wasItemKeyDown = false;
+
+        @SubscribeEvent
+        public static void onClientTick(TickEvent.ClientTickEvent event) {
+            if (event.phase != TickEvent.Phase.END) return;
+
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player == null) return;
+
+            boolean isItemKeyDown = KART_ITEM_KEY.isDown();
+
+            // Détection du premier tick où la touche est pressée
+            if (isItemKeyDown && !wasItemKeyDown) {
+                if (mc.player.getVehicle() != null && mc.player.getVehicle() instanceof TestKart kart) {
+                    KartItemUseMethods.useItem(kart);
+                }
+            }
+
+            // Mise à jour de l’état précédent
+            wasItemKeyDown = isItemKeyDown;
+        }
+
     }
-    }
+}

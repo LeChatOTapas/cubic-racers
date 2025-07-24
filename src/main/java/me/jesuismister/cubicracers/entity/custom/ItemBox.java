@@ -4,12 +4,15 @@ import me.jesuismister.cubicracers.config.KartItemConfig;
 import me.jesuismister.cubicracers.init.ItemInit;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import me.jesuismister.cubicracers.init.SoundsInit;
+import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.util.ClientRandom;
+import me.jesuismister.cubicracers.util.ClientUtil;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -22,6 +25,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -91,36 +95,43 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        BlockState state = Blocks.GLASS.defaultBlockState();
+
         //SI IL Y A UN ITEM DE DISPO DANS LE CUBE
         if (getHasItem()) {
-            //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
-            List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.5f)); // Ajustez la valeur de l'inflation selon vos besoins
-
-            //PARCOURIR LA LISTE DES ENTITES PROCHES
-            for (Entity entity : nearbyEntities) {
-                //ON CHECK QUE LES ENTITES "KART"
-                if (entity instanceof TestKart kart) {
-
-                    if (level().isClientSide() && kart.getFirstPassenger()!=null && kart.getFirstPassenger() instanceof Player player){
-                        giveRandomItem(kart);
-                        SoundsInit.playSound(SoundsInit.ITEM_BOX_CONSUME.get(), player.level(), getOnPos(), player, SoundSource.RECORDS, 1f);
-                        spawnParticleForAll(this.level(), 20, new BlockParticleOption(ParticleTypes.BLOCK, state), true, this.getX() , this.getY() + 2,  this.getZ() , 0.6f, 0f, 0.6f, 0.8f, 40);
-                    } else {
-                        setHasItem(false);
-                        setTickDisabled(0);
-                    }
-                    break;
-                }
-            }
-        }
-
-        //REAPPROVISIONNER LE CUBE AU BOUT DE X SECONDES
-        if (!getHasItem()) {
+            applyCollision();
+        } else {
             if (getTickDisabled() > TICK_TO_GET_BACK_ITEM) setHasItem(true);
             setTickDisabled(getTickDisabled() + 1);
         }
+    }
 
+    @Override
+    protected void checkEndOfLife() {
+    }
+
+    @Override
+    protected void applyCollision() {
+        //RECUPERER TOUTES LES ENTITES PROCHES DU CUBE
+        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.5f));
+
+        //PARCOURIR LA LISTE DES ENTITES PROCHES
+        for (Entity entity : nearbyEntities) {
+            //ON CHECK QUE LES ENTITES "KART"
+            if (entity instanceof TestKart kart) {
+                if (!level().isClientSide()) {
+                    giveRandomItem(kart);
+                    ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.ITEM_BOX_CONSUME.get(), SoundSource.RECORDS, 1f, 0.95f);
+                }
+                setHasItem(false);
+                setTickDisabled(0);
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected int getMaxTimeAlive() {
+        return -1;
     }
 
     /**
@@ -129,16 +140,12 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
      * @param kart
      */
     public boolean giveRandomItem(TestKart kart) {
-        if (kart.getFirstPassenger()== null || !(kart.getFirstPassenger() instanceof Player))
+        if (kart.getFirstPassenger() == null || !(kart.getFirstPassenger() instanceof Player))
             return false;
 
-        if(kart.getKartItem().equals("None")){
+        if (kart.getKartItem().equals("None")) {
             kart.setKartItem(getRandomItem());
-        }else{
         }
-        //ServerPlayer player = (ServerPlayer) kart.getFirstPassenger();
-        //Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new ItemToClientMessage(kart.getKartItem()));
-
         return true;
     }
 
@@ -156,7 +163,7 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
         if (damage.getEntity() instanceof Player player) {
             if (this.getFirstPassenger() == null) {
                 remove(RemovalReason.KILLED);
-                if(!player.isCreative() && !level().isClientSide()){
+                if (!player.isCreative() && !level().isClientSide()) {
                     Item spawn_item = ItemInit.ITEM_BOX_SPAWN_ITEM.get();
                     player.level().addFreshEntity(new ItemEntity(player.level(), getX(), getY(), getZ(), new ItemStack(spawn_item)));
                 }
@@ -166,16 +173,16 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
         return false;
     }
 
-    private String getRandomItem(){
+    private String getRandomItem() {
         //Determination de la borne maximal (car pas forcement 100)
         int max = 0;
-        for(ForgeConfigSpec.DoubleValue v : KartItemConfig.ITEMS_DROP_RATES.values()){
+        for (ForgeConfigSpec.DoubleValue v : KartItemConfig.ITEMS_DROP_RATES.values()) {
             max += v.get();
         }
 
         int rand = ClientRandom.nextInt(max);
         int temp = 0;
-        for(Map.Entry<String, ForgeConfigSpec.DoubleValue> v : KartItemConfig.ITEMS_DROP_RATES.entrySet()){
+        for (Map.Entry<String, ForgeConfigSpec.DoubleValue> v : KartItemConfig.ITEMS_DROP_RATES.entrySet()) {
             temp += v.getValue().get();
             if (rand <= temp) {
                 return v.getKey();

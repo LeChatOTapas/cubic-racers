@@ -37,12 +37,17 @@ public class GreenShell extends ItemKartAbstract implements GeoEntity {
     public static final String ANIMATION = "animations/green_shell.animation.json";
     public static final float HITBOX = 1f;
 
-    private static final int TICK_TO_DESPAWN = 20 * 20; //20s
+    private static final int TICK_TO_DESPAWN = 20 * 15; //20s
     private int tickAlive = 0;
     private int bounceTime = 0;
 
     public GreenShell(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
+    }
+
+    @Override
+    public float getStepHeight() {
+        return 1.2f;
     }
 
     @Override
@@ -62,82 +67,85 @@ public class GreenShell extends ItemKartAbstract implements GeoEntity {
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        //RECUPERER TOUTES LES ENTITES PROCHES DE LA CARAPACE
-        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.1));
-
-        if(!level().isClientSide){
-            for (Entity entity : nearbyEntities) {
-                if (entity instanceof TestKart kart) {
-                    if (kart.getCanMove()) {
-                        TestKart.stunKart(kart, "Green_shell");
-                        ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.GREEN_SHELL_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
-                    }
-                    if(!level().isClientSide()) this.remove(RemovalReason.KILLED);
-                    return;
-                }
-            }
+    protected void checkEndOfLife() {
+        if (removeDelay <= 0) {
+            this.remove(RemovalReason.KILLED);
+            return;
         }
-
-        //REBONDS
-        if (this.horizontalCollision) bounce();
-
-        //DEPLACEMENT DE LA CARAPACE
-        setMovement(this);
-        this.move(MoverType.SELF, new Vec3(this.getDeltaMovement().x, -1, this.getDeltaMovement().z));
-
-        //DETRUIRE LA CARAPACE AU BOUT D'UN MOMENT
-        tickAlive++;
-        if(level().isClientSide()) playMovingSound();
-        if (tickAlive > TICK_TO_DESPAWN) {
-            this.remove(RemovalReason.DISCARDED);
-        }
-    }
-
-    public static void setMovement(GreenShell green_shell) {
-        green_shell.setSpeed(MAX_SPEED);
-
-        double x = Math.sin(Math.toRadians(-green_shell.getYRot())) * MAX_SPEED;
-        double z = Math.cos(Math.toRadians(-green_shell.getYRot())) * MAX_SPEED;
-        Vec3 vec3 = new Vec3(x, 0, z);
-        green_shell.setDeltaMovement(vec3);
+        removeDelay--;
     }
 
     @Override
-    /**
-     * La carapace peut comme le kart, monter au dessus des blocs de 1 de haut
-     */
-    public float getStepHeight() {
-        return 1.2f;
+    protected void applyCollision() {
+        List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0));
+        for (Entity entity : nearbyEntities) {
+            if (entity instanceof TestKart kart && kart.getFirstPassenger() != null) {
+                if (!kart.isStun()) {
+                    TestKart.stunKart(kart, "GreenShell");
+                    if (!level().isClientSide)
+                        ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.GREEN_SHELL_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
+                }
+                removeDelay = 2;
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected int getMaxTimeAlive() {
+        return 20 * 30; // 30s
+    }
+
+    @Override
+    protected void applyVelocity() {
+        Vec3 velocity = getDeltaMovement();
+        move(MoverType.SELF, velocity);
+        setDeltaMovement(velocity.x, velocity.y - 0.3, velocity.z);
+
+        if (horizontalCollision) bounce();
+        if (level().isClientSide()) playMovingSound();
     }
 
     private void bounce() {
-        if (!this.level().getBlockState(this.blockPosition().relative(Direction.WEST)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.WEST)).is(Blocks.WATER)) {
-            this.setYRot(-this.getYRot());
-            bounceTime++;
-        } else if (!this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.WATER)) {
-            this.setYRot(-this.getYRot());
-            bounceTime++;
-        } else if (!this.level().getBlockState(this.blockPosition().relative(Direction.NORTH)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.WATER)) {
-            this.setYRot(-180 - this.getYRot());
-            bounceTime++;
-        } else if (!this.level().getBlockState(this.blockPosition().relative(Direction.SOUTH)).is(Blocks.AIR) && !this.level().getBlockState(this.blockPosition().relative(Direction.EAST)).is(Blocks.WATER)) {
-            this.setYRot(180 - this.getYRot());
+        Vec3 velocity = getDeltaMovement(); // Récupère la vélocité actuelle
+        BlockPos pos = this.blockPosition();
+
+        boolean bounced = false;
+
+        if (!level().getBlockState(pos.relative(Direction.WEST)).isAir() && !level().getBlockState(pos.relative(Direction.WEST)).is(Blocks.WATER)) {
+            setDeltaMovement(-velocity.x, velocity.y, velocity.z); // inverse X
+            bounced = true;
+        } else if (!level().getBlockState(pos.relative(Direction.EAST)).isAir() && !level().getBlockState(pos.relative(Direction.EAST)).is(Blocks.WATER)) {
+            setDeltaMovement(-velocity.x, velocity.y, velocity.z); // inverse X
+            bounced = true;
+        } else if (!level().getBlockState(pos.relative(Direction.NORTH)).isAir() && !level().getBlockState(pos.relative(Direction.NORTH)).is(Blocks.WATER)) {
+            setDeltaMovement(velocity.x, velocity.y, -velocity.z); // inverse Z
+            bounced = true;
+        } else if (!level().getBlockState(pos.relative(Direction.SOUTH)).isAir() && !level().getBlockState(pos.relative(Direction.SOUTH)).is(Blocks.WATER)) {
+            setDeltaMovement(velocity.x, velocity.y, -velocity.z); // inverse Z
+            bounced = true;
+        }
+
+        if (bounced) {
             bounceTime++;
         }
 
         if (bounceTime > 4) {
             this.remove(RemovalReason.KILLED);
-            ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.GREEN_SHELL_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
+            // ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.GREEN_SHELL_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
         }
     }
+
+
+    ///////////
+    // SOUND //
+    ///////////
 
     @OnlyIn(Dist.CLIENT)
     private SoundGreenShellMoving greenShellMoving;
 
     @OnlyIn(Dist.CLIENT)
-    public void playMovingSound(){
+    public void playMovingSound() {
         List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(15));
         for (Entity entity : nearbyEntities) {
             if (entity instanceof Player) {

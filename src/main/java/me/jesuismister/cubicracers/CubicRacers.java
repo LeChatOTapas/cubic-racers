@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers;
 
 import de.maxhenkel.corelib.CommonRegistry;
+import me.jesuismister.cubicracers.commands.TestCommand;
 import me.jesuismister.cubicracers.config.ClientConfig;
 import me.jesuismister.cubicracers.config.Config;
 import me.jesuismister.cubicracers.entity.KartData;
@@ -10,7 +11,9 @@ import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.ClientRandom;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -48,11 +51,18 @@ public class CubicRacers {
 
         ModCreativeModeTabs.CREATIVE_MODE_TABS.register(bus);
 
+        MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
+
         ClientRandom.initialize(SEED);
         bus.addListener(this::addCreativeTab);
         bus.addListener(this::commonSetup);
 
+
         Config.register();
+    }
+
+    private void onServerStarting(ServerStartingEvent event) {
+        TestCommand.register(event.getServer().getCommands().getDispatcher());
     }
 
     /**
@@ -84,21 +94,21 @@ public class CubicRacers {
         }
     }
 
-    public void commonSetup(final FMLCommonSetupEvent event){
+    public void commonSetup(final FMLCommonSetupEvent event) {
         Network.init();
     }
 
-    public void initKartData(){
+    public void initKartData() {
         int i = 0;
         //Les karts doivent faire <= 2.0f en hitboxX et = à 2.0f en hitboxY
-        KARTS_DATA.add(new KartData(i++,"standard_kart", "Maxmos",         0, 1.8f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"flame_flyer",   "TurboMooze3000", 0.3F, 1.6f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"b_dasher",      "Maxmos",         0.1F, 1.9f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"zipper",        "TurboMooze3000", 0.2F, 1.6f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"mach_celere",   "Maxmos",         0.1F, 1.9f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"rally_romper",  "TurboMooze3000", 0.8F, 2.0f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"wild_wiggler",  "Zitro & Maxmos", 0.7F, 1.5f, 2.0f));
-        KARTS_DATA.add(new KartData(i++,"wild_wing",     "Maxmos",         0.2F, 1.7f, 2.0f));
+        KARTS_DATA.add(new KartData(i++, "standard_kart", "Maxmos", 0, 1.8f, 2.0f));
+        KARTS_DATA.add(new KartData(i++, "flame_flyer", "TurboMooze3000", 0.3F, 1.6f, 2.0f));
+        KARTS_DATA.add(new KartData(i++, "b_dasher", "Maxmos", 0.1F, 1.9f, 2.0f));
+        KARTS_DATA.add(new KartData(i++, "zipper", "TurboMooze3000", 0.2F, 1.6f, 2.0f));
+        KARTS_DATA.add(new KartData(i++, "mach_celere", "Maxmos", 0.1F, 1.9f, 2.0f));
+        KARTS_DATA.add(new KartData(i++, "rally_romper", "TurboMooze3000", 0.8F, 2.0f, 2.0f));
+        KARTS_DATA.add(new KartData(i++, "wild_wiggler", "Zitro & Maxmos", 0.7F, 1.5f, 2.0f));
+        KARTS_DATA.add(new KartData(i++, "wild_wing", "Maxmos", 0.2F, 1.7f, 2.0f));
         //KARTS_DATA.add(new KartData(i++,"trash_kart",    "JeSuisMister", -0.7f, 2.5f, 1.8f));
     }
 }
