@@ -38,7 +38,7 @@ public class ModEvents {
         @SubscribeEvent
         public static void registerGuiOverlay(RegisterGuiOverlaysEvent event) {
             event.registerAboveAll("item_box_hud", ItemHudOverlay.HUD_ITEM_BOX);
-            event.registerAboveAll("speed_hud", SpeedHudOverlay.HUD_SPEED);
+            // event.registerAboveAll("speed_hud", SpeedHudOverlay.HUD_SPEED);
         }
 
         @SubscribeEvent
