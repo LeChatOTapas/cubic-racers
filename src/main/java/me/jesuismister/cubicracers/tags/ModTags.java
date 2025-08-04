@@ -11,7 +11,7 @@ public class ModTags {
         public static final TagKey<Block> ROAD_BLOCK_TAG = tag("road_block_tag");
 
         private static TagKey<Block> tag (String name){
-            return BlockTags.create(new ResourceLocation(CubicRacers.MODID, name));
+            return BlockTags.create(ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, name));
         }
     }
 

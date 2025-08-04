@@ -1,38 +1,52 @@
 package me.jesuismister.cubicracers;
 
-import de.maxhenkel.corelib.CommonRegistry;
 import me.jesuismister.cubicracers.commands.TestCommand;
-import me.jesuismister.cubicracers.config.ClientConfig;
 import me.jesuismister.cubicracers.config.Config;
 import me.jesuismister.cubicracers.entity.KartData;
 import me.jesuismister.cubicracers.init.*;
-import me.jesuismister.cubicracers.network.Network;
-import me.jesuismister.cubicracers.particles.ParticlesInit;
-import me.jesuismister.cubicracers.util.ClientRandom;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Mod(CubicRacers.MODID)
 public class CubicRacers {
     public static final String MODID = "cubicracers";
     public static final long SEED = System.currentTimeMillis();
+
     public static final List<KartData> KARTS_DATA = new ArrayList<>();
 
-    public CubicRacers() {
+    public CubicRacers(IEventBus modEventBus, ModContainer modContainer) {
         initKartData();
 
+        // NeoForge.EVENT_BUS.register(this);
+
+        ModCreativeModeTabs.register(modEventBus);
+        ItemInit.register(modEventBus);
+        BlockInit.register(modEventBus);
+        KartInit.register(modEventBus);
+        KartItemsInit.register(modEventBus);
+        ParticlesInit.register(modEventBus);
+        SoundsInit.register(modEventBus);
+
+        modEventBus.addListener(this::commonSetup);
+        // modEventBus.addListener(this::onServerStarting);
+        modEventBus.addListener(this::addToCreativeTab);
+
+        // Config
+        Config.register();
+        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SERVER);
+
+        /*
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         SoundsInit.SOUND_REGISTER.register(bus);
@@ -57,45 +71,39 @@ public class CubicRacers {
         bus.addListener(this::addCreativeTab);
         bus.addListener(this::commonSetup);
 
-
         Config.register();
+        */
     }
 
     private void onServerStarting(ServerStartingEvent event) {
         TestCommand.register(event.getServer().getCommands().getDispatcher());
     }
 
-    /**
-     * Ajoute les items dans l'onglet créatif
-     *
-     * @param event
-     */
-    private void addCreativeTab(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTab() == ModCreativeModeTabs.CUBIC_RACERS_TAB.get()) {
+    private void addToCreativeTab(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == ModCreativeModeTabs.CUBIC_RACERS_TAB) {
             event.accept(ItemInit.ROAD_MAKER);
-            event.accept(ItemInit.ITEM_BOX_SPAWN_ITEM.get());
+            event.accept(ItemInit.ITEM_BOX_SPAWN_ITEM);
 
-            event.accept(BlockInit.BOOSTER.get());
-            event.accept(BlockInit.GLIDE_TRIGGER_BLOCK.get());
-            event.accept(BlockInit.KART_CONTROLLER.get());
+            event.accept(BlockInit.BOOSTER);
+            event.accept(BlockInit.GLIDE_TRIGGER_BLOCK);
+            event.accept(BlockInit.KART_CONTROLLER);
 
-            event.accept(BlockInit.STARTING_BLOCK.get());
-            event.accept(BlockInit.ROAD_BLOCK.get());
-            event.accept(BlockInit.ROAD_BLOCK_DIRT.get());
-            event.accept(BlockInit.ROAD_BLOCK_SAND.get());
-            event.accept(BlockInit.ROAD_BLOCK_SNOW.get());
+            event.accept(BlockInit.STARTING_BLOCK);
+            event.accept(BlockInit.ROAD_BLOCK);
+            event.accept(BlockInit.ROAD_BLOCK_DIRT);
+            event.accept(BlockInit.ROAD_BLOCK_SAND);
+            event.accept(BlockInit.ROAD_BLOCK_SNOW);
 
-            event.accept(BlockInit.RED_BOUNCING_MUSHROOM_BLOCK.get());
+            event.accept(BlockInit.RED_BOUNCING_MUSHROOM_BLOCK);
 
 
-            for (RegistryObject<Item> r : ItemInit.KARTS_SPAWN_ITEM) {
+            for (Supplier<Item> r : ItemInit.KARTS_SPAWN_ITEM) {
                 event.accept(r.get());
             }
         }
     }
 
     public void commonSetup(final FMLCommonSetupEvent event) {
-        Network.init();
     }
 
     public void initKartData() {

@@ -16,55 +16,34 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.*;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animatable.manager.AnimatableManager;
+import software.bernie.geckolib.animatable.processing.AnimationController;
+import software.bernie.geckolib.animatable.processing.AnimationTest;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
 public class GreenShell extends ItemKartAbstract implements GeoEntity {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    private static final float MAX_SPEED = 1.5f;
-
-    public static final String TEXTURE = "textures/entity/green_shell.png";
-    public static final String MODEL = "geo/green_shell.geo.json";
-    public static final String ANIMATION = "animations/green_shell.animation.json";
     public static final float HITBOX = 1f;
-
-    private static final int TICK_TO_DESPAWN = 20 * 15; //20s
-    private int tickAlive = 0;
     private int bounceTime = 0;
 
     public GreenShell(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
     }
 
+    /*
     @Override
     public float getStepHeight() {
         return 1.2f;
     }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
-    }
-
-    private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
-        tAnimationState.getController().setAnimation(RawAnimation.begin()
-                .then("spin", Animation.LoopType.LOOP));
-        return PlayState.CONTINUE;
-    }
+     */
 
     @Override
     protected void checkEndOfLife() {
@@ -136,16 +115,33 @@ public class GreenShell extends ItemKartAbstract implements GeoEntity {
         }
     }
 
+    //////////////
+    // GECKOLIB //
+    //////////////
+    private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    protected static final RawAnimation SPIN = RawAnimation.begin().thenLoop("spin");
+
+    @Override
+    public void registerControllers(final AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>("controller", 0, this::predicate));
+    }
+
+    private PlayState predicate(AnimationTest<GeoAnimatable> geoAnimatableAnimationTest) {
+        return geoAnimatableAnimationTest.setAndContinue(SPIN);
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geoCache;
+    }
 
     ///////////
     // SOUND //
-    ///////////
-
-    @OnlyIn(Dist.CLIENT)
     private SoundGreenShellMoving greenShellMoving;
 
-    @OnlyIn(Dist.CLIENT)
     public void playMovingSound() {
+        if (!level().isClientSide) return;
+
         List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(15));
         for (Entity entity : nearbyEntities) {
             if (entity instanceof Player) {
@@ -157,7 +153,6 @@ public class GreenShell extends ItemKartAbstract implements GeoEntity {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public boolean isSoundPlaying(SoundInstance sound) {
         if (sound == null) {
             return false;

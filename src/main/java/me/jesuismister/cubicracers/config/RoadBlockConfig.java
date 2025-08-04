@@ -1,18 +1,15 @@
 package me.jesuismister.cubicracers.config;
 
-import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.entity.KartData;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class RoadBlockConfig {
-    public static ForgeConfigSpec.BooleanValue ROAD_BLOCK_REQUIRE;
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> ROAD_BLOCKS;
+    public static ModConfigSpec.BooleanValue ROAD_BLOCK_REQUIRE;
+    public static ModConfigSpec.ConfigValue<List<? extends String>> ROAD_BLOCKS;
 
-    public static void registerServerConfig(ForgeConfigSpec.Builder SERVER_BUILDER) {
+    public static void registerServerConfig(ModConfigSpec.Builder SERVER_BUILDER) {
         SERVER_BUILDER.comment("Does kart require to be on Road Block to drive at full speed").push("road_block_require");
         ROAD_BLOCK_REQUIRE = SERVER_BUILDER.define("enable", true);
 

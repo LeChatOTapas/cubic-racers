@@ -1,14 +1,14 @@
-package me.jesuismister.cubicracers.particles.custom;
+package me.jesuismister.cubicracers.particles;
 
 import me.jesuismister.cubicracers.CubicRacers;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = CubicRacers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = CubicRacers.MODID, value = Dist.CLIENT)
 public class DriftParticles extends TextureSheetParticle {
 
     protected DriftParticles(ClientLevel level, double xCoord, double yCoord, double zCoord,
@@ -47,7 +47,6 @@ public class DriftParticles extends TextureSheetParticle {
         return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class Provider implements ParticleProvider<SimpleParticleType> {
         private final SpriteSet sprites;
 

@@ -19,9 +19,10 @@ public class TestCommand {
                                     Player player = (Player) (context.getSource().getEntity());
                                     if (player != null && player.getVehicle() instanceof TestKart kart) {
                                         kart.setKartItem(item);
-                                        player.sendSystemMessage(Component.literal("§a " + kart.getKartItem()));
+                                        player.displayClientMessage(Component.literal("§a " + kart.getKartItem()), false);
+                                    }else{
+                                        player.displayClientMessage(Component.literal("§bRIP"), false);
                                     }
-                                    player.sendSystemMessage(Component.literal("§aWesh !!!!!!!!!!!!!!!!!!!! " + player.level()));
                                     return 1;
                                 }))
         );

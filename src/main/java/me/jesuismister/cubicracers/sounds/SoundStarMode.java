@@ -1,7 +1,6 @@
 package me.jesuismister.cubicracers.sounds;
 
 import me.jesuismister.cubicracers.entity.custom.TestKart;
-import me.jesuismister.cubicracers.entity.custom.TestKartAbstract;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 
@@ -25,7 +24,7 @@ public class SoundStarMode extends SoundLoopKart {
     @Override
     public boolean shouldStopSound() {
         TestKart kart = (TestKart) entity;
-        if (!kart.isInvinsible()) {
+        if (!kart.isInvincible()) {
             return true;
         }
         return false;

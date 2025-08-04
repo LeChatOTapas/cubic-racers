@@ -1,41 +1,56 @@
 package me.jesuismister.cubicracers.network.message.serverToClient.kartItem;
 
+import io.netty.buffer.ByteBuf;
+import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
 
-public class BoostSyncMessage {
-    private final int entityId;
-    private final float timeBoost;
+public record BoostSyncMessage(
+        int entityId,
+        float timeBoost
+) implements CustomPacketPayload {
 
-    public BoostSyncMessage(int entityId, float timeBoost) {
-        this.entityId = entityId;
-        this.timeBoost = timeBoost;
+    public static final CustomPacketPayload.Type<BoostSyncMessage> TYPE = new CustomPacketPayload.Type<>(
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "BoostSyncMessage")
+    );
+
+    public static final StreamCodec<ByteBuf, BoostSyncMessage> STREAM_CODEC =
+            new StreamCodec<>() {
+                @Override
+                public void encode(ByteBuf buf, BoostSyncMessage msg) {
+                    ByteBufCodecs.INT.encode(buf, msg.entityId());
+                    ByteBufCodecs.FLOAT.encode(buf, msg.timeBoost());
+                }
+
+                @Override
+                public BoostSyncMessage decode(ByteBuf buf) {
+                    return new BoostSyncMessage(
+                            ByteBufCodecs.INT.decode(buf),
+                            ByteBufCodecs.FLOAT.decode(buf)
+                    );
+                }
+            };
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static void encode(BoostSyncMessage message, FriendlyByteBuf buffer) {
-        buffer.writeInt(message.entityId);
-        buffer.writeFloat(message.timeBoost);
-    }
-
-    public static BoostSyncMessage decode(FriendlyByteBuf buffer) {
-        return new BoostSyncMessage(buffer.readInt(), buffer.readFloat());
-    }
-
-    public static void handle(BoostSyncMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() -> {
+    public static void handle(BoostSyncMessage msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null) return;
-            Entity entity = mc.level.getEntity(message.entityId);
+            Entity entity = mc.level.getEntity(msg.entityId());
             if (entity instanceof TestKart kart) {
-                kart.setTimeBoost(message.timeBoost);
+                kart.setTimeBoost(msg.timeBoost());
             }
         });
-        context.setPacketHandled(true);
     }
 }

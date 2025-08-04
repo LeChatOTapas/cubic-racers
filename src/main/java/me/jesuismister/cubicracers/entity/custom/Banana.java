@@ -1,59 +1,38 @@
 package me.jesuismister.cubicracers.entity.custom;
 
+
 import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.util.ClientUtil;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.TypedDataComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.*;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animatable.manager.AnimatableManager;
+import software.bernie.geckolib.animatable.processing.AnimationController;
+import software.bernie.geckolib.animatable.processing.AnimationTest;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 
 import java.util.List;
 
-public class Banana extends ItemKartAbstract implements GeoEntity {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    public static final String TEXTURE = "textures/entity/banana.png";
-    public static final String MODEL = "geo/banana.geo.json";
-    public static final String ANIMATION = "animations/banana.animation.json";
+public class Banana extends ItemKartAbstract {
     public static final float HITBOX = 1f;
 
     public Banana(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
-    }
-
-    private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
-        tAnimationState.getController().setAnimation(RawAnimation.begin()
-                .then("dancing", Animation.LoopType.LOOP));
-        return PlayState.CONTINUE;
-    }
-
-    @Override
-    public boolean isNoGravity() {
-        return false;
     }
 
     @Override
@@ -84,5 +63,25 @@ public class Banana extends ItemKartAbstract implements GeoEntity {
     @Override
     protected int getMaxTimeAlive() {
         return 20 * 30; // 30s
+    }
+
+    //////////////
+    // GECKOLIB //
+    //////////////
+    private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    protected static final RawAnimation DANCING = RawAnimation.begin().thenLoop("dancing");
+
+    @Override
+    public void registerControllers(final AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>("controller", 0, this::predicate));
+    }
+
+    private PlayState predicate(AnimationTest<GeoAnimatable> geoAnimatableAnimationTest) {
+        return geoAnimatableAnimationTest.setAndContinue(DANCING);
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geoCache;
     }
 }

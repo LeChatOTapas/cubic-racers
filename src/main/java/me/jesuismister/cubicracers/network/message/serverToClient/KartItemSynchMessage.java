@@ -1,40 +1,55 @@
 package me.jesuismister.cubicracers.network.message.serverToClient;
 
+import io.netty.buffer.ByteBuf;
+import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record KartItemSynchMessage(
+        String item
+) implements CustomPacketPayload {
 
-public class KartItemSynchMessage {
-    private final String item;
+    public static final CustomPacketPayload.Type<KartItemSynchMessage> TYPE = new CustomPacketPayload.Type<>(
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "KartItemSynchMessage")
+    );
 
-    public KartItemSynchMessage(String value) {
-        this.item = value;
+    public static final StreamCodec<ByteBuf, KartItemSynchMessage> STREAM_CODEC =
+            new StreamCodec<>() {
+                @Override
+                public void encode(ByteBuf buf, KartItemSynchMessage msg) {
+                    ByteBufCodecs.STRING_UTF8.encode(buf, msg.item());
+                }
+
+                @Override
+                public KartItemSynchMessage decode(ByteBuf buf) {
+                    return new KartItemSynchMessage(
+                            ByteBufCodecs.STRING_UTF8.decode(buf)
+                    );
+                }
+            };
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static KartItemSynchMessage decode(FriendlyByteBuf buf) {
-        return new KartItemSynchMessage(buf.readUtf());
-    }
-
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(item);
-    }
-
-    public void handle(Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() -> {
+    public static void handle(KartItemSynchMessage msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             // Client-side only
-            if (context.get().getDirection().getReceptionSide().isClient()) {
+            if (ctx.player().level().isClientSide()) {
                 if(Minecraft.getInstance().player != null){
                     Player player = Minecraft.getInstance().player;
                     if(player.getVehicle()!=null && player.getVehicle() instanceof TestKart kart){
-                        kart.setKartItem(item);
+                        kart.setKartItem(msg.item());
                     }
                 }
             }
         });
-        context.get().setPacketHandled(true);
     }
 }

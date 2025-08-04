@@ -1,49 +1,64 @@
 package me.jesuismister.cubicracers.network.message.serverToClient.kartItem;
 
-import me.jesuismister.cubicracers.entity.custom.BobOmb;
+import io.netty.buffer.ByteBuf;
+import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.network.message.clientToServer.kartItem.KlaxonUseMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Random;
-import java.util.function.Supplier;
 
-public class KlaxonParticleMessage {
-    private final double x;
-    private final double y;
-    private final double z;
+public record KlaxonParticleMessage(
+        double x,
+        double y,
+        double z
+) implements CustomPacketPayload {
 
-    public KlaxonParticleMessage(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public static final CustomPacketPayload.Type<KlaxonParticleMessage> TYPE = new CustomPacketPayload.Type<>(
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "KlaxonParticleMessage")
+    );
+
+    public static final StreamCodec<ByteBuf, KlaxonParticleMessage> STREAM_CODEC =
+            new StreamCodec<>() {
+                @Override
+                public void encode(ByteBuf buf, KlaxonParticleMessage msg) {
+                    ByteBufCodecs.DOUBLE.encode(buf, msg.x());
+                    ByteBufCodecs.DOUBLE.encode(buf, msg.y());
+                    ByteBufCodecs.DOUBLE.encode(buf, msg.z());
+                }
+
+                @Override
+                public KlaxonParticleMessage decode(ByteBuf buf) {
+                    return new KlaxonParticleMessage(
+                            ByteBufCodecs.DOUBLE.decode(buf),
+                            ByteBufCodecs.DOUBLE.decode(buf),
+                            ByteBufCodecs.DOUBLE.decode(buf)
+                    );
+                }
+            };
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static KlaxonParticleMessage decode(FriendlyByteBuf buf) {
-        return new KlaxonParticleMessage(buf.readDouble(), buf.readDouble(), buf.readDouble());
-    }
-
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeDouble(x);
-        buf.writeDouble(y);
-        buf.writeDouble(z);
-    }
-
-    public void handle(Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() -> {
+    public static void handle(KlaxonParticleMessage msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             // Client-side only
-            if (context.get().getDirection().getReceptionSide().isClient()) {
+            if (ctx.player().level().isClientSide()) {
                 if (Minecraft.getInstance().player != null) {
-                    spawnKlaxonParticles(x, y, z);
+                    spawnKlaxonParticles(msg.x(), msg.y(), msg.z());
                 }
             }
         });
-        context.get().setPacketHandled(true);
     }
 
-    public void spawnKlaxonParticles(double centerX, double centerY, double centerZ) {
+    public static void spawnKlaxonParticles(double centerX, double centerY, double centerZ) {
         Random random = new Random();
         double outerRadius = KlaxonUseMessage.KLAXON_RANGE;
         double innerRadius = outerRadius / 2;

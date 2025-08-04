@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers.entity.client.model;
 
 import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.entity.custom.Banana;
 import me.jesuismister.cubicracers.entity.custom.FakeBox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -9,27 +10,32 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.renderer.base.GeoRenderState;
 
 import java.util.Optional;
 
 public class FakeBoxModel extends GeoModel<FakeBox> {
+    public static final String TEXTURE = "textures/entity/item_box.png";
+    public static final String MODEL = "geo/item_box.geo.json";
+    public static final String ANIMATION = "animations/item_box.animation.json";
+
     @Override
-    public ResourceLocation getModelResource(FakeBox fakeBox) {
-        return new ResourceLocation(CubicRacers.MODID, fakeBox.MODEL);
+    public ResourceLocation getModelResource(GeoRenderState renderState) {
+        return ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, MODEL);
     }
 
     @Override
-    public ResourceLocation getTextureResource(FakeBox fakeBox) {
-        return new ResourceLocation(CubicRacers.MODID, fakeBox.TEXTURE);
+    public ResourceLocation getTextureResource(GeoRenderState renderState) {
+        return ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, TEXTURE);
     }
 
     @Override
-    public ResourceLocation getAnimationResource(FakeBox fakeBox) {
-        return new ResourceLocation(CubicRacers.MODID, fakeBox.ANIMATION);
+    public ResourceLocation getAnimationResource(FakeBox fakebox) {
+        return ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, ANIMATION);
     }
 
+    /*
     @Override
     public void setCustomAnimations(FakeBox fakeBox, long instanceId, AnimationState<FakeBox> animationState) {
         super.setCustomAnimations(fakeBox, instanceId, animationState);
@@ -44,4 +50,5 @@ public class FakeBoxModel extends GeoModel<FakeBox> {
         float yrot = Mth.wrapDegrees((float)(Mth.atan2(d2, d0) * (double)(180F / (float)Math.PI)) - 90.0F);
         if(boneQuestionMark.isPresent()) boneQuestionMark.get().setRotY((float) -Math.toRadians(yrot));
     }
+    */
 }

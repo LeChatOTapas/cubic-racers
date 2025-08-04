@@ -22,8 +22,10 @@ public abstract class SoundLoopKart extends AbstractTickableSoundInstance {
         this.entity = entity;
         this.looping = true;
         this.delay = 0;
-        this.default_volume = Config.CLIENT_CONFIG.kartVolume.get().floatValue();
-        this.volume = Config.CLIENT_CONFIG.kartVolume.get().floatValue();
+        // this.default_volume = Config.CLIENT_CONFIG.kartVolume.get().floatValue();
+        this.default_volume = 0.10f;
+        // this.volume = Config.CLIENT_CONFIG.kartVolume.get().floatValue();
+        this.volume = 0.10f;
         this.pitch = 1F;
         this.relative = true;
         this.attenuation = Attenuation.LINEAR;

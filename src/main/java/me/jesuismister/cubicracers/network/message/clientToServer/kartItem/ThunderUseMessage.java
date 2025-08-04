@@ -1,37 +1,50 @@
 package me.jesuismister.cubicracers.network.message.clientToServer.kartItem;
 
+import io.netty.buffer.ByteBuf;
+import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
-import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.serverToClient.StunMessage;
-import me.jesuismister.cubicracers.util.UtilityMethod;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.List;
-import java.util.function.Supplier;
 
-public class ThunderUseMessage {
+public record ThunderUseMessage() implements CustomPacketPayload {
     private static final int THUNDER_RANGE = 500;
 
-    public ThunderUseMessage() {
+    public static final CustomPacketPayload.Type<ThunderUseMessage> TYPE = new CustomPacketPayload.Type<>(
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "ThunderUseMessage")
+    );
+
+    public static final StreamCodec<ByteBuf, ThunderUseMessage> STREAM_CODEC =
+            new StreamCodec<>() {
+                @Override
+                public void encode(ByteBuf buf, ThunderUseMessage msg) {
+                }
+
+                @Override
+                public ThunderUseMessage decode(ByteBuf buf) {
+                    return new ThunderUseMessage();
+                }
+            };
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static void encode(ThunderUseMessage message, FriendlyByteBuf buffer) {
-    }
-
-    public static ThunderUseMessage decode(FriendlyByteBuf buffer) {
-        return new ThunderUseMessage();
-    }
-
-    public static void handle(ThunderUseMessage msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            if (player == null) return;
+    public static void handle(ThunderUseMessage msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            Player player = ctx.player();
             if (player.getVehicle() != null && player.getVehicle() instanceof TestKart kart) {
                 kart.setKartItem("None");
 
@@ -41,12 +54,9 @@ public class ThunderUseMessage {
                         if (target.getCanMove() && !target.equals(kart)) {
                             TestKart.stunKart(target, "Thunder");
                             // Envoi du message à tous les clients (pour affichage visuel)
-                            Network.CHANNEL.send(
-                                    PacketDistributor.TRACKING_ENTITY.with(() -> kart),
-                                    new StunMessage(target.getId(), "Thunder")
-                            );
+                            PacketDistributor.sendToPlayer((ServerPlayer)target.getFirstPassenger(), new StunMessage(target.getId(), "Thunder"));
                         }
-                        LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(kart.level());
+                        LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(kart.level(), EntitySpawnReason.COMMAND);
                         if (lightning != null) {
                             lightning.setPos(target.getX(), target.getY(), target.getZ());
                             lightning.setVisualOnly(true); // ne fait pas de dégâts
@@ -56,6 +66,5 @@ public class ThunderUseMessage {
                 }
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

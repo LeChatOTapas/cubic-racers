@@ -3,21 +3,24 @@ package me.jesuismister.cubicracers.init;
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.KartData;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class KartInit {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES =
-            DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, CubicRacers.MODID);
+            DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, CubicRacers.MODID);
 
-    public static final Map<String, RegistryObject<EntityType<TestKart>>> KARTS = new HashMap<>();
+    public static final Map<String, Supplier<EntityType<TestKart>>> KARTS = new HashMap<>();
 
     public static void initAllKarts() {
         for (KartData d : CubicRacers.KARTS_DATA) {
@@ -31,6 +34,10 @@ public class KartInit {
         KARTS.put(name, ENTITY_TYPES.register(name, () -> EntityType.Builder.<TestKart>of((type, level) ->
                         new TestKart(type, level, id, texture, model, animation, playerPosY, hitboxX, hitboxY), MobCategory.MISC)
                 .sized(hitboxX, hitboxY)
-                .build(new ResourceLocation(CubicRacers.MODID, name).toString())));
+                .build(ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.withDefaultNamespace(name)))));
+    }
+
+    public static void register(IEventBus eventBus) {
+        ENTITY_TYPES.register(eventBus);
     }
 }

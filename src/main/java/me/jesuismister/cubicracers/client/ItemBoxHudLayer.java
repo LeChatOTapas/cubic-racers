@@ -1,15 +1,14 @@
 package me.jesuismister.cubicracers.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.entity.custom.TestKart;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
-public class ItemHudOverlay {
-    private static final ResourceLocation EMPTY_ITEM_BOX = new ResourceLocation(CubicRacers.MODID,
+/*
+public class ItemBoxHudLayer implements LayeredDraw.Layer{
+
+        private static final ResourceLocation EMPTY_ITEM_BOX = new ResourceLocation(CubicRacers.MODID,
             "textures/kart/empty_item_box.png");
     private static final ResourceLocation BANANA_ITEM_BOX = new ResourceLocation(CubicRacers.MODID,
             "textures/kart/banana_item_box.png");
@@ -54,13 +53,16 @@ public class ItemHudOverlay {
         }
     }));
 
-    /**
-     * Méthode qui détermine si l'HUD doit être affiché
-     *
-     * @param player
-     * @return
-     */
-    private static boolean shouldPrint(LocalPlayer player) {
-        return player != null && player.getVehicle() != null && player.getVehicle() instanceof TestKart;
+    @Override
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        // Exemple : afficher la vitesse du joueur
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (player != null) {
+            double speed = Math.sqrt(player.getDeltaMovement().lengthSqr()) * 20; // blocs/seconde
+            String speedText = String.format("Speed: %.1f b/s", speed);
+            guiGraphics.drawString(mc.font, speedText, 10, 10, 0xFFFFFF, false);
+        }
     }
 }
+*/

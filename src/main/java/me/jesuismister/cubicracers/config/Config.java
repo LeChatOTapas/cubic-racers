@@ -1,29 +1,25 @@
 package me.jesuismister.cubicracers.config;
 
-import de.maxhenkel.corelib.CommonRegistry;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
+import me.jesuismister.cubicracers.CubicRacers;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.config.IConfigSpec;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
+@EventBusSubscriber(modid = CubicRacers.MODID)
 public class Config {
-    public static ClientConfig CLIENT_CONFIG;
+    public static IConfigSpec SERVER;
 
     public static void register() {
         registerServerConfigs();
-        registerClientConfigs();
     }
 
     private static void registerServerConfigs() {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
         RoadBlockConfig.registerServerConfig(builder);
         KartItemConfig.registerServerConfig(builder);
         KartConfig.registerServerConfig(builder);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, builder.build());
+        SERVER = builder.build();
     }
-    private static void registerClientConfigs() {
-        ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
-        CLIENT_CONFIG = CommonRegistry.registerConfig(ModConfig.Type.CLIENT, ClientConfig.class);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, SERVER_BUILDER.build());
-    }
-
 }

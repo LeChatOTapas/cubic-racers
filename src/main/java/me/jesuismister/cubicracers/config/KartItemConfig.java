@@ -1,17 +1,15 @@
 package me.jesuismister.cubicracers.config;
 
-import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.entity.KartData;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class KartItemConfig {
-    public static Map<String, ForgeConfigSpec.DoubleValue> ITEMS_DROP_RATES = new HashMap<>();
+    public static Map<String, ModConfigSpec.DoubleValue> ITEMS_DROP_RATES = new HashMap<>();
 
-    public static void registerServerConfig(ForgeConfigSpec.Builder SERVER_BUILDER) {
+    public static void registerServerConfig(ModConfigSpec.Builder SERVER_BUILDER) {
         Map<String, Float> itemList = Map.of(
                 "Banana", 20f,
                 "Green_shell", 30f,

@@ -1,20 +1,41 @@
 package me.jesuismister.cubicracers.entity.client.renderer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.entity.client.KartRenderData;
+import me.jesuismister.cubicracers.entity.client.model.ItemBoxModel;
 import me.jesuismister.cubicracers.entity.client.model.TestKartModel;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Quaternionf;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
+import software.bernie.geckolib.renderer.base.GeoRenderState;
+import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
-public class TestKartRenderer extends GeoEntityRenderer<TestKart> {
+public class TestKartRenderer<R extends LivingEntityRenderState & GeoRenderState> extends GeoEntityRenderer<TestKart, R> {
 
+    public TestKartRenderer(EntityRendererProvider.Context context) {
+        super(context, new TestKartModel());
+        //this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
+    }
+
+    @Override
+    public void addRenderData(TestKart kart, Void relatedObject, R renderState) {
+        super.addRenderData(kart, relatedObject, renderState);
+
+        // On stocke dans le renderState les chemins dynamiques
+        renderState.addGeckolibData(
+                KartRenderData.MODEL_PATH,
+                kart.MODEL
+        );
+        renderState.addGeckolibData(
+                KartRenderData.TEXTURE_PATH,
+                kart.isInvincible()
+                        ? "textures/entity/star_model.png"
+                        : kart.TEXTURE
+        );
+    }
+
+/*
     public TestKartRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new TestKartModel());
         //this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
@@ -53,7 +74,6 @@ public class TestKartRenderer extends GeoEntityRenderer<TestKart> {
         poseStack.popPose();
     }
 
-
     @Override
     public RenderType getRenderType(TestKart animatable, ResourceLocation texture, @Nullable MultiBufferSource bufferSource, float partialTick) {
         return super.getRenderType(animatable, texture, bufferSource, partialTick);
@@ -61,4 +81,5 @@ public class TestKartRenderer extends GeoEntityRenderer<TestKart> {
         //Ca fait bugué le glowmask de l'étoile ???
         //return RenderType.entityTranslucent(new ResourceLocation(CubicRacers.MODID, animatable.TEXTURE));
     }
+    */
 }

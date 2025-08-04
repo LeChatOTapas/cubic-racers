@@ -1,66 +1,79 @@
 package me.jesuismister.cubicracers.network.message.clientToServer.kartItem;
 
-import me.jesuismister.cubicracers.entity.custom.Banana;
+import io.netty.buffer.ByteBuf;
+import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.BobOmb;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import me.jesuismister.cubicracers.util.UtilityMethod;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record BobOmbUseMessage(
+        double x,
+        double y,
+        double z,
+        boolean isLobShot,
+        float direction,
+        float kartSpeed
+) implements CustomPacketPayload {
 
-public class BobOmbUseMessage {
-    private double x;
-    private double y;
-    private double z;
-    private boolean isLobShot;
-    private float direction;
-    private float kartSpeed;
+    public static final CustomPacketPayload.Type<BobOmbUseMessage> TYPE = new CustomPacketPayload.Type<>(
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "BobOmbUseMessage")
+    );
 
-    public BobOmbUseMessage(double x, double y, double z, boolean isLobShot, float direction, float kartSpeed) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.isLobShot = isLobShot;
-        this.direction = direction;
-        this.kartSpeed = kartSpeed;
+    public static final StreamCodec<ByteBuf, BobOmbUseMessage> STREAM_CODEC =
+            new StreamCodec<>() {
+                @Override
+                public void encode(ByteBuf buf, BobOmbUseMessage msg) {
+                    ByteBufCodecs.DOUBLE.encode(buf, msg.x());
+                    ByteBufCodecs.DOUBLE.encode(buf, msg.y());
+                    ByteBufCodecs.DOUBLE.encode(buf, msg.z());
+                    ByteBufCodecs.BOOL.encode(buf, msg.isLobShot());
+                    ByteBufCodecs.FLOAT.encode(buf, msg.direction());
+                    ByteBufCodecs.FLOAT.encode(buf, msg.kartSpeed());
+                }
+
+                @Override
+                public BobOmbUseMessage decode(ByteBuf buf) {
+                    return new BobOmbUseMessage(
+                            ByteBufCodecs.DOUBLE.decode(buf),
+                            ByteBufCodecs.DOUBLE.decode(buf),
+                            ByteBufCodecs.DOUBLE.decode(buf),
+                            ByteBufCodecs.BOOL.decode(buf),
+                            ByteBufCodecs.FLOAT.decode(buf),
+                            ByteBufCodecs.FLOAT.decode(buf)
+                    );
+                }
+            };
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static void encode(BobOmbUseMessage message, FriendlyByteBuf buffer) {
-        buffer.writeDouble(message.x);
-        buffer.writeDouble(message.y);
-        buffer.writeDouble(message.z);
-        buffer.writeBoolean(message.isLobShot);
-        buffer.writeFloat(message.direction);
-        buffer.writeFloat(message.kartSpeed);
-    }
-
-    public static BobOmbUseMessage decode(FriendlyByteBuf buffer) {
-        return new BobOmbUseMessage(buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readBoolean(), buffer.readFloat(), buffer.readFloat());
-    }
-
-    public static void handle(BobOmbUseMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
-            if (player == null) return;
+    public static void handle(BobOmbUseMessage msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            Player player = ctx.player();
             if (player.getVehicle() != null && player.getVehicle() instanceof TestKart kart)
                 kart.setKartItem("None");
 
-            Level level = player.serverLevel();
+            Level level = player.level();
             BobOmb entity = new BobOmb(KartItemsInit.BOMB_OMB.get(), level);
-            entity.setPos(UtilityMethod.getCoordToSpawnItem(message.x, message.y + 0.5, message.z, message.direction, message.isLobShot));
+            entity.setPos(UtilityMethod.getCoordToSpawnItem(msg.x(), msg.y() + 0.5, msg.z(), msg.direction(), msg.isLobShot()));
 
             // si tir en cloche, on prépare la vélocité AVANT le spawn
-            if (message.isLobShot) {
-                double yawRad = Math.toRadians(message.direction);
+            if (msg.isLobShot()) {
+                double yawRad = Math.toRadians(msg.direction());
                 double xDir = -Math.sin(yawRad);
                 double zDir = Math.cos(yawRad);
-                double speedH = 2.5 * (message.kartSpeed + 0.25);
+                double speedH = 2.5 * (msg.kartSpeed() + 0.25);
                 double speedV = 1.75;
                 Vec3 velocity = new Vec3(xDir * speedH, speedV, zDir * speedH);
 
@@ -69,6 +82,5 @@ public class BobOmbUseMessage {
             entity.setNoGravity(false);
             level.addFreshEntity(entity);
         });
-        context.setPacketHandled(true);
     }
 }

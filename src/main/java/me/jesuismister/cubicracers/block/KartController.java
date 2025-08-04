@@ -1,6 +1,7 @@
 package me.jesuismister.cubicracers.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -14,12 +15,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.redstone.Orientation;
 
 import javax.annotation.Nullable;
 
 public class KartController extends Block {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
     public KartController(Properties p_55657_) {
@@ -39,7 +41,7 @@ public class KartController extends Block {
     }
 
     @Override
-    public void neighborChanged(BlockState blockState, Level level, BlockPos blockPos, Block p_60512_, BlockPos p_60513_, boolean p_60514_) {
+    protected void neighborChanged(BlockState blockState, Level level, BlockPos blockPos, Block p_60512_, @org.jetbrains.annotations.Nullable Orientation p_365159_, boolean p_60514_) {
         if (!level.isClientSide) {
             boolean flag = blockState.getValue(LIT);
             if (flag != level.hasNeighborSignal(blockPos)) {

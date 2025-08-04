@@ -4,15 +4,15 @@ import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import org.joml.Quaternionf;
 
-@Mod.EventBusSubscriber(modid = CubicRacers.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = CubicRacers.MODID, value = Dist.CLIENT)
 public class PlayerRenderEventHandler {
-
+/*
     @SubscribeEvent
     public static void onPlayerRenderPre(RenderLivingEvent.Pre<Player, PlayerModel<Player>> event) {
         if(event.getEntity() instanceof Player player){
@@ -37,7 +37,6 @@ public class PlayerRenderEventHandler {
             }
         }
     }
-
     @SubscribeEvent
     public static void onPlayerRenderPost(RenderLivingEvent.Post<Player, PlayerModel<Player>> event) {
         if(event.getEntity() instanceof Player player) {
@@ -46,4 +45,5 @@ public class PlayerRenderEventHandler {
             }
         }
     }
+*/
 }

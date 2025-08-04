@@ -1,7 +1,6 @@
 package me.jesuismister.cubicracers.sounds;
 
 import me.jesuismister.cubicracers.entity.custom.TestKart;
-import me.jesuismister.cubicracers.entity.custom.TestKartAbstract;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 
@@ -30,7 +29,7 @@ public class SoundEngineIdle extends SoundLoopKart {
     @Override
     public boolean shouldStopSound() {
         TestKart kart = (TestKart) entity;
-        if (kart.isDeltaOn() || kart.isInvinsible() || kart.getSpeed() > kart.getMAX_SPEED()*0.2f || kart.getSpeed() < -kart.getMAX_SPEED()*0.2f) {
+        if (kart.isDeltaOn() || kart.isInvincible() || kart.getSpeed() > kart.getMAX_SPEED()*0.2f || kart.getSpeed() < -kart.getMAX_SPEED()*0.2f) {
             return true;
         }
         return false;

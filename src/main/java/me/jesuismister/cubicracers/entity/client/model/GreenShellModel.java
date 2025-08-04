@@ -1,30 +1,29 @@
 package me.jesuismister.cubicracers.entity.client.model;
 
 import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.entity.custom.Banana;
 import me.jesuismister.cubicracers.entity.custom.GreenShell;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.renderer.base.GeoRenderState;
 
 public class GreenShellModel extends GeoModel<GreenShell> {
+    public static final String TEXTURE = "textures/entity/green_shell.png";
+    public static final String MODEL = "green_shell";
+    public static final String ANIMATION = "green_shell";
 
     @Override
-    public ResourceLocation getModelResource(GreenShell green_shell) {
-        return new ResourceLocation(CubicRacers.MODID, green_shell.MODEL);
+    public ResourceLocation getModelResource(GeoRenderState renderState) {
+        return ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, MODEL);
     }
 
     @Override
-    public ResourceLocation getTextureResource(GreenShell green_shell) {
-        return new ResourceLocation(CubicRacers.MODID, green_shell.TEXTURE);
+    public ResourceLocation getTextureResource(GeoRenderState renderState) {
+        return ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, TEXTURE);
     }
 
     @Override
-    public ResourceLocation getAnimationResource(GreenShell green_shell) {
-        return new ResourceLocation(CubicRacers.MODID, green_shell.ANIMATION);
-    }
-
-    @Override
-    public void setCustomAnimations(GreenShell green_shell, long instanceId, AnimationState<GreenShell> animationState) {
-        super.setCustomAnimations(green_shell, instanceId, animationState);
+    public ResourceLocation getAnimationResource(GreenShell greenShell) {
+        return ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, ANIMATION);
     }
 }

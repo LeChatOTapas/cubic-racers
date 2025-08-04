@@ -1,58 +1,58 @@
 
 package me.jesuismister.cubicracers.network.message.clientToServer.kartItem;
 
+import io.netty.buffer.ByteBuf;
+import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
 import me.jesuismister.cubicracers.init.SoundsInit;
-import me.jesuismister.cubicracers.network.Network;
-import me.jesuismister.cubicracers.network.message.serverToClient.StunMessage;
-import me.jesuismister.cubicracers.network.message.serverToClient.kartItem.ExplosionParticleMessage;
 import me.jesuismister.cubicracers.network.message.serverToClient.kartItem.KlaxonParticleMessage;
 import me.jesuismister.cubicracers.util.ClientUtil;
 import me.jesuismister.cubicracers.util.UtilityMethod;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.List;
-import java.util.Random;
-import java.util.function.Supplier;
 
-public class KlaxonUseMessage {
+public record KlaxonUseMessage() implements CustomPacketPayload {
     public static final int KLAXON_RANGE = 4;
 
-    public KlaxonUseMessage() {
+    public static final CustomPacketPayload.Type<KlaxonUseMessage> TYPE = new CustomPacketPayload.Type<>(
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "KlaxonUseMessage")
+    );
+
+    public static final StreamCodec<ByteBuf, KlaxonUseMessage> STREAM_CODEC =
+            new StreamCodec<>() {
+                @Override
+                public void encode(ByteBuf buf, KlaxonUseMessage msg) {
+                }
+
+                @Override
+                public KlaxonUseMessage decode(ByteBuf buf) {
+                    return new KlaxonUseMessage();
+                }
+            };
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static void encode(KlaxonUseMessage message, FriendlyByteBuf buffer) {
-    }
-
-    public static KlaxonUseMessage decode(FriendlyByteBuf buffer) {
-        return new KlaxonUseMessage();
-    }
-
-    public static void handle(KlaxonUseMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
-            if (player == null) return;
+    public static void handle(KlaxonUseMessage msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            Player player = ctx.player();
             if (player.getVehicle() != null && player.getVehicle() instanceof TestKart kart) {
                 kart.setKartItem("None");
 
                 UtilityMethod.stunKartAround(kart, KLAXON_RANGE, "Klaxon");
 
-                Network.CHANNEL.send(
-                        PacketDistributor.ALL.noArg(),
-                        new KlaxonParticleMessage(kart.getX(), kart.getY(), kart.getZ())
-                );
+                PacketDistributor.sendToAllPlayers(new KlaxonParticleMessage(kart.getX(), kart.getY(), kart.getZ()));
 
                 ClientUtil.playSoundToAll(kart.level(), kart.getX(), kart.getY(), kart.getZ(), 8 + KLAXON_RANGE, SoundsInit.KLAXON.get(), SoundSource.RECORDS, 1f, 0.95f);
             }
         });
-        context.setPacketHandled(true);
     }
 }

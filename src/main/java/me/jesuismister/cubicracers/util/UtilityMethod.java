@@ -1,14 +1,10 @@
 package me.jesuismister.cubicracers.util;
 
 import me.jesuismister.cubicracers.entity.custom.TestKart;
-import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.serverToClient.StunMessage;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 
@@ -29,10 +25,7 @@ public class UtilityMethod {
                 if (kart.getCanMove() && !entity.equals(target)) {
                     TestKart.stunKart(kart, stunMotif);
                     // Envoi du message à tous les clients (pour affichage visuel)
-                    Network.CHANNEL.send(
-                            PacketDistributor.TRACKING_ENTITY.with(() -> kart),
-                            new StunMessage(kart.getId(), stunMotif)
-                    );
+                    PacketDistributor.sendToAllPlayers(new StunMessage(kart.getId(), stunMotif));
                 }
             }
         }

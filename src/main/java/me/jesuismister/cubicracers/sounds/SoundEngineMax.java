@@ -31,7 +31,7 @@ public class SoundEngineMax extends SoundLoopKart {
     @Override
     public boolean shouldStopSound() {
         TestKartAbstract kart = (TestKartAbstract) entity;
-        if ((RoadBlockConfig.ROAD_BLOCK_REQUIRE.get() && !kart.isOnRoadBlock()) || kart.isDeltaOn() || kart.isInvinsible() || kart.getSpeed() == 0) {
+        if ((RoadBlockConfig.ROAD_BLOCK_REQUIRE.get() && !kart.isOnRoadBlock()) || kart.isDeltaOn() || kart.isInvincible() || kart.getSpeed() == 0) {
             return true;
         }
         return false;

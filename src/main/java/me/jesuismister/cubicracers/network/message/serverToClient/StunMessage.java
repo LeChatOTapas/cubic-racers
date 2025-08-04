@@ -1,45 +1,57 @@
 package me.jesuismister.cubicracers.network.message.serverToClient;
 
-import me.jesuismister.cubicracers.entity.custom.BobOmb;
+import io.netty.buffer.ByteBuf;
+import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.Random;
-import java.util.function.Supplier;
+public record StunMessage(
+        int kartId,
+        String stunType
+) implements CustomPacketPayload {
 
-public class StunMessage {
-    private int kartId;
-    private String stunType;
+    public static final CustomPacketPayload.Type<StunMessage> TYPE = new CustomPacketPayload.Type<>(
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "StunMessage")
+    );
 
-    public StunMessage(int kartId, String stunType) {
-        this.kartId = kartId;
-        this.stunType = stunType;
+    public static final StreamCodec<ByteBuf, StunMessage> STREAM_CODEC =
+            new StreamCodec<>() {
+                @Override
+                public void encode(ByteBuf buf, StunMessage msg) {
+                    ByteBufCodecs.INT.encode(buf, msg.kartId());
+                    ByteBufCodecs.STRING_UTF8.encode(buf, msg.stunType());
+                }
+
+                @Override
+                public StunMessage decode(ByteBuf buf) {
+                    return new StunMessage(
+                            ByteBufCodecs.INT.decode(buf),
+                            ByteBufCodecs.STRING_UTF8.decode(buf)
+                    );
+                }
+            };
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static StunMessage decode(FriendlyByteBuf buf) {
-        return new StunMessage(buf.readInt(), buf.readUtf());
-    }
-
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeInt(kartId);
-        buf.writeUtf(stunType);
-    }
-
-    public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-        contextSupplier.get().enqueueWork(() -> {
+    public static void handle(StunMessage msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             Level level = Minecraft.getInstance().level;
             if (level == null) return;
 
-            Entity entity = level.getEntity(kartId);
+            Entity entity = level.getEntity(msg.kartId());
             if (entity instanceof TestKart kart) {
-                TestKart.stunKart(kart, stunType);
+                TestKart.stunKart(kart, msg.stunType());
             }
         });
-        contextSupplier.get().setPacketHandled(true);
     }
 }

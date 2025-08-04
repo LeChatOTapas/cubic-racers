@@ -1,12 +1,14 @@
 package me.jesuismister.cubicracers.entity.client.model;
 
 import me.jesuismister.cubicracers.CubicRacers;
+import me.jesuismister.cubicracers.entity.client.KartRenderData;
+import me.jesuismister.cubicracers.entity.custom.Banana;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.renderer.base.GeoRenderState;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -17,22 +19,27 @@ public class TestKartModel extends GeoModel<TestKart> {
     private static final float ROTATE_KART_DEGREE = 5; //WHEN THE KART IS TURNING IN THE AIR (LEFT OR RIGHT WITH GLIDER)
 
     @Override
-    public ResourceLocation getModelResource(TestKart kart) {
-        return new ResourceLocation(CubicRacers.MODID, kart.MODEL);
+    public ResourceLocation getModelResource(GeoRenderState renderState) {
+        String path = renderState.getGeckolibData(KartRenderData.MODEL_PATH);
+        return ResourceLocation.fromNamespaceAndPath(
+                CubicRacers.MODID, path
+        );
     }
 
     @Override
-    public ResourceLocation getTextureResource(TestKart kart) {
-        System.out.println("=> " + kart.isInvinsible());
-        if(kart.isInvinsible()) return new ResourceLocation(CubicRacers.MODID, "textures/entity/star_model.png");
-        else return new ResourceLocation(CubicRacers.MODID, kart.TEXTURE);
+    public ResourceLocation getTextureResource(GeoRenderState renderState) {
+        String path = renderState.getGeckolibData(KartRenderData.TEXTURE_PATH);
+        return ResourceLocation.fromNamespaceAndPath(
+                CubicRacers.MODID, path
+        );
     }
 
     @Override
     public ResourceLocation getAnimationResource(TestKart kart) {
-        return new ResourceLocation(CubicRacers.MODID, kart.ANIMATION);
+        return ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, kart.ANIMATION);
     }
 
+    /*
     @Override
     public void setCustomAnimations(TestKart kart, long instanceId, AnimationState<TestKart> animationState) {
         super.setCustomAnimations(kart, instanceId, animationState);
@@ -147,6 +154,6 @@ public class TestKartModel extends GeoModel<TestKart> {
             //UPDATE
             bonesKart.get().updateRotation(0, 0, ROTATE_KART_DEGREE * Mth.DEG_TO_RAD * kart.getPourcentage_inclinaison());
         }
-
     }
+     */
 }

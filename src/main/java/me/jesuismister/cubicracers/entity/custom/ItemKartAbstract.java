@@ -1,29 +1,19 @@
 package me.jesuismister.cubicracers.entity.custom;
 
-import me.jesuismister.cubicracers.init.SoundsInit;
-import me.jesuismister.cubicracers.util.ClientUtil;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
-import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.GeoEntity;
 
-import java.util.List;
-
-public abstract class ItemKartAbstract extends Entity {
+public abstract class ItemKartAbstract extends Entity implements GeoEntity {
     protected int tickAlive = 0;
     protected int removeDelay = -1;
 
@@ -32,30 +22,13 @@ public abstract class ItemKartAbstract extends Entity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    @Override
-    protected void defineSynchedData() {
-    }
-
-    @Override
     public boolean isNoGravity() {
         return false;
     }
 
     @Override
-    protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {
-    }
-
-    @Override
-    protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {
-    }
-
-    @Override
-    public boolean hurt(DamageSource damage, float p_19947_) {
-        if (damage.getEntity() instanceof Player player) {
+    public boolean hurtClient(DamageSource damageSource) {
+        if (damageSource.getEntity() instanceof Player player) {
             if (player.isCreative()) {
                 if (player.getVehicle() == null) {
                     this.remove(RemovalReason.KILLED);
@@ -94,17 +67,20 @@ public abstract class ItemKartAbstract extends Entity {
 
     abstract protected int getMaxTimeAlive();
 
-    /*
-    public void stun(float range, String motif) {
-        List<Entity> nearbyEntities = this.level().getEntities(this, this.getBoundingBox().inflate(range));
-        for (Entity entity : nearbyEntities) {
-            if (entity instanceof TestKart kart) {
-                if (kart.getCanMove()){
-                    TestKart.stunKart(kart, motif);
-                    ClientUtil.playSoundToAll(level(), getX(), getY(), getZ(), 8, SoundsInit.BANANA_HIT_KART.get(), SoundSource.RECORDS, 1f, 0.95f);
-                }
-            }
-        }
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
-    */
+
+    @Override
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
+        return false;
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput valueInput) {
+    }
+
+    @Override
+    protected void addAdditionalSaveData(ValueOutput valueOutput) {
+    }
 }

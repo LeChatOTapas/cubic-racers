@@ -4,15 +4,11 @@ import me.jesuismister.cubicracers.config.KartItemConfig;
 import me.jesuismister.cubicracers.init.ItemInit;
 import me.jesuismister.cubicracers.init.KartItemsInit;
 import me.jesuismister.cubicracers.init.SoundsInit;
-import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.util.ClientRandom;
 import me.jesuismister.cubicracers.util.ClientUtil;
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -22,33 +18,27 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.*;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animatable.manager.AnimatableManager;
+import software.bernie.geckolib.animatable.processing.AnimationController;
+import software.bernie.geckolib.animatable.processing.AnimationTest;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 import java.util.Map;
 
-import static me.jesuismister.cubicracers.util.ClientUtil.spawnParticleForAll;
-
 public class ItemBox extends ItemKartAbstract implements GeoEntity {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    public static final String TEXTURE = "textures/entity/item_box.png";
-    public static final String MODEL = "geo/item_box.geo.json";
-    public static final String ANIMATION = "animations/item_box.animation.json";
     public static final float HITBOX_X = 1f;
     public static final float HITBOX_Y = 2f;
 
     private static final int TICK_TO_GET_BACK_ITEM = 20 * 4; //4s
+
     public static final EntityDataAccessor<Boolean> hasItem = SynchedEntityData.defineId(ItemBox.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> tickDisabled = SynchedEntityData.defineId(ItemBox.class, EntityDataSerializers.INT);
 
@@ -66,32 +56,10 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
     }
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        this.entityData.set(hasItem, true);
+        this.entityData.set(tickDisabled, 0);
     }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
-    }
-
-    private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState) {
-        if (getHasItem()) {
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("box_on", Animation.LoopType.LOOP));
-        } else {
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("box_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
-        }
-        return PlayState.CONTINUE;
-    }
-
-    @Override
-    protected void defineSynchedData() {
-        this.entityData.define(hasItem, true);
-        this.entityData.define(tickDisabled, 0);
-    }
-
     @Override
     public void tick() {
         super.tick();
@@ -134,11 +102,6 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
         return -1;
     }
 
-    /**
-     * Méthode qui donne un item au kart donné en paramètre
-     *
-     * @param kart
-     */
     public boolean giveRandomItem(TestKart kart) {
         if (kart.getFirstPassenger() == null || !(kart.getFirstPassenger() instanceof Player))
             return false;
@@ -156,11 +119,8 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
     }
 
     @Override
-    /**
-     * Méthode qui fait en sorte de détruire le cube quand il prend des dégats
-     */
-    public boolean hurt(DamageSource damage, float p_19947_) {
-        if (damage.getEntity() instanceof Player player) {
+    public boolean hurtClient(DamageSource damageSource) {
+        if (damageSource.getEntity() instanceof Player player) {
             if (this.getFirstPassenger() == null) {
                 remove(RemovalReason.KILLED);
                 if (!player.isCreative() && !level().isClientSide()) {
@@ -176,13 +136,13 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
     private String getRandomItem() {
         //Determination de la borne maximal (car pas forcement 100)
         int max = 0;
-        for (ForgeConfigSpec.DoubleValue v : KartItemConfig.ITEMS_DROP_RATES.values()) {
+        for (ModConfigSpec.DoubleValue v : KartItemConfig.ITEMS_DROP_RATES.values()) {
             max += v.get();
         }
 
         int rand = ClientRandom.nextInt(max);
         int temp = 0;
-        for (Map.Entry<String, ForgeConfigSpec.DoubleValue> v : KartItemConfig.ITEMS_DROP_RATES.entrySet()) {
+        for (Map.Entry<String, ModConfigSpec.DoubleValue> v : KartItemConfig.ITEMS_DROP_RATES.entrySet()) {
             temp += v.getValue().get();
             if (rand <= temp) {
                 return v.getKey();
@@ -205,5 +165,30 @@ public class ItemBox extends ItemKartAbstract implements GeoEntity {
 
     public void setTickDisabled(int value) {
         this.entityData.set(tickDisabled, value);
+    }
+
+    //////////////
+    // GECKOLIB //
+    //////////////
+    private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    protected static final RawAnimation BOX_ON = RawAnimation.begin().thenLoop("box_on");
+    protected static final RawAnimation BOX_OFF = RawAnimation.begin().thenLoop("box_off");
+
+    @Override
+    public void registerControllers(final AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>("controller", 0, this::predicate));
+    }
+
+    private PlayState predicate(AnimationTest<GeoAnimatable> geoAnimatableAnimationTest) {
+        if (getHasItem()) {
+            return geoAnimatableAnimationTest.setAndContinue(BOX_ON);
+        } else {
+            return geoAnimatableAnimationTest.setAndContinue(BOX_OFF);
+        }
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geoCache;
     }
 }

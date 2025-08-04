@@ -4,40 +4,37 @@ import me.jesuismister.cubicracers.config.KartConfig;
 import me.jesuismister.cubicracers.init.BlockInit;
 import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.init.SoundsInit;
-import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.clientToServer.KartSynchMessage;
 import me.jesuismister.cubicracers.network.message.serverToClient.KartItemSynchMessage;
 import me.jesuismister.cubicracers.sounds.*;
-import me.jesuismister.cubicracers.util.KartItemUseMethods;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
 public class TestKart extends TestKartAbstract {
     public static float HITBOX_X;
     public static float HITBOX_Y;
-    //CACHE
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     //PATH
     public final String TEXTURE;
     public final String MODEL;
@@ -93,7 +90,7 @@ public class TestKart extends TestKartAbstract {
 
     @Override
     public void tick() {
-        if (level().isClientSide) updateSounds();
+        if (level().isClientSide) updateSoundsClient();
         else {
             setMAX_SPEED(KartConfig.MAX_SPEED.get(id).get().floatValue());
             setDELTA_SPEED(KartConfig.MAX_SPEED.get(id).get().floatValue());
@@ -106,8 +103,8 @@ public class TestKart extends TestKartAbstract {
         if (getDriftTimeBoost() > 0) setDriftTimeBoost(getDriftTimeBoost() - 0.1f);
         if (getTimeBoost() > 0) setTimeBoost(getTimeBoost() - 0.1f);
         if (getTimeStar() > 0) setTimeStar(getTimeStar() - 0.1f);
-        if (isInvinsible() && getTimeStar() <= 0) {
-            setInvinsible(false);
+        if (isInvincible() && getTimeStar() <= 0) {
+            setInvincible(false);
             setStarSpeedBoost(1f);
         }
 
@@ -125,7 +122,7 @@ public class TestKart extends TestKartAbstract {
                 yo = getY();
                 zo = getZ();
                 // Synchro des items
-                Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new KartItemSynchMessage(this.getKartItem()));
+                PacketDistributor.sendToAllPlayers(new KartItemSynchMessage(this.getKartItem()));
             } else {
                 moveCamera(player);
                 synchKart(player);
@@ -140,24 +137,27 @@ public class TestKart extends TestKartAbstract {
     private void synchKart(Player player) {
         if (Minecraft.getInstance().player.getName().equals(player.getName())) {
             try {
+                /*
                 for (ServerPlayer sp : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
                     if (!sp.getName().equals(player.getName())) {
                         Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
                                 new KartSynchMessage(this.getId(), getX(), getY(), getZ(), getYRot()));
                     }
                 }
+                */
+                PacketDistributor.sendToAllPlayers(new KartSynchMessage(this.getId(), getX(), getY(), getZ(), getYRot()));
             } catch (Exception ignored) {
             }
         }
     }
 
     @Override
-    public void lerpTo(double p_38299_, double p_38300_, double p_38301_, float p_38302_, float p_38303_, int p_38304_, boolean p_38305_) {
-        super.lerpTo(p_38299_, p_38300_, p_38301_, p_38302_, p_38303_, p_38304_, p_38305_);
+    public void lerpHeadTo(float yaw, int pitch) {
+        super.lerpHeadTo(yaw, pitch);
     }
 
     private void tickLerp() {
-        if (this.isControlledByLocalInstance()) {
+        if (this.isLocalInstanceAuthoritative()) {
             this.lerpSteps = 0;
             this.syncPacketPositionCodec(this.getX(), this.getY(), this.getZ());
         }
@@ -268,7 +268,7 @@ public class TestKart extends TestKartAbstract {
 
     private void calculateSpeed() {
         //VECTEUR DE MOUVEMENT : BOOST
-        if (getTimeBoost() > 0 || (isInvinsible() && !isPressingKeyDeccelerate())) {
+        if (getTimeBoost() > 0 || (isInvincible() && !isPressingKeyDeccelerate())) {
             setSpeed(getMAX_SPEED());
         }
         //VECTEUR DE MOUVEMENT : DELTAPLANE
@@ -293,13 +293,13 @@ public class TestKart extends TestKartAbstract {
         if (horizontalCollision) setSpeed(Mth.clamp(getSpeed(), -getMAX_SPEED() / 2.5f, getMAX_SPEED() / 2));
 
         //SI PAS SUR UN BLOC DE ROUTE (SANS BOOST OU ETOILE), ON SLOW LE VEHICULE
-        if (!isOnRoadBlock() && !isInvinsible() && getTimeBoost() <= 0) {
+        if (!isOnRoadBlock() && !isInvincible() && getTimeBoost() <= 0) {
             setSpeed(Mth.clamp(getSpeed(), -getMAX_SPEED() / 2.5f, getMAX_SPEED() / 2));
         }
     }
 
     private boolean applyBoostToSpeed() {
-        if (isInvinsible()) {
+        if (isInvincible()) {
             if (isPressingKeyBackward()) {
                 setSpeed(Mth.clamp(getSpeed() - getBOOST(), getMAX_SPEED() / 2 - getBOOST(), getMAX_SPEED() + getBOOST()));
             } else {
@@ -333,7 +333,7 @@ public class TestKart extends TestKartAbstract {
         }
 
         //SI EN ETOILE, ALORS ON STUN LES GENS QU'ON PERCUTE
-        if (isInvinsible()) {
+        if (isInvincible()) {
             List<Entity> nearbyEntities = level().getEntities(this, getBoundingBox().inflate(0.5f));
             for (Entity entity : nearbyEntities) {
                 if (entity instanceof TestKart kart) {
@@ -424,7 +424,7 @@ public class TestKart extends TestKartAbstract {
                 }
             }
             // ANALYSE DES ACTIONS SI LE JOUEUR DRIFT
-            if (!getDriftingSens().equals("None") && (isOnRoadBlock() || getTimeBoost() > 0 || isInvinsible()) && isPressingKeyDrift() && !horizontalCollision && !isDeltaOn() && getSpeed() > getMAX_SPEED() * 0.25) {
+            if (!getDriftingSens().equals("None") && (isOnRoadBlock() || getTimeBoost() > 0 || isInvincible()) && isPressingKeyDrift() && !horizontalCollision && !isDeltaOn() && getSpeed() > getMAX_SPEED() * 0.25) {
                 //DRIFT INITIAL : DRIFT A GAUCHE
                 if (isDrifting() && getDriftingSens().equals("Left")) {
                     //LE JOUEUR MAINTIENT LA TOUCHE GAUCHE
@@ -519,7 +519,7 @@ public class TestKart extends TestKartAbstract {
     }
 
     public static void stunKart(TestKart kart, String motif) {
-        if (kart.isInvinsible()) return;
+        if (kart.isInvincible()) return;
 
         kart.setStunMotif(motif);
 
@@ -534,56 +534,49 @@ public class TestKart extends TestKartAbstract {
     ////////////
     // SOUNDS //
     ////////////
-
+    private transient SoundEngineIdle engineIdleLoop;
+    private transient SoundEngineMax engineMaxLoop;
+    private transient SoundStarMode starModeLoop;
+    private transient SoundKartGliding kartGliding;
+    private transient SoundKartDrifting kartDrifting;
+    private transient SoundKartOffRoad kartOffRoad;
     public boolean boostFini = true;
-    @OnlyIn(Dist.CLIENT)
-    private SoundEngineIdle engineIdleLoop;
-    @OnlyIn(Dist.CLIENT)
-    private SoundEngineMax engineMaxLoop;
-    @OnlyIn(Dist.CLIENT)
-    private SoundStarMode starModeLoop;
-    @OnlyIn(Dist.CLIENT)
-    private SoundKartGliding kartGliding;
-    @OnlyIn(Dist.CLIENT)
-    private SoundKartDrifting kartDrifting;
-    @OnlyIn(Dist.CLIENT)
-    private SoundKartOffRoad kartOffRoad;
 
-    @OnlyIn(Dist.CLIENT)
-    public void updateSounds() {
+    private void updateSoundsClient() {
         if (!level().isClientSide) return;
 
-        if (isInvinsible()) {
-            if (!isSoundPlaying(starModeLoop)) {
+        Minecraft mc = Minecraft.getInstance();
+        SoundManager sm = mc.getSoundManager();
+
+        if (isInvincible()) {
+            if (!isSoundPlaying(starModeLoop, sm)) {
                 starModeLoop = new SoundStarMode(this, SoundsInit.STAR_MODE.get(), SoundSource.RECORDS);
                 SoundsInit.playSoundLoop(starModeLoop, level());
             }
         } else if (isDeltaOn()) {
-            if (!isSoundPlaying(kartGliding)) {
+            if (!isSoundPlaying(kartGliding, sm)) {
                 kartGliding = new SoundKartGliding(this, SoundsInit.KART_GLIDING.get(), SoundSource.RECORDS);
                 SoundsInit.playSoundLoop(kartGliding, level());
             }
         } else {
-            //ARRET OU EN MOUVEMENT
             if (Math.abs(getSpeed()) <= 0.2f) {
-                if (!isSoundPlaying(engineIdleLoop)) {
+                if (!isSoundPlaying(engineIdleLoop, sm)) {
                     engineIdleLoop = new SoundEngineIdle(this, SoundsInit.ENGINE_IDLE.get(), SoundSource.RECORDS);
                     SoundsInit.playSoundLoop(engineIdleLoop, level());
                 }
             } else if (!isOnRoadBlock() && onGround() && Math.abs(getSpeed()) > 0.2f) {
-                if (!isSoundPlaying(kartOffRoad)) {
+                if (!isSoundPlaying(kartOffRoad, sm)) {
                     kartOffRoad = new SoundKartOffRoad(this, SoundsInit.KART_OFF_ROAD.get(), SoundSource.RECORDS);
                     SoundsInit.playSoundLoop(kartOffRoad, level());
                 }
-            } else if (isOnRoadBlock() && onGround() && Math.abs(getSpeed()) > 0.2f) {
-                if (!isSoundPlaying(engineMaxLoop)) {
+            } else if (isOnRoadBlock() && onGround()) {
+                if (!isSoundPlaying(engineMaxLoop, sm)) {
                     engineMaxLoop = new SoundEngineMax(this, SoundsInit.ENGINE_MAX.get(), SoundSource.RECORDS);
                     SoundsInit.playSoundLoop(engineMaxLoop, level());
                 }
 
-                //DRIFTING OU PAS DRIFTING
                 if (isDrifting()) {
-                    if (!isSoundPlaying(kartDrifting)) {
+                    if (!isSoundPlaying(kartDrifting, sm)) {
                         kartDrifting = new SoundKartDrifting(this, SoundsInit.KART_DRIFTING.get(), SoundSource.RECORDS);
                         SoundsInit.playSoundLoop(kartDrifting, level());
                     }
@@ -591,21 +584,18 @@ public class TestKart extends TestKartAbstract {
             }
         }
 
-        //getBOOST() DE VITESSE
+        // BOOST
         if (boostFini && (getTimeBoost() > 0 || getDriftTimeBoost() > 0)) {
             boostFini = false;
-            if (getFirstPassenger() != null && getFirstPassenger() instanceof Player player)
-                SoundsInit.playSound(SoundsInit.KART_SPEED_BOOST.get(), level(), new BlockPos((int) getX(), (int) getY(), (int) getZ()), player, SoundSource.RECORDS, 1f);
+            if (getFirstPassenger() instanceof Player player)
+                SoundsInit.playSound(SoundsInit.KART_SPEED_BOOST.get(), level(), blockPosition(), player, SoundSource.RECORDS, 1f);
         } else if (!boostFini && (getTimeBoost() <= 0 && getDriftTimeBoost() <= 0)) {
             boostFini = true;
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public boolean isSoundPlaying(SoundInstance sound) {
-        if (sound == null) {
-            return false;
-        }
-        return Minecraft.getInstance().getSoundManager().isActive(sound);
+    private boolean isSoundPlaying(SoundInstance sound, SoundManager sm) {
+        return sound != null && sm.isActive(sound);
     }
+
 }

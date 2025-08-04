@@ -1,44 +1,47 @@
 package me.jesuismister.cubicracers.event;
 
 import me.jesuismister.cubicracers.CubicRacers;
-import me.jesuismister.cubicracers.client.ItemHudOverlay;
-import me.jesuismister.cubicracers.client.SpeedHudOverlay;
 import me.jesuismister.cubicracers.entity.client.renderer.*;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
-import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.network.message.clientToServer.InputSynchMessage;
 import me.jesuismister.cubicracers.init.KartInit;
 import me.jesuismister.cubicracers.init.KartItemsInit;
-import me.jesuismister.cubicracers.particles.ParticlesInit;
-import me.jesuismister.cubicracers.particles.custom.DriftParticles;
+import me.jesuismister.cubicracers.init.ParticlesInit;
+import me.jesuismister.cubicracers.particles.DriftParticles;
 import me.jesuismister.cubicracers.init.KeyBinds;
 import me.jesuismister.cubicracers.util.KartItemUseMethods;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
+import java.util.function.Supplier;
 
 import static me.jesuismister.cubicracers.init.KeyBinds.KART_ITEM_KEY;
 
 public class ModEvents {
 
-    @Mod.EventBusSubscriber(modid = CubicRacers.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = CubicRacers.MODID, value = Dist.CLIENT)
     public static class ClientModBusEvents {
         @SubscribeEvent
-        public static void registerGuiOverlay(RegisterGuiOverlaysEvent event) {
-            event.registerAboveAll("item_box_hud", ItemHudOverlay.HUD_ITEM_BOX);
-            event.registerAboveAll("speed_hud", SpeedHudOverlay.HUD_SPEED);
+        public static void registerGuiOverlay(RegisterGuiLayersEvent event) {
+            // event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "item_box_hud"), new ItemBoxHudLayer());
+            // event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "speed_hud"), new SpeedHudLayer());
+        }
+
+        @SubscribeEvent // on the mod event bus
+        public static void register(final RegisterPayloadHandlersEvent event) {
+            // Sets the current network version
+            final PayloadRegistrar registrar = event.registrar("1");
         }
 
         @SubscribeEvent
@@ -51,7 +54,7 @@ public class ModEvents {
             });*/
 
             //REGISTER TOUS LES KARTS
-            for (RegistryObject<EntityType<TestKart>> kart : KartInit.KARTS.values()) {
+            for (Supplier<EntityType<TestKart>> kart : KartInit.KARTS.values()) {
                 EntityRenderers.register(kart.get(), TestKartRenderer::new);
             }
 
@@ -64,32 +67,14 @@ public class ModEvents {
         }
 
         @SubscribeEvent
-        public static void onKeyRegister(RegisterKeyMappingsEvent event) {
-            event.register(KeyBinds.KART_ACCELERATE_KEY);
-            event.register(KeyBinds.KART_DECCELERATE_KEY);
-
-            event.register(KeyBinds.KART_FORWARD_KEY);
-            event.register(KeyBinds.KART_BACKWARD_KEY);
-            event.register(KeyBinds.KART_LEFT_KEY);
-            event.register(KeyBinds.KART_RIGHT_KEY);
-
-            //event.register(KeyBinds.KART_DELTA_KEY);
-            event.register(KeyBinds.KART_DRIFT_KEY);
-            event.register(KART_ITEM_KEY);
-        }
-
-        @SubscribeEvent
         public static void registerParticleFactories(final RegisterParticleProvidersEvent event) {
-            Minecraft.getInstance().particleEngine.register(ParticlesInit.DRIFT_BLUE_PARTICLES.get(),
-                    DriftParticles.Provider::new);
-            Minecraft.getInstance().particleEngine.register(ParticlesInit.DRIFT_ORANGE_PARTICLES.get(),
-                    DriftParticles.Provider::new);
-            Minecraft.getInstance().particleEngine.register(ParticlesInit.DRIFT_PURPLE_PARTICLES.get(),
-                    DriftParticles.Provider::new);
+            event.registerSpriteSet(ParticlesInit.DRIFT_BLUE_PARTICLES.get(), DriftParticles.Provider::new);
+            event.registerSpriteSet(ParticlesInit.DRIFT_ORANGE_PARTICLES.get(), DriftParticles.Provider::new);
+            event.registerSpriteSet(ParticlesInit.DRIFT_PURPLE_PARTICLES.get(), DriftParticles.Provider::new);
         }
     }
 
-    @Mod.EventBusSubscriber(modid = CubicRacers.MODID)
+    @EventBusSubscriber(modid = CubicRacers.MODID)
     public static class ClientForgeEvent {
         @SubscribeEvent
         public static void onKeyInput(InputEvent.Key event) {
@@ -106,13 +91,13 @@ public class ModEvents {
                     kart.setPressingKeyDrift(KeyBinds.KART_DRIFT_KEY.isDown());
                     kart.setPressingKeyItem(KART_ITEM_KEY.isDown());
 
-                    Network.CHANNEL.sendToServer(new InputSynchMessage(
+                    ClientPacketDistributor.sendToServer(new InputSynchMessage(
                             kart.isPressingKeyAccelerate(), kart.isPressingKeyDeccelerate(),
                             kart.isPressingKeyForward(), kart.isPressingKeyBackward(),
                             kart.isPressingKeyLeft(), kart.isPressingKeyRight(),
                             kart.isPressingKeyDrift(), kart.isPressingKeyItem()));
                 } else {
-                    Network.CHANNEL.sendToServer(new InputSynchMessage(false, false, false, false, false, false, false, false));
+                    ClientPacketDistributor.sendToServer(new InputSynchMessage(false, false, false, false, false, false, false, false));
                 }
             }
         }
@@ -128,9 +113,7 @@ public class ModEvents {
         private static boolean wasItemKeyDown = false;
 
         @SubscribeEvent
-        public static void onClientTick(TickEvent.ClientTickEvent event) {
-            if (event.phase != TickEvent.Phase.END) return;
-
+        public static void onClientTick(ClientTickEvent.Post event) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null) return;
 

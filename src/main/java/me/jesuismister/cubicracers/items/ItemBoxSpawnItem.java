@@ -3,7 +3,7 @@ package me.jesuismister.cubicracers.items;
 import me.jesuismister.cubicracers.entity.custom.ItemBox;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.player.Player;
@@ -27,12 +27,12 @@ public class ItemBoxSpawnItem extends Item {
         super(properties);
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+    public InteractionResult use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
         HitResult hitresult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
         //SI LE TARGET DU CLIQUE DU JOUEUR EST PAS VALIDE, ON PASSE
         if (hitresult.getType() == HitResult.Type.MISS) {
-            return InteractionResultHolder.pass(itemstack);
+            return InteractionResult.PASS;
         }
         //SINON ON CONTINUE
         else {
@@ -45,7 +45,7 @@ public class ItemBoxSpawnItem extends Item {
             for (Entity entity : list) {
                 AABB aabb = entity.getBoundingBox().inflate(entity.getPickRadius());
                 if (aabb.contains(vec31)) {
-                    return InteractionResultHolder.pass(itemstack);
+                    return InteractionResult.PASS;
                 }
             }
 
@@ -55,7 +55,7 @@ public class ItemBoxSpawnItem extends Item {
                 itemBox.setYRot(player.getYRot());
                 //SI LE CUBE N'A PAS ASSEZ DE PLACE POUR SPAWN, ON ARRETE
                 if (!level.noCollision(itemBox, itemBox.getBoundingBox())) {
-                    return InteractionResultHolder.fail(itemstack);
+                    return InteractionResult.FAIL;
                 }
                 //SINON ON LE FAIT SPAWN
                 else {
@@ -69,12 +69,12 @@ public class ItemBoxSpawnItem extends Item {
                         }
                     }
                     player.awardStat(Stats.ITEM_USED.get(this));
-                    return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
+                    return InteractionResult.SUCCESS;
                 }
             }
             //SINON ON ARRETE
             else {
-                return InteractionResultHolder.pass(itemstack);
+                return InteractionResult.PASS;
             }
         }
     }

@@ -1,45 +1,61 @@
 package me.jesuismister.cubicracers.network.message.serverToClient.kartItem;
 
+import io.netty.buffer.ByteBuf;
+import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.BobOmb;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Random;
-import java.util.function.Supplier;
 
-public class ExplosionParticleMessage {
-    private final double x;
-    private final double y;
-    private final double z;
+public record ExplosionParticleMessage(
+        double x,
+        double y,
+        double z
+) implements CustomPacketPayload {
 
-    public ExplosionParticleMessage(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public static final CustomPacketPayload.Type<ExplosionParticleMessage> TYPE = new CustomPacketPayload.Type<>(
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "ExplosionParticleMessage")
+    );
+
+    public static final StreamCodec<ByteBuf, ExplosionParticleMessage> STREAM_CODEC =
+            new StreamCodec<>() {
+                @Override
+                public void encode(ByteBuf buf, ExplosionParticleMessage msg) {
+                    ByteBufCodecs.DOUBLE.encode(buf, msg.x());
+                    ByteBufCodecs.DOUBLE.encode(buf, msg.y());
+                    ByteBufCodecs.DOUBLE.encode(buf, msg.z());
+                }
+
+                @Override
+                public ExplosionParticleMessage decode(ByteBuf buf) {
+                    return new ExplosionParticleMessage(
+                            ByteBufCodecs.DOUBLE.decode(buf),
+                            ByteBufCodecs.DOUBLE.decode(buf),
+                            ByteBufCodecs.DOUBLE.decode(buf)
+                    );
+                }
+            };
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static ExplosionParticleMessage decode(FriendlyByteBuf buf) {
-        return new ExplosionParticleMessage(buf.readDouble(), buf.readDouble(), buf.readDouble());
-    }
-
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeDouble(x);
-        buf.writeDouble(y);
-        buf.writeDouble(z);
-    }
-
-    public void handle(Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() -> {
+    public static void handle(ExplosionParticleMessage msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             // Client-side only
-            if (context.get().getDirection().getReceptionSide().isClient()) {
+            if (ctx.player().level().isClientSide()) {
                 if (Minecraft.getInstance().player != null) {
-                    spawnExplosionParticles(x, y, z);
+                    spawnExplosionParticles(msg.x(), msg.y(), msg.z());
                 }
             }
         });
-        context.get().setPacketHandled(true);
     }
 
     public static void spawnExplosionParticles(double x, double y, double z) {

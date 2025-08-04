@@ -1,23 +1,16 @@
 package me.jesuismister.cubicracers.entity.custom;
 
 import me.jesuismister.cubicracers.block.KartController;
-import me.jesuismister.cubicracers.config.KartConfig;
 import me.jesuismister.cubicracers.config.RoadBlockConfig;
 import me.jesuismister.cubicracers.init.BlockInit;
 import me.jesuismister.cubicracers.init.ItemInit;
-import me.jesuismister.cubicracers.init.SoundsInit;
-import me.jesuismister.cubicracers.sounds.*;
 import me.jesuismister.cubicracers.tags.ModTags;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -30,20 +23,23 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.*;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animatable.manager.AnimatableManager;
+import software.bernie.geckolib.animatable.processing.AnimationController;
+import software.bernie.geckolib.animatable.processing.AnimationTest;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public abstract class TestKartAbstract extends Boat implements GeoEntity {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+import java.util.function.Supplier;
 
+public abstract class TestKartAbstract extends Entity implements GeoEntity {
     public static final EntityDataAccessor<Float> Speed = SynchedEntityData.defineId(TestKartAbstract.class, EntityDataSerializers.FLOAT);
     public int id;
 
@@ -92,51 +88,48 @@ public abstract class TestKartAbstract extends Boat implements GeoEntity {
 
     //KART ITEM
     private String kartItem = "None";
-    public boolean isInvinsible = false;
+    public boolean isInvincible = false;
     public float starSpeedBoost = 1.5f; //COEFF DE BOOST / 1 PAR DEFAUT / 1.5 SOUS ETOILE
     public float timeStar = 0;
 
     //LOCK
     public boolean isLock = false;
 
-    public TestKartAbstract(EntityType<? extends Boat> p_38290_, Level p_38291_) {
-        super(p_38290_, p_38291_);
+    public TestKartAbstract(EntityType<?> entityType, Level level) {
+        super(entityType, level);
     }
 
     @Override
-    public boolean canBeCollidedWith() {
+    public boolean canBeCollidedWith(@Nullable Entity p_423669_) {
         return false;
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        entityData.define(MAX_SPEED, 0.0f);
-        entityData.define(DELTA_SPEED, 0.0f);
-        entityData.define(ACCELERATION_BOOST, 0.0f);
-        entityData.define(BOOST, 0.0f);
-        entityData.define(MANIABILITE_COEEF, 0.0f);
+    protected void defineSynchedData(SynchedEntityData.Builder p_376157_) {
+        // super.defineSynchedData(p_376157_);
+        entityData.set(MAX_SPEED, 0.0f);
+        entityData.set(DELTA_SPEED, 0.0f);
+        entityData.set(ACCELERATION_BOOST, 0.0f);
+        entityData.set(BOOST, 0.0f);
+        entityData.set(MANIABILITE_COEEF, 0.0f);
 
-        entityData.define(isPressingKeyAccelerate, false);
-        entityData.define(isPressingKeyDeccelerate, false);
-        entityData.define(isPressingKeyForward, false);
-        entityData.define(isPressingKeyBackward, false);
-        entityData.define(isPressingKeyLeft, false);
-        entityData.define(isPressingKeyRight, false);
-        entityData.define(isPressingKeyDrift, false);
-        entityData.define(isPressingKeyItem, false);
-        entityData.define(isPressingKeyDelta, false);
+        entityData.set(isPressingKeyAccelerate, false);
+        entityData.set(isPressingKeyDeccelerate, false);
+        entityData.set(isPressingKeyForward, false);
+        entityData.set(isPressingKeyBackward, false);
+        entityData.set(isPressingKeyLeft, false);
+        entityData.set(isPressingKeyRight, false);
+        entityData.set(isPressingKeyDrift, false);
+        entityData.set(isPressingKeyItem, false);
+        entityData.set(isPressingKeyDelta, false);
 
-        entityData.define(Speed, 0.0f);
+        entityData.set(Speed, 0.0f);
 
-        entityData.define(stunMotif, "None");
+        entityData.set(stunMotif, "None");
     }
 
     @Override
-    /**
-     * Méthode qui fait en sorte de détruire le kart quand il prend des dégats
-     */
-    public boolean hurt(DamageSource damage, float p_19947_) {
+    public boolean hurtClient(DamageSource damage) {
         if (damage.getEntity() instanceof Player player) {
             if (this.getFirstPassenger() == null) {
                 remove(RemovalReason.KILLED);
@@ -148,6 +141,24 @@ public abstract class TestKartAbstract extends Boat implements GeoEntity {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
+        return hurtClient(damageSource);
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput valueInput) {
+    }
+
+    @Override
+    protected void addAdditionalSaveData(ValueOutput valueOutput) {
+    }
+
+    @Override
+    protected float nextStep() {
+        return 1.2f;
     }
 
     @Override
@@ -201,11 +212,6 @@ public abstract class TestKartAbstract extends Boat implements GeoEntity {
 
     public void setStunMotif(String value) {
         this.entityData.set(stunMotif, value, true);
-    }
-
-
-    public AnimatableInstanceCache getCache() {
-        return cache;
     }
 
     public float getSpeed() {
@@ -376,12 +382,12 @@ public abstract class TestKartAbstract extends Boat implements GeoEntity {
         this.kartItem = kartItem;
     }
 
-    public boolean isInvinsible() {
-        return isInvinsible;
+    public boolean isInvincible() {
+        return isInvincible;
     }
 
-    public void setInvinsible(boolean invinsible) {
-        isInvinsible = invinsible;
+    public void setInvincible(boolean invincible) {
+        isInvincible = invincible;
     }
 
     public float getStarSpeedBoost() {
@@ -408,7 +414,7 @@ public abstract class TestKartAbstract extends Boat implements GeoEntity {
         isLock = lock;
     }
 
-////////////
+    ////////////
     // AUTRES //
     ////////////
 
@@ -420,11 +426,6 @@ public abstract class TestKartAbstract extends Boat implements GeoEntity {
     @Override
     public boolean isNoGravity() {
         return false;
-    }
-
-    @Override
-    public float getStepHeight() {
-        return 1.2f;
     }
 
     @Override
@@ -477,102 +478,8 @@ public abstract class TestKartAbstract extends Boat implements GeoEntity {
         return true;
     }
 
-    /**
-     * FONCTION POUR DEBUG : ENVOIE UN MESSAGE AU CONDUCTEUR DU VEHICULE
-     *
-     * @param msg
-     */
-    public void sendConductorMessage(String msg) {
-        try {
-            if (this != null && this.getFirstPassenger() != null && this.getFirstPassenger() instanceof Player player) {
-                player.sendSystemMessage(Component.literal(msg));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendAll(String msg) {
-        try {
-            if (Minecraft.getInstance() != null && Minecraft.getInstance().player != null) {
-                Minecraft.getInstance().player.sendSystemMessage(Component.literal(msg));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, "controller_engine", 0, this::predicate_engine));
-        controllerRegistrar.add(new AnimationController<>(this, "controller_propeller", 0, this::predicate_propeller));
-        controllerRegistrar.add(new AnimationController<>(this, "controller_glider", 0, this::predicade_glider));
-        controllerRegistrar.add(new AnimationController<>(this, "controller_drift", 0, this::predicate_drift));
-    }
-
-    private <T extends GeoAnimatable> PlayState predicate_engine(AnimationState<T> tAnimationState) {
-        tAnimationState.getController().setAnimation(RawAnimation.begin()
-                .then("engine", Animation.LoopType.LOOP));
-        return PlayState.CONTINUE;
-    }
-
-    private <T extends GeoAnimatable> PlayState predicate_propeller(AnimationState<T> tAnimationState) {
-        if (isInWater()) {
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("propeller_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
-        } else {
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("propeller_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
-        }
-        return PlayState.CONTINUE;
-    }
-
-    private <T extends GeoAnimatable> PlayState predicade_glider(AnimationState<T> tAnimationState) {
-        if (isDeltaOn()) {
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("glider_on", Animation.LoopType.HOLD_ON_LAST_FRAME));
-        } else {
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("glider_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
-        }
-        return PlayState.CONTINUE;
-    }
-
-    private <T extends GeoAnimatable> PlayState predicate_drift(AnimationState<T> tAnimationState) {
-        //ANIMATION DES PARTICULES VIOLETTES
-        int blockX = (int) Math.floor(getX());
-        int blockY = (int) Math.floor(getY());
-        int blockZ = (int) Math.floor(getZ());
-
-        if (getDriftingTime() >= 3) {
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("drift_v", Animation.LoopType.LOOP));
-        }
-        //ANIMATION DES PARTICULES ORANGE
-        else if (getDriftingTime() >= 2) {
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("drift_o", Animation.LoopType.LOOP));
-        }
-        //ANIMATION DES PARTICULES BLEUES
-        else if (getDriftingTime() >= 1) {
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("drift_b", Animation.LoopType.LOOP));
-        }
-        //PAS D'ANIMATION DE DRIFT
-        else {
-            tAnimationState.getController().setAnimation(RawAnimation.begin()
-                    .then("drift_off", Animation.LoopType.HOLD_ON_LAST_FRAME));
-        }
-        return PlayState.CONTINUE;
-    }
-
     public BlockState getBlock(int x, int y, int z) {
-        return this.getCommandSenderWorld().getBlockState(new BlockPos(x, y, z));
+        return this.level().getBlockState(new BlockPos(x, y, z));
     }
 
     public boolean isOnRoadBlock() {
@@ -582,7 +489,7 @@ public abstract class TestKartAbstract extends Boat implements GeoEntity {
         int blockY = (int) Math.floor(getY());
         int blockZ = (int) Math.floor(getZ());
 
-        if (getBlock(blockX, blockY - 1, blockZ).is(ModTags.Blocks.ROAD_BLOCK_TAG) || RoadBlockConfig.ROAD_BLOCKS.get().contains(ForgeRegistries.BLOCKS.getKey(getBlock(blockX, blockY - 1, blockZ).getBlock()).toString())) {
+        if (getBlock(blockX, blockY - 1, blockZ).is(ModTags.Blocks.ROAD_BLOCK_TAG) || RoadBlockConfig.ROAD_BLOCKS.get().contains(getBlock(blockX, blockY - 1, blockZ).getBlock().getName().toString())) {
             return true;
         } else {
             return false;
@@ -612,5 +519,70 @@ public abstract class TestKartAbstract extends Boat implements GeoEntity {
             }
         }
         return false;
+    }
+
+    //////////////
+    // GECKOLIB //
+    //////////////
+    private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    protected static final RawAnimation ENGINE = RawAnimation.begin().thenLoop("engine");
+    protected static final RawAnimation PROPELLER_ON = RawAnimation.begin().thenPlayAndHold("propeller_on");
+    protected static final RawAnimation PROPELLER_OFF = RawAnimation.begin().thenPlayAndHold("propeller_off");
+    protected static final RawAnimation GLIDER_ON = RawAnimation.begin().thenPlayAndHold("glider_on");
+    protected static final RawAnimation GLIDER_OFF = RawAnimation.begin().thenPlayAndHold("glider_off");
+    protected static final RawAnimation DRIFT_OFF = RawAnimation.begin().thenLoop("drift_off");
+    protected static final RawAnimation DRIFT_B = RawAnimation.begin().thenLoop("drift_b");
+    protected static final RawAnimation DRIFT_O = RawAnimation.begin().thenLoop("drift_o");
+    protected static final RawAnimation DRIFT_V = RawAnimation.begin().thenLoop("drift_v");
+
+    @Override
+    public void registerControllers(final AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>("controller_engine", 0, this::predicate_engine));
+        controllers.add(new AnimationController<>("controller_propeller", 0, this::predicate_propeller));
+        controllers.add(new AnimationController<>("controller_glider", 0, this::predicade_glider));
+        controllers.add(new AnimationController<>("controller_drift", 0, this::predicate_drift));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geoCache;
+    }
+
+    private PlayState predicate_engine(AnimationTest<GeoAnimatable> tAnimationState) {
+        return tAnimationState.setAndContinue(ENGINE);
+    }
+
+    private PlayState predicate_propeller(AnimationTest<GeoAnimatable> tAnimationState) {
+        if (isInWater()) {
+            return tAnimationState.setAndContinue(PROPELLER_ON);
+        } else {
+            return tAnimationState.setAndContinue(PROPELLER_OFF);
+        }
+    }
+
+    private PlayState predicade_glider(AnimationTest<GeoAnimatable> tAnimationState) {
+        if (isDeltaOn()) {
+            return tAnimationState.setAndContinue(GLIDER_ON);
+        } else {
+            return tAnimationState.setAndContinue(GLIDER_OFF);
+        }
+    }
+
+    private PlayState predicate_drift(AnimationTest<GeoAnimatable> tAnimationState) {
+        if (getDriftingTime() >= 3) {
+            return tAnimationState.setAndContinue(DRIFT_V);
+        }
+        //ANIMATION DES PARTICULES ORANGE
+        else if (getDriftingTime() >= 2) {
+            return tAnimationState.setAndContinue(DRIFT_O);
+        }
+        //ANIMATION DES PARTICULES BLEUES
+        else if (getDriftingTime() >= 1) {
+            return tAnimationState.setAndContinue(DRIFT_B);
+        }
+        //PAS D'ANIMATION DE DRIFT
+        else {
+            return tAnimationState.setAndContinue(DRIFT_OFF);
+        }
     }
 }

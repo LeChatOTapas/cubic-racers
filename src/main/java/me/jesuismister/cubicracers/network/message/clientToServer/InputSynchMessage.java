@@ -1,69 +1,76 @@
 package me.jesuismister.cubicracers.network.message.clientToServer;
 
+import io.netty.buffer.ByteBuf;
+import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record InputSynchMessage(
+        boolean keyAccelerate,
+        boolean keyDeccelerate,
+        boolean keyForward,
+        boolean keyBackward,
+        boolean keyLeft,
+        boolean keyRight,
+        boolean keyDrift,
+        boolean keyItem
+) implements CustomPacketPayload {
 
-public class InputSynchMessage {
-    public boolean keyAccelerate;
-    public boolean keyDeccelerate;
-    public boolean keyForward;
-    public boolean keyBackward;
-    public boolean keyLeft;
-    public boolean keyRight;
-    public boolean keyDrift;
-    public boolean keyItem;
+    public static final CustomPacketPayload.Type<InputSynchMessage> TYPE = new CustomPacketPayload.Type<>(
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "InputSynchMessage")
+    );
 
-    public InputSynchMessage() {
+    public static final StreamCodec<ByteBuf, InputSynchMessage> STREAM_CODEC =
+            new StreamCodec<>() {
+                @Override
+                public void encode(ByteBuf buf, InputSynchMessage msg) {
+                    ByteBufCodecs.BOOL.encode(buf, msg.keyAccelerate());
+                    ByteBufCodecs.BOOL.encode(buf, msg.keyDeccelerate());
+                    ByteBufCodecs.BOOL.encode(buf, msg.keyForward());
+                    ByteBufCodecs.BOOL.encode(buf, msg.keyBackward());
+                    ByteBufCodecs.BOOL.encode(buf, msg.keyLeft());
+                    ByteBufCodecs.BOOL.encode(buf, msg.keyRight());
+                    ByteBufCodecs.BOOL.encode(buf, msg.keyDrift());
+                    ByteBufCodecs.BOOL.encode(buf, msg.keyItem());
+                }
+
+                @Override
+                public InputSynchMessage decode(ByteBuf buf) {
+                    return new InputSynchMessage(
+                            ByteBufCodecs.BOOL.decode(buf),
+                            ByteBufCodecs.BOOL.decode(buf),
+                            ByteBufCodecs.BOOL.decode(buf),
+                            ByteBufCodecs.BOOL.decode(buf),
+                            ByteBufCodecs.BOOL.decode(buf),
+                            ByteBufCodecs.BOOL.decode(buf),
+                            ByteBufCodecs.BOOL.decode(buf),
+                            ByteBufCodecs.BOOL.decode(buf)
+                    );
+                }
+            };
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public InputSynchMessage(boolean keyAccelerate, boolean keyDeccelerate, boolean keyForward, boolean keyBackward, boolean keyLeft, boolean keyRight, boolean keyDrift, boolean keyItem) {
-        this.keyAccelerate = keyAccelerate;
-        this.keyDeccelerate = keyDeccelerate;
-        this.keyForward = keyForward;
-        this.keyBackward = keyBackward;
-        this.keyLeft = keyLeft;
-        this.keyRight = keyRight;
-        this.keyDrift = keyDrift;
-        this.keyItem = keyItem;
-    }
-
-    public static void encode(InputSynchMessage message, FriendlyByteBuf buffer) {
-        buffer.writeBoolean(message.keyAccelerate);
-        buffer.writeBoolean(message.keyDeccelerate);
-
-        buffer.writeBoolean(message.keyForward);
-        buffer.writeBoolean(message.keyBackward);
-        buffer.writeBoolean(message.keyLeft);
-        buffer.writeBoolean(message.keyRight);
-
-        buffer.writeBoolean(message.keyDrift);
-        buffer.writeBoolean(message.keyItem);
-    }
-
-    public static InputSynchMessage decode(FriendlyByteBuf buffer) {
-        return new InputSynchMessage(buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean());
-    }
-
-    public static void handle(InputSynchMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
-            if (player != null && player.getVehicle() != null && player.getVehicle() instanceof TestKart kart) {
-                kart.setPressingKeyAccelerate(message.keyAccelerate);
-                kart.setPressingKeyDeccelerate(message.keyDeccelerate);
-                kart.setPressingKeyForward(message.keyForward);
-                kart.setPressingKeyBackward(message.keyBackward);
-                kart.setPressingKeyLeft(message.keyLeft);
-                kart.setPressingKeyRight(message.keyRight);
-                kart.setPressingKeyDrift(message.keyDrift);
-                kart.setPressingKeyItem(message.keyItem);
+    public static void handle(InputSynchMessage msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ctx.player();
+            if (player.getVehicle() instanceof TestKart kart) {
+                kart.setPressingKeyAccelerate(msg.keyAccelerate());
+                kart.setPressingKeyDeccelerate(msg.keyDeccelerate());
+                kart.setPressingKeyForward(msg.keyForward());
+                kart.setPressingKeyBackward(msg.keyBackward());
+                kart.setPressingKeyLeft(msg.keyLeft());
+                kart.setPressingKeyRight(msg.keyRight());
+                kart.setPressingKeyDrift(msg.keyDrift());
+                kart.setPressingKeyItem(msg.keyItem());
             }
         });
-        context.setPacketHandled(true);
     }
 }
