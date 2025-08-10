@@ -5,19 +5,19 @@ import me.jesuismister.cubicracers.entity.client.model.ItemBoxModel;
 import me.jesuismister.cubicracers.entity.client.model.TestKartModel;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.base.GeoRenderState;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
-public class TestKartRenderer<R extends LivingEntityRenderState & GeoRenderState> extends GeoEntityRenderer<TestKart, R> {
+public class TestKartRenderer<R extends EntityRenderState & GeoRenderState> extends GeoEntityRenderer<TestKart, R> {
 
     public TestKartRenderer(EntityRendererProvider.Context context) {
         super(context, new TestKartModel());
         //this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
-
     @Override
     public void addRenderData(TestKart kart, Void relatedObject, R renderState) {
         super.addRenderData(kart, relatedObject, renderState);
@@ -34,7 +34,6 @@ public class TestKartRenderer<R extends LivingEntityRenderState & GeoRenderState
                         : kart.TEXTURE
         );
     }
-
 /*
     public TestKartRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new TestKartModel());

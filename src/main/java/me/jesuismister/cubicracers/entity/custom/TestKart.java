@@ -137,14 +137,6 @@ public class TestKart extends TestKartAbstract {
     private void synchKart(Player player) {
         if (Minecraft.getInstance().player.getName().equals(player.getName())) {
             try {
-                /*
-                for (ServerPlayer sp : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
-                    if (!sp.getName().equals(player.getName())) {
-                        Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
-                                new KartSynchMessage(this.getId(), getX(), getY(), getZ(), getYRot()));
-                    }
-                }
-                */
                 PacketDistributor.sendToAllPlayers(new KartSynchMessage(this.getId(), getX(), getY(), getZ(), getYRot()));
             } catch (Exception ignored) {
             }

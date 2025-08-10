@@ -25,8 +25,8 @@ public class KartData {
         this.hitboxY = hitboxY;
 
         this.texture = "textures/entity/" + name + ".png";
-        this.model = "geo/" + name + ".geo.json";
-        this.animation = "animations/" + name + ".animation.json";
+        this.model = name;
+        this.animation = name;
     }
 
     public static KartData getKartData(List<KartData> kartsData, String kartName) {
@@ -34,5 +34,21 @@ public class KartData {
             if (d.name.equals(kartName)) return d;
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "KartData{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", creatorName='" + creatorName + '\'' +
+                ", texture='" + texture + '\'' +
+                ", model='" + model + '\'' +
+                ", animation='" + animation + '\'' +
+                ", playerPosY=" + playerPosY +
+                ", hitboxX=" + hitboxX +
+                ", hitboxY=" + hitboxY +
+                ", spawn_item=" + spawn_item +
+                '}';
     }
 }

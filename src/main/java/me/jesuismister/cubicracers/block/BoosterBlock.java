@@ -13,8 +13,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class BoosterBlock extends GlazedTerracottaBlock {
 
-    public BoosterBlock(BlockBehaviour.Properties p_55926_) {
-        super(p_55926_);
+    public BoosterBlock(Properties properties) {
+        super(properties);
     }
 
     @Override

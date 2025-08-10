@@ -31,16 +31,21 @@ public class CubicRacers {
         // NeoForge.EVENT_BUS.register(this);
 
         ModCreativeModeTabs.register(modEventBus);
-        ItemInit.register(modEventBus);
-        BlockInit.register(modEventBus);
-        KartInit.register(modEventBus);
+
         KartItemsInit.register(modEventBus);
+        
+        KartInit.initAllKarts(); //IMPORTANT DE LE METTRE AVANT LE "KartInit.ENTITY_TYPES.register(bus)"
+        KartInit.register(modEventBus);
+
+        ItemInit.initSpawnKartItem(); //IMPORTANT DE LE METTRE AVANT LE "ItemInit.ITEMS.register(bus)"
+        ItemInit.register(modEventBus);
+
+        BlockInit.register(modEventBus);
         ParticlesInit.register(modEventBus);
         SoundsInit.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
         // modEventBus.addListener(this::onServerStarting);
-        modEventBus.addListener(this::addToCreativeTab);
 
         // Config
         Config.register();
@@ -77,30 +82,6 @@ public class CubicRacers {
 
     private void onServerStarting(ServerStartingEvent event) {
         TestCommand.register(event.getServer().getCommands().getDispatcher());
-    }
-
-    private void addToCreativeTab(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == ModCreativeModeTabs.CUBIC_RACERS_TAB) {
-            event.accept(ItemInit.ROAD_MAKER);
-            event.accept(ItemInit.ITEM_BOX_SPAWN_ITEM);
-
-            event.accept(BlockInit.BOOSTER);
-            event.accept(BlockInit.GLIDE_TRIGGER_BLOCK);
-            event.accept(BlockInit.KART_CONTROLLER);
-
-            event.accept(BlockInit.STARTING_BLOCK);
-            event.accept(BlockInit.ROAD_BLOCK);
-            event.accept(BlockInit.ROAD_BLOCK_DIRT);
-            event.accept(BlockInit.ROAD_BLOCK_SAND);
-            event.accept(BlockInit.ROAD_BLOCK_SNOW);
-
-            event.accept(BlockInit.RED_BOUNCING_MUSHROOM_BLOCK);
-
-
-            for (Supplier<Item> r : ItemInit.KARTS_SPAWN_ITEM) {
-                event.accept(r.get());
-            }
-        }
     }
 
     public void commonSetup(final FMLCommonSetupEvent event) {

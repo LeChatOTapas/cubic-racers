@@ -25,7 +25,7 @@ public record BobOmbUseMessage(
 ) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<BobOmbUseMessage> TYPE = new CustomPacketPayload.Type<>(
-            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "BobOmbUseMessage")
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "bob_omb_use_message")
     );
 
     public static final StreamCodec<ByteBuf, BobOmbUseMessage> STREAM_CODEC =

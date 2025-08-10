@@ -21,7 +21,7 @@ public record InputSynchMessage(
 ) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<InputSynchMessage> TYPE = new CustomPacketPayload.Type<>(
-            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "InputSynchMessage")
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "input_synch_message")
     );
 
     public static final StreamCodec<ByteBuf, InputSynchMessage> STREAM_CODEC =
@@ -60,6 +60,7 @@ public record InputSynchMessage(
 
     public static void handle(InputSynchMessage msg, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
+            System.out.println("RECU");
             var player = ctx.player();
             if (player.getVehicle() instanceof TestKart kart) {
                 kart.setPressingKeyAccelerate(msg.keyAccelerate());

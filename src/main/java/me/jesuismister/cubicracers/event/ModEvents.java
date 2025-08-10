@@ -80,13 +80,13 @@ public class ModEvents {
         public static void onKeyInput(InputEvent.Key event) {
             if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.getVehicle() != null && Minecraft.getInstance().player.getVehicle() instanceof TestKart kart) {
                 if (kart.getCanMove()) {
-                    kart.setPressingKeyAccelerate(KeyBinds.KART_ACCELERATE_KEY.isDown());
-                    kart.setPressingKeyDeccelerate(KeyBinds.KART_DECCELERATE_KEY.isDown());
+                    kart.setPressingKeyAccelerate(Minecraft.getInstance().options.keyUp.isDown());
+                    kart.setPressingKeyDeccelerate(Minecraft.getInstance().options.keyDown.isDown());
+                    kart.setPressingKeyLeft(Minecraft.getInstance().options.keyLeft.isDown());
+                    kart.setPressingKeyRight(Minecraft.getInstance().options.keyRight.isDown());
 
                     kart.setPressingKeyForward(KeyBinds.KART_FORWARD_KEY.isDown());
                     kart.setPressingKeyBackward(KeyBinds.KART_BACKWARD_KEY.isDown());
-                    kart.setPressingKeyLeft(KeyBinds.KART_LEFT_KEY.isDown());
-                    kart.setPressingKeyRight(KeyBinds.KART_RIGHT_KEY.isDown());
 
                     kart.setPressingKeyDrift(KeyBinds.KART_DRIFT_KEY.isDown());
                     kart.setPressingKeyItem(KART_ITEM_KEY.isDown());

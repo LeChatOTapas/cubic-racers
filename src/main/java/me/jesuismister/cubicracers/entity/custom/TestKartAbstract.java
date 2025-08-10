@@ -105,27 +105,27 @@ public abstract class TestKartAbstract extends Entity implements GeoEntity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder p_376157_) {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
         // super.defineSynchedData(p_376157_);
-        entityData.set(MAX_SPEED, 0.0f);
-        entityData.set(DELTA_SPEED, 0.0f);
-        entityData.set(ACCELERATION_BOOST, 0.0f);
-        entityData.set(BOOST, 0.0f);
-        entityData.set(MANIABILITE_COEEF, 0.0f);
+        builder.define(MAX_SPEED, 0.0f);
+        builder.define(DELTA_SPEED, 0.0f);
+        builder.define(ACCELERATION_BOOST, 0.0f);
+        builder.define(BOOST, 0.0f);
+        builder.define(MANIABILITE_COEEF, 0.0f);
 
-        entityData.set(isPressingKeyAccelerate, false);
-        entityData.set(isPressingKeyDeccelerate, false);
-        entityData.set(isPressingKeyForward, false);
-        entityData.set(isPressingKeyBackward, false);
-        entityData.set(isPressingKeyLeft, false);
-        entityData.set(isPressingKeyRight, false);
-        entityData.set(isPressingKeyDrift, false);
-        entityData.set(isPressingKeyItem, false);
-        entityData.set(isPressingKeyDelta, false);
+        builder.define(isPressingKeyAccelerate, false);
+        builder.define(isPressingKeyDeccelerate, false);
+        builder.define(isPressingKeyForward, false);
+        builder.define(isPressingKeyBackward, false);
+        builder.define(isPressingKeyLeft, false);
+        builder.define(isPressingKeyRight, false);
+        builder.define(isPressingKeyDrift, false);
+        builder.define(isPressingKeyItem, false);
+        builder.define(isPressingKeyDelta, false);
 
-        entityData.set(Speed, 0.0f);
+        builder.define(Speed, 0.0f);
 
-        entityData.set(stunMotif, "None");
+        builder.define(stunMotif, "None");
     }
 
     @Override
@@ -167,131 +167,131 @@ public abstract class TestKartAbstract extends Entity implements GeoEntity {
     }
 
     public float getMAX_SPEED() {
-        return this.entityData.get(MAX_SPEED);
+        return this.getEntityData().get(MAX_SPEED);
     }
 
     public void setMAX_SPEED(float value) {
-        this.entityData.set(MAX_SPEED, value, true);
+        this.getEntityData().set(MAX_SPEED, value, true);
     }
 
     public float getDELTA_SPEED() {
-        return this.entityData.get(DELTA_SPEED);
+        return this.getEntityData().get(DELTA_SPEED);
     }
 
     public void setDELTA_SPEED(float value) {
-        this.entityData.set(DELTA_SPEED, value, true);
+        this.getEntityData().set(DELTA_SPEED, value, true);
     }
 
     public float getACCELERATION_BOOST() {
-        return this.entityData.get(ACCELERATION_BOOST);
+        return this.getEntityData().get(ACCELERATION_BOOST);
     }
 
     public void setACCELERATION_BOOST(float value) {
-        this.entityData.set(ACCELERATION_BOOST, value, true);
+        this.getEntityData().set(ACCELERATION_BOOST, value, true);
     }
 
     public float getBOOST() {
-        return this.entityData.get(BOOST);
+        return this.getEntityData().get(BOOST);
     }
 
     public void setBOOST(float value) {
-        this.entityData.set(BOOST, value, true);
+        this.getEntityData().set(BOOST, value, true);
     }
 
     public float getMANIABILITE_COEEF() {
-        return this.entityData.get(MANIABILITE_COEEF);
+        return this.getEntityData().get(MANIABILITE_COEEF);
     }
 
     public void setMANIABILITE_COEEF(float value) {
-        this.entityData.set(MANIABILITE_COEEF, value, true);
+        this.getEntityData().set(MANIABILITE_COEEF, value, true);
     }
 
     public String getStunMotif() {
-        return this.entityData.get(stunMotif);
+        return this.getEntityData().get(stunMotif);
     }
 
     public void setStunMotif(String value) {
-        this.entityData.set(stunMotif, value, true);
+        this.getEntityData().set(stunMotif, value, true);
     }
 
     public float getSpeed() {
-        return this.entityData.get(Speed);
+        return this.getEntityData().get(Speed);
     }
 
     public void setSpeed(float value) {
-        this.entityData.set(Speed, value, true);
+        this.getEntityData().set(Speed, value, true);
     }
 
     public boolean isPressingKeyAccelerate() {
-        return this.entityData.get(isPressingKeyAccelerate);
+        return this.getEntityData().get(isPressingKeyAccelerate);
     }
 
     public void setPressingKeyAccelerate(boolean value) {
-        this.entityData.set(isPressingKeyAccelerate, value, true);
+        this.getEntityData().set(isPressingKeyAccelerate, value, true);
     }
 
     public boolean isPressingKeyDeccelerate() {
-        return this.entityData.get(isPressingKeyDeccelerate);
+        return this.getEntityData().get(isPressingKeyDeccelerate);
     }
 
     public void setPressingKeyDeccelerate(boolean value) {
-        this.entityData.set(isPressingKeyDeccelerate, value, true);
+        this.getEntityData().set(isPressingKeyDeccelerate, value, true);
     }
 
     public boolean isPressingKeyForward() {
-        return this.entityData.get(isPressingKeyForward);
+        return this.getEntityData().get(isPressingKeyForward);
     }
 
     public void setPressingKeyForward(boolean value) {
-        this.entityData.set(isPressingKeyForward, value, true);
+        this.getEntityData().set(isPressingKeyForward, value, true);
     }
 
     public boolean isPressingKeyBackward() {
-        return this.entityData.get(isPressingKeyBackward);
+        return this.getEntityData().get(isPressingKeyBackward);
     }
 
     public void setPressingKeyBackward(boolean value) {
-        this.entityData.set(isPressingKeyBackward, value, true);
+        this.getEntityData().set(isPressingKeyBackward, value, true);
     }
 
     public boolean isPressingKeyLeft() {
-        return this.entityData.get(isPressingKeyLeft);
+        return this.getEntityData().get(isPressingKeyLeft);
     }
 
     public void setPressingKeyLeft(boolean value) {
-        this.entityData.set(isPressingKeyLeft, value, true);
+        this.getEntityData().set(isPressingKeyLeft, value, true);
     }
 
     public boolean isPressingKeyRight() {
-        return this.entityData.get(isPressingKeyRight);
+        return this.getEntityData().get(isPressingKeyRight);
     }
 
     public void setPressingKeyRight(boolean value) {
-        this.entityData.set(isPressingKeyRight, value, true);
+        this.getEntityData().set(isPressingKeyRight, value, true);
     }
 
     public boolean isPressingKeyDrift() {
-        return this.entityData.get(isPressingKeyDrift);
+        return this.getEntityData().get(isPressingKeyDrift);
     }
 
     public void setPressingKeyDrift(boolean value) {
-        this.entityData.set(isPressingKeyDrift, value, true);
+        this.getEntityData().set(isPressingKeyDrift, value, true);
     }
 
     public boolean isPressingKeyItem() {
-        return this.entityData.get(isPressingKeyItem);
+        return this.getEntityData().get(isPressingKeyItem);
     }
 
     public void setPressingKeyItem(boolean value) {
-        this.entityData.set(isPressingKeyItem, value, true);
+        this.getEntityData().set(isPressingKeyItem, value, true);
     }
 
     public boolean isPressingKeyDelta() {
-        return this.entityData.get(isPressingKeyDelta);
+        return this.getEntityData().get(isPressingKeyDelta);
     }
 
     public void setPressingKeyDelta(boolean value) {
-        this.entityData.set(isPressingKeyDelta, value, true);
+        this.getEntityData().set(isPressingKeyDelta, value, true);
     }
 
     public boolean isDrifting() {

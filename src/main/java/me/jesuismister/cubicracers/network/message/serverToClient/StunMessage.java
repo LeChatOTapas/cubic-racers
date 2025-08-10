@@ -18,7 +18,7 @@ public record StunMessage(
 ) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<StunMessage> TYPE = new CustomPacketPayload.Type<>(
-            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "StunMessage")
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "stun_message")
     );
 
     public static final StreamCodec<ByteBuf, StunMessage> STREAM_CODEC =

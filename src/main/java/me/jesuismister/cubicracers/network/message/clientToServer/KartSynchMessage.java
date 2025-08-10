@@ -23,7 +23,7 @@ public record KartSynchMessage(
 ) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<KartSynchMessage> TYPE = new CustomPacketPayload.Type<>(
-            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "KartSynchMessage")
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "kart_synch_message")
     );
 
     public static final StreamCodec<ByteBuf, KartSynchMessage> STREAM_CODEC =

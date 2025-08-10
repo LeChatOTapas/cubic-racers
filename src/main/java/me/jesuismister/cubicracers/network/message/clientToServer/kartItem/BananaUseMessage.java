@@ -25,7 +25,7 @@ public record BananaUseMessage(
 ) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<BananaUseMessage> TYPE = new CustomPacketPayload.Type<>(
-            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "BananaUseMessage")
+            ResourceLocation.fromNamespaceAndPath(CubicRacers.MODID, "banana_use_message")
     );
 
     public static final StreamCodec<ByteBuf, BananaUseMessage> STREAM_CODEC =
