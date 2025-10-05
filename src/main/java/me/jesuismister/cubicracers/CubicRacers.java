@@ -5,18 +5,22 @@ import me.jesuismister.cubicracers.commands.TestCommand;
 import me.jesuismister.cubicracers.config.ClientConfig;
 import me.jesuismister.cubicracers.config.Config;
 import me.jesuismister.cubicracers.entity.KartData;
+import me.jesuismister.cubicracers.entity.custom.client.ClientEventHandler;
 import me.jesuismister.cubicracers.init.*;
 import me.jesuismister.cubicracers.network.Network;
 import me.jesuismister.cubicracers.particles.ParticlesInit;
 import me.jesuismister.cubicracers.util.ClientRandom;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegistryObject;
@@ -57,6 +61,10 @@ public class CubicRacers {
         bus.addListener(this::addCreativeTab);
         bus.addListener(this::commonSetup);
 
+        // Enregistrer les événements spécifiques au client
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> {
+            bus.addListener(this::clientSetup);
+        });
 
         Config.register();
     }
@@ -95,7 +103,13 @@ public class CubicRacers {
     }
 
     public void commonSetup(final FMLCommonSetupEvent event) {
+        // Initialisation commune (client et serveur)
         Network.init();
+    }
+
+    private void clientSetup(final FMLClientSetupEvent event) {
+        // Initialisation côté client uniquement
+        ClientEventHandler.init();
     }
 
     public void initKartData() {

@@ -1,13 +1,11 @@
 package me.jesuismister.cubicracers.network.message.clientToServer;
 
 import me.jesuismister.cubicracers.entity.custom.TestKart;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 public class KartSynchMessage {
@@ -28,26 +26,34 @@ public class KartSynchMessage {
     public static void handle(KartSynchMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
-            try {
-                if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.level().isClientSide()) {
-                    Player p = Minecraft.getInstance().player;
-                    List<Entity> nearbyEntities = p.level().getEntities(p, p.getBoundingBox().inflate(200));
-                    for (Entity e : nearbyEntities) {
-                        if (e instanceof TestKart) {
-                            TestKart kart = (TestKart) e;
-                            if (kart.getId() == message.id) {
-                                kart.setPos(message.x, message.y, message.z);
-                                kart.setYRot(message.yRot);
-                                // p.sendSystemMessage(Component.literal("KARTS : " + kart.getX() + " / " + kart.getY() + " / " + kart.getZ()));
-                                // p.sendSystemMessage(Component.literal("       " + kart.getYRot() + " / " + kart.getKartItem()));
-                                break;
-                            }
+            // Utiliser DistExecutor pour isoler le code client
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> handleOnClient(message));
+        });
+        context.setPacketHandled(true);
+    }
+
+    // Cette méthode ne sera chargée que côté client
+    @net.minecraftforge.api.distmarker.OnlyIn(Dist.CLIENT)
+    private static void handleOnClient(KartSynchMessage message) {
+        try {
+            net.minecraft.client.Minecraft minecraft = net.minecraft.client.Minecraft.getInstance();
+            if (minecraft.player != null && minecraft.player.level().isClientSide()) {
+                net.minecraft.world.entity.player.Player p = minecraft.player;
+                java.util.List<net.minecraft.world.entity.Entity> nearbyEntities = p.level().getEntities(p, p.getBoundingBox().inflate(200));
+                for (net.minecraft.world.entity.Entity e : nearbyEntities) {
+                    if (e instanceof TestKart) {
+                        TestKart kart = (TestKart) e;
+                        if (kart.getId() == message.id) {
+                            kart.setPos(message.x, message.y, message.z);
+                            kart.setYRot(message.yRot);
+                            break;
                         }
                     }
                 }
-            } catch (Exception e) {
             }
-        });
+        } catch (Exception e) {
+            // Ignorer les erreurs
+        }
     }
 
     public static void encode(KartSynchMessage message, FriendlyByteBuf buffer) {

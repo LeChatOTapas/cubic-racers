@@ -1,20 +1,16 @@
 package me.jesuismister.cubicracers.network.message.serverToClient;
 
-import me.jesuismister.cubicracers.entity.custom.BobOmb;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.Random;
 import java.util.function.Supplier;
 
 public class StunMessage {
-    private int kartId;
-    private String stunType;
+    private final int kartId;
+    private final String stunType;
 
     public StunMessage(int kartId, String stunType) {
         this.kartId = kartId;
@@ -25,21 +21,33 @@ public class StunMessage {
         return new StunMessage(buf.readInt(), buf.readUtf());
     }
 
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeInt(kartId);
-        buf.writeUtf(stunType);
+    public static void encode(StunMessage message, FriendlyByteBuf buf) {
+        buf.writeInt(message.kartId);
+        buf.writeUtf(message.stunType);
+    }
+
+    public static void handle(StunMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+        contextSupplier.get().enqueueWork(() -> {
+            // Utiliser DistExecutor pour exécuter le code client uniquement côté client
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> handleOnClient(message));
+        });
+        contextSupplier.get().setPacketHandled(true);
     }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-        contextSupplier.get().enqueueWork(() -> {
-            Level level = Minecraft.getInstance().level;
-            if (level == null) return;
+        StunMessage.handle(this, contextSupplier);
+    }
 
-            Entity entity = level.getEntity(kartId);
-            if (entity instanceof TestKart kart) {
-                TestKart.stunKart(kart, stunType);
-            }
-        });
-        contextSupplier.get().setPacketHandled(true);
+    // Cette méthode ne sera chargée que côté client
+    @net.minecraftforge.api.distmarker.OnlyIn(Dist.CLIENT)
+    private static void handleOnClient(StunMessage message) {
+        // Code sécurisé qui ne s'exécute que côté client
+        net.minecraft.client.Minecraft minecraft = net.minecraft.client.Minecraft.getInstance();
+        if (minecraft.level == null) return;
+
+        net.minecraft.world.entity.Entity entity = minecraft.level.getEntity(message.kartId);
+        if (entity instanceof TestKart kart) {
+            TestKart.stunKart(kart, message.stunType);
+        }
     }
 }

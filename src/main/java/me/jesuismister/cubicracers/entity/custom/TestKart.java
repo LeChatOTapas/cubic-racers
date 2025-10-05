@@ -3,30 +3,22 @@ package me.jesuismister.cubicracers.entity.custom;
 import me.jesuismister.cubicracers.config.KartConfig;
 import me.jesuismister.cubicracers.init.BlockInit;
 import me.jesuismister.cubicracers.init.KartInit;
-import me.jesuismister.cubicracers.init.SoundsInit;
 import me.jesuismister.cubicracers.network.Network;
-import me.jesuismister.cubicracers.network.message.clientToServer.KartSynchMessage;
 import me.jesuismister.cubicracers.network.message.serverToClient.KartItemSynchMessage;
-import me.jesuismister.cubicracers.sounds.*;
-import me.jesuismister.cubicracers.util.KartItemUseMethods;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.util.GeckoLibUtil;
@@ -93,16 +85,7 @@ public class TestKart extends TestKartAbstract {
 
     @Override
     public void tick() {
-        if (level().isClientSide) updateSounds();
-        else {
-            setMAX_SPEED(KartConfig.MAX_SPEED.get(id).get().floatValue());
-            setDELTA_SPEED(KartConfig.MAX_SPEED.get(id).get().floatValue());
-            setACCELERATION_BOOST(KartConfig.ACCELERATION_BOOST.get(id).get().floatValue());
-            setBOOST(KartConfig.BOOST.get(id).get().floatValue());
-            setMANIABILITE_COEEF(KartConfig.HANDLING.get(id).get().floatValue());
-        }
-
-        // ON UPDATE LES TIMERS
+        // Timers
         if (getDriftTimeBoost() > 0) setDriftTimeBoost(getDriftTimeBoost() - 0.1f);
         if (getTimeBoost() > 0) setTimeBoost(getTimeBoost() - 0.1f);
         if (getTimeStar() > 0) setTimeStar(getTimeStar() - 0.1f);
@@ -111,8 +94,32 @@ public class TestKart extends TestKartAbstract {
             setStarSpeedBoost(1f);
         }
 
-        // PARTICULE DE BOOST
-        if (getTimeBoost() > 0 || getDriftTimeBoost() > 0) spawnBoostParticules(ParticleTypes.FLAME);
+        // Traitement spécifique au client
+        if (level().isClientSide) {
+            // Utilisation de DistExecutor pour exécuter le code client uniquement côté client
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+                clientTick();
+
+                // PARTICULE DE BOOST (seulement côté client)
+                if (getTimeBoost() > 0 || getDriftTimeBoost() > 0) {
+                    clientSpawnBoostParticules();
+                }
+            });
+        }
+        // Traitement spécifique au serveur
+        else {
+            setMAX_SPEED(KartConfig.MAX_SPEED.get(id).get().floatValue());
+            setDELTA_SPEED(KartConfig.MAX_SPEED.get(id).get().floatValue());
+            setACCELERATION_BOOST(KartConfig.ACCELERATION_BOOST.get(id).get().floatValue());
+            setBOOST(KartConfig.BOOST.get(id).get().floatValue());
+            setMANIABILITE_COEEF(KartConfig.HANDLING.get(id).get().floatValue());
+
+            // SYNCHRONISATION DE POSITION - Béton Armé 💪
+            // Envoie la position toutes les 2 ticks (~100ms) pour une synchro parfaite
+            if (this.tickCount % 2 == 0 && !this.getPassengers().isEmpty()) {
+                Network.sendKartPositionSync(this);
+            }
+        }
 
         super.baseTick();
         this.tickLerp();
@@ -124,11 +131,13 @@ public class TestKart extends TestKartAbstract {
                 xo = getX();
                 yo = getY();
                 zo = getZ();
-                // Synchro des items
-                Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new KartItemSynchMessage(this.getKartItem()));
+                // Synchro des items - utilisation de la méthode sécurisée
+                if (player instanceof ServerPlayer serverPlayer) {
+                    Network.sendKartItemSynchMessage(serverPlayer, this.getKartItem());
+                }
             } else {
-                moveCamera(player);
-                synchKart(player);
+                // Traitement côté client - utilisation de DistExecutor pour sécuriser l'appel
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> clientHandlePlayerControl(player));
             }
         } else {
             setDeltaOn(false);
@@ -137,23 +146,20 @@ public class TestKart extends TestKartAbstract {
         move(MoverType.SELF, getDeltaMovement().add(0, calculateFallSpeed(), 0));
     }
 
-    private void synchKart(Player player) {
-        if (Minecraft.getInstance().player.getName().equals(player.getName())) {
-            try {
-                for (ServerPlayer sp : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
-                    if (!sp.getName().equals(player.getName())) {
-                        Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
-                                new KartSynchMessage(this.getId(), getX(), getY(), getZ(), getYRot()));
-                    }
-                }
-            } catch (Exception ignored) {
-            }
-        }
+    // Ces méthodes sont vides côté serveur et seront "overridden" par le code client
+    @OnlyIn(Dist.CLIENT)
+    protected void clientTick() {
+        // Implémentation côté client uniquement
     }
 
-    @Override
-    public void lerpTo(double p_38299_, double p_38300_, double p_38301_, float p_38302_, float p_38303_, int p_38304_, boolean p_38305_) {
-        super.lerpTo(p_38299_, p_38300_, p_38301_, p_38302_, p_38303_, p_38304_, p_38305_);
+    @OnlyIn(Dist.CLIENT)
+    protected void clientSpawnBoostParticules() {
+        // Implémentation côté client uniquement
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    protected void clientHandlePlayerControl(Player player) {
+        // Implémentation côté client uniquement
     }
 
     private void tickLerp() {
@@ -173,7 +179,6 @@ public class TestKart extends TestKartAbstract {
             this.setPos(d0, d1, d2);
             this.setRot(this.getYRot(), this.getXRot());
         }
-
     }
 
     private void controlKart(Player player) {
@@ -252,14 +257,6 @@ public class TestKart extends TestKartAbstract {
         verticalSpeed = Math.min(verticalSpeed, TestKartAbstract.TERMINAL_VELOCITY);
 
         return -verticalSpeed;
-    }
-
-    private void moveCamera(Player player) {
-        //ON BOUGE LA CAMERA DU CONDUCTEUR
-        if (player != null) {
-            player.setYRot(getYRot());
-            player.setYBodyRot(getYRot());
-        }
     }
 
     public boolean isStun() {
@@ -389,27 +386,8 @@ public class TestKart extends TestKartAbstract {
     }
 
     public void spawnBoostParticules(SimpleParticleType particle) {
-        if (!level().isClientSide()) return;
-
-        float yaw = getYRot();
-        double motionX = -Math.sin(Math.toRadians(yaw));
-        double motionZ = Math.cos(Math.toRadians(yaw));
-        spawnParticules(particle, 0.25 * Math.cos(Math.toRadians(yaw)), 0, 0.25 * Math.sin(Math.toRadians(yaw)),
-                motionX * 0.5f, 0, motionZ * 0.5f);
-    }
-
-    public void spawnParticules(SimpleParticleType particle, double x1, double y1, double z1, double x2, double y2, double z2) {
-        if (!level().isClientSide()) return;
-
-        Minecraft minecraft = Minecraft.getInstance();
-        double x = getX();
-        double y = getY();
-        double z = getZ();
-
-        //SPAWN PARTICULES GAUCHES
-        minecraft.particleEngine.createParticle(particle, x - x1, y - y1, z - z1, x2, y2, z2);
-        //SPAWN PARTICULES DROITES
-        minecraft.particleEngine.createParticle(particle, x + x1, y + y1, z + z1, x2, y2, z2);
+        // Cette méthode ne fait rien côté serveur
+        // Implémentation uniquement côté client
     }
 
     private void rotateOrDrift() {
@@ -531,81 +509,6 @@ public class TestKart extends TestKartAbstract {
         kart.resetDrift();
     }
 
-    ////////////
-    // SOUNDS //
-    ////////////
-
+    // Diverses méthodes utilitaires accessibles au client
     public boolean boostFini = true;
-    @OnlyIn(Dist.CLIENT)
-    private SoundEngineIdle engineIdleLoop;
-    @OnlyIn(Dist.CLIENT)
-    private SoundEngineMax engineMaxLoop;
-    @OnlyIn(Dist.CLIENT)
-    private SoundStarMode starModeLoop;
-    @OnlyIn(Dist.CLIENT)
-    private SoundKartGliding kartGliding;
-    @OnlyIn(Dist.CLIENT)
-    private SoundKartDrifting kartDrifting;
-    @OnlyIn(Dist.CLIENT)
-    private SoundKartOffRoad kartOffRoad;
-
-    @OnlyIn(Dist.CLIENT)
-    public void updateSounds() {
-        if (!level().isClientSide) return;
-
-        if (isInvinsible()) {
-            if (!isSoundPlaying(starModeLoop)) {
-                starModeLoop = new SoundStarMode(this, SoundsInit.STAR_MODE.get(), SoundSource.RECORDS);
-                SoundsInit.playSoundLoop(starModeLoop, level());
-            }
-        } else if (isDeltaOn()) {
-            if (!isSoundPlaying(kartGliding)) {
-                kartGliding = new SoundKartGliding(this, SoundsInit.KART_GLIDING.get(), SoundSource.RECORDS);
-                SoundsInit.playSoundLoop(kartGliding, level());
-            }
-        } else {
-            //ARRET OU EN MOUVEMENT
-            if (Math.abs(getSpeed()) <= 0.2f) {
-                if (!isSoundPlaying(engineIdleLoop)) {
-                    engineIdleLoop = new SoundEngineIdle(this, SoundsInit.ENGINE_IDLE.get(), SoundSource.RECORDS);
-                    SoundsInit.playSoundLoop(engineIdleLoop, level());
-                }
-            } else if (!isOnRoadBlock() && onGround() && Math.abs(getSpeed()) > 0.2f) {
-                if (!isSoundPlaying(kartOffRoad)) {
-                    kartOffRoad = new SoundKartOffRoad(this, SoundsInit.KART_OFF_ROAD.get(), SoundSource.RECORDS);
-                    SoundsInit.playSoundLoop(kartOffRoad, level());
-                }
-            } else if (isOnRoadBlock() && onGround() && Math.abs(getSpeed()) > 0.2f) {
-                if (!isSoundPlaying(engineMaxLoop)) {
-                    engineMaxLoop = new SoundEngineMax(this, SoundsInit.ENGINE_MAX.get(), SoundSource.RECORDS);
-                    SoundsInit.playSoundLoop(engineMaxLoop, level());
-                }
-
-                //DRIFTING OU PAS DRIFTING
-                if (isDrifting()) {
-                    if (!isSoundPlaying(kartDrifting)) {
-                        kartDrifting = new SoundKartDrifting(this, SoundsInit.KART_DRIFTING.get(), SoundSource.RECORDS);
-                        SoundsInit.playSoundLoop(kartDrifting, level());
-                    }
-                }
-            }
-        }
-
-        //getBOOST() DE VITESSE
-        if (boostFini && (getTimeBoost() > 0 || getDriftTimeBoost() > 0)) {
-            boostFini = false;
-            if (getFirstPassenger() != null && getFirstPassenger() instanceof Player player)
-                SoundsInit.playSound(SoundsInit.KART_SPEED_BOOST.get(), level(), new BlockPos((int) getX(), (int) getY(), (int) getZ()), player, SoundSource.RECORDS, 1f);
-        } else if (!boostFini && (getTimeBoost() <= 0 && getDriftTimeBoost() <= 0)) {
-            boostFini = true;
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public boolean isSoundPlaying(SoundInstance sound) {
-        if (sound == null) {
-            return false;
-        }
-        return Minecraft.getInstance().getSoundManager().isActive(sound);
-    }
 }

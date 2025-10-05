@@ -2,7 +2,6 @@ package me.jesuismister.cubicracers.util;
 
 import me.jesuismister.cubicracers.entity.custom.TestKart;
 import me.jesuismister.cubicracers.network.Network;
-import me.jesuismister.cubicracers.network.message.serverToClient.StunMessage;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
@@ -28,11 +27,8 @@ public class UtilityMethod {
             if (target instanceof TestKart kart && kart.getFirstPassenger() != null) {
                 if (kart.getCanMove() && !entity.equals(target)) {
                     TestKart.stunKart(kart, stunMotif);
-                    // Envoi du message à tous les clients (pour affichage visuel)
-                    Network.CHANNEL.send(
-                            PacketDistributor.TRACKING_ENTITY.with(() -> kart),
-                            new StunMessage(kart.getId(), stunMotif)
-                    );
+                    // Utiliser la méthode sécurisée pour envoyer le message de stun
+                    Network.sendStunMessage(kart.getId(), stunMotif);
                 }
             }
         }

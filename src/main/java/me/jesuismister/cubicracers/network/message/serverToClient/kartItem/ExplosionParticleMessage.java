@@ -1,12 +1,11 @@
 package me.jesuismister.cubicracers.network.message.serverToClient.kartItem;
 
 import me.jesuismister.cubicracers.entity.custom.BobOmb;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.Random;
 import java.util.function.Supplier;
 
 public class ExplosionParticleMessage {
@@ -24,33 +23,47 @@ public class ExplosionParticleMessage {
         return new ExplosionParticleMessage(buf.readDouble(), buf.readDouble(), buf.readDouble());
     }
 
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeDouble(x);
-        buf.writeDouble(y);
-        buf.writeDouble(z);
+    public static void encode(ExplosionParticleMessage message, FriendlyByteBuf buf) {
+        buf.writeDouble(message.x);
+        buf.writeDouble(message.y);
+        buf.writeDouble(message.z);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> context) {
+    public static void handle(ExplosionParticleMessage message, Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> {
-            // Client-side only
+            // Utiliser DistExecutor pour exécuter le code client uniquement côté client
             if (context.get().getDirection().getReceptionSide().isClient()) {
-                if (Minecraft.getInstance().player != null) {
-                    spawnExplosionParticles(x, y, z);
-                }
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> handleOnClient(message));
             }
         });
         context.get().setPacketHandled(true);
     }
 
-    public static void spawnExplosionParticles(double x, double y, double z) {
-        Random random = new Random();
+    public void handle(Supplier<NetworkEvent.Context> context) {
+        ExplosionParticleMessage.handle(this, context);
+    }
+
+    // Cette méthode ne sera chargée que côté client
+    @net.minecraftforge.api.distmarker.OnlyIn(Dist.CLIENT)
+    private static void handleOnClient(ExplosionParticleMessage message) {
+        net.minecraft.client.Minecraft minecraft = net.minecraft.client.Minecraft.getInstance();
+        if (minecraft.player != null) {
+            spawnExplosionParticles(message.x, message.y, message.z);
+        }
+    }
+
+    // Cette méthode ne sera chargée que côté client
+    @net.minecraftforge.api.distmarker.OnlyIn(Dist.CLIENT)
+    private static void spawnExplosionParticles(double x, double y, double z) {
+        java.util.Random random = new java.util.Random();
 
         for (int i = 0; i < 10; i++) {
             double offsetX = random.nextGaussian() * BobOmb.RANGE;
             double offsetY = random.nextGaussian() * BobOmb.RANGE;
             double offsetZ = random.nextGaussian() * BobOmb.RANGE;
 
-            Minecraft.getInstance().particleEngine.createParticle(ParticleTypes.EXPLOSION, x, y, z, offsetX, offsetY, offsetZ);
+            net.minecraft.client.Minecraft.getInstance().particleEngine.createParticle(
+                net.minecraft.core.particles.ParticleTypes.EXPLOSION, x, y, z, offsetX, offsetY, offsetZ);
         }
     }
 }
