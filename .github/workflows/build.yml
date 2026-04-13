@@ -1,0 +1,83 @@
+name: Build & Release
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  # ─────────────────────────────────────────────
+  # Job 1 : Compile + build le JAR
+  # Tourne à chaque push/PR et sur les tags
+  # ─────────────────────────────────────────────
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      # Cache Gradle + ForgeGradle pour éviter de tout re-télécharger
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build
+        run: ./gradlew build
+        env:
+          GRADLE_OPTS: "-Dfile.encoding=UTF-8"
+
+      # Upload l'artifact seulement sur tag ou déclenchement manuel
+      - name: Upload JAR artifact
+        if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cubicracers-jar
+          path: build/libs/cubicracers-*.jar
+          if-no-files-found: error
+          retention-days: 7
+
+  # ─────────────────────────────────────────────
+  # Job 2 : Crée la GitHub Release
+  # Tourne UNIQUEMENT quand un tag v* est poussé
+  # ─────────────────────────────────────────────
+  release:
+    needs: build
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cubicracers-jar
+          path: artifacts/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*.jar
+          generate_release_notes: true   # génère les notes depuis les commits
+          draft: false
+          prerelease: false
+
