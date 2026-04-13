@@ -27,11 +27,12 @@ public class StunMessage {
     }
 
     public static void handle(StunMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
-        contextSupplier.get().enqueueWork(() -> {
+        NetworkEvent.Context context = contextSupplier.get();
+        context.enqueueWork(() -> {
             // Utiliser DistExecutor pour exécuter le code client uniquement côté client
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> handleOnClient(message));
         });
-        contextSupplier.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {

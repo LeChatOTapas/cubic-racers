@@ -2,7 +2,6 @@ package me.jesuismister.cubicracers.event;
 
 import me.jesuismister.cubicracers.CubicRacers;
 import me.jesuismister.cubicracers.client.ItemHudOverlay;
-import me.jesuismister.cubicracers.client.SpeedHudOverlay;
 import me.jesuismister.cubicracers.entity.client.renderer.*;
 import me.jesuismister.cubicracers.entity.custom.TestKart;
 import me.jesuismister.cubicracers.network.Network;
@@ -38,18 +37,10 @@ public class ModEvents {
         @SubscribeEvent
         public static void registerGuiOverlay(RegisterGuiOverlaysEvent event) {
             event.registerAboveAll("item_box_hud", ItemHudOverlay.HUD_ITEM_BOX);
-            // event.registerAboveAll("speed_hud", SpeedHudOverlay.HUD_SPEED);
         }
 
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            /*event.enqueueWork(() -> {
-                Set<Item> set = new HashSet<>();
-                set.addAll(ClientLevel.MARKER_PARTICLE_ITEMS);
-                set.add(BlockInit.TRANSPARENT_ROAD_BLOCK.get().asItem());
-                ClientLevel.MARKER_PARTICLE_ITEMS = set;
-            });*/
-
             //REGISTER TOUS LES KARTS
             for (RegistryObject<EntityType<TestKart>> kart : KartInit.KARTS.values()) {
                 EntityRenderers.register(kart.get(), TestKartRenderer::new);
@@ -73,7 +64,6 @@ public class ModEvents {
             event.register(KeyBinds.KART_LEFT_KEY);
             event.register(KeyBinds.KART_RIGHT_KEY);
 
-            //event.register(KeyBinds.KART_DELTA_KEY);
             event.register(KeyBinds.KART_DRIFT_KEY);
             event.register(KART_ITEM_KEY);
         }
@@ -89,7 +79,7 @@ public class ModEvents {
         }
     }
 
-    @Mod.EventBusSubscriber(modid = CubicRacers.MODID)
+    @Mod.EventBusSubscriber(modid = CubicRacers.MODID, value = Dist.CLIENT)
     public static class ClientForgeEvent {
         @SubscribeEvent
         public static void onKeyInput(InputEvent.Key event) {

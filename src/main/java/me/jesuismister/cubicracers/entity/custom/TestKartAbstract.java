@@ -484,7 +484,7 @@ public abstract class TestKartAbstract extends Boat implements GeoEntity {
      */
     public void sendConductorMessage(String msg) {
         try {
-            if (this != null && this.getFirstPassenger() != null && this.getFirstPassenger() instanceof Player player) {
+            if (this.getFirstPassenger() != null && this.getFirstPassenger() instanceof Player player) {
                 player.sendSystemMessage(Component.literal(msg));
             }
         } catch (Exception e) {
@@ -492,6 +492,7 @@ public abstract class TestKartAbstract extends Boat implements GeoEntity {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void sendAll(String msg) {
         try {
             if (Minecraft.getInstance() != null && Minecraft.getInstance().player != null) {

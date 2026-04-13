@@ -2,20 +2,15 @@ package me.jesuismister.cubicracers.entity.custom.client;
 
 import me.jesuismister.cubicracers.entity.custom.TestKart;
 import me.jesuismister.cubicracers.init.SoundsInit;
-import me.jesuismister.cubicracers.network.Network;
-import me.jesuismister.cubicracers.network.message.clientToServer.KartSynchMessage;
 import me.jesuismister.cubicracers.sounds.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
 /**
  * Classe qui gère toutes les fonctionnalités spécifiques au client pour TestKart
@@ -48,9 +43,6 @@ public class TestKartClientHandler {
     public static void handlePlayerControl(TestKart kart, Player player) {
         // Déplace la caméra du joueur
         moveCamera(kart, player);
-
-        // Synchronise la position avec le serveur
-        syncKartPosition(kart, player);
     }
 
     /**
@@ -63,36 +55,6 @@ public class TestKartClientHandler {
         player.setYBodyRot(kart.getYRot());
     }
 
-    /**
-     * Synchronise la position du kart avec les autres joueurs via le réseau
-     * @param kart Le kart à synchroniser
-     * @param player Le joueur qui contrôle le kart
-     */
-    private static void syncKartPosition(TestKart kart, Player player) {
-        try {
-            if (Minecraft.getInstance().player != null &&
-                Minecraft.getInstance().player.getName().getString().equals(player.getName().getString())) {
-
-                try {
-                    // Envoie la position aux autres joueurs
-                    if (ServerLifecycleHooks.getCurrentServer() != null) {
-                        for (ServerPlayer sp : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
-                            if (!sp.getName().getString().equals(player.getName().getString())) {
-                                Network.CHANNEL.send(
-                                    PacketDistributor.PLAYER.with(() -> sp),
-                                    new KartSynchMessage(kart.getId(), kart.getX(), kart.getY(), kart.getZ(), kart.getYRot())
-                                );
-                            }
-                        }
-                    }
-                } catch (Exception ignored) {
-                    // Cette exception est ignorée car elle se produit en mode solo
-                }
-            }
-        } catch (Exception ignored) {
-            // Ignore les exceptions potentielles
-        }
-    }
 
     /**
      * Met à jour les sons du kart
