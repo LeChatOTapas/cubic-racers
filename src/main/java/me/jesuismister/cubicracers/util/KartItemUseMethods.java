@@ -11,13 +11,19 @@ import java.util.List;
 public class KartItemUseMethods {
     private static final int THUNDER_RANGE = 500;
 
-    public static void useItem(TestKart kart) {
+    /**
+     * Utilise l'item du kart.
+     * @param kart       Le kart dont l'item est utilisé
+     * @param isForward  true si la flèche HAUT est maintenue (tir vers l'avant pour banana/bob-omb/fake-box)
+     * @param isBackward true si la flèche BAS est maintenue (tir vers l'arrière pour la carapace verte)
+     */
+    public static void useItem(TestKart kart, boolean isForward, boolean isBackward) {
         if (kart.level().isClientSide) {
             switch (kart.getKartItem()) {
-                case "Banana" -> banana(kart);
-                case "Fake_box" -> fakebox(kart);
-                case "Bob_omb" -> bobomb(kart);
-                case "Green_shell" -> greenshell(kart);
+                case "Banana" -> banana(kart, isForward);
+                case "Fake_box" -> fakebox(kart, isForward);
+                case "Bob_omb" -> bobomb(kart, isForward);
+                case "Green_shell" -> greenshell(kart, isBackward);
                 case "Star" -> star(kart);
                 case "Mushroom" -> mushroom(kart);
                 case "Thunder" -> thunder(kart);
@@ -27,20 +33,20 @@ public class KartItemUseMethods {
         }
     }
 
-    private static void banana(TestKart kart) {
-        Network.CHANNEL.sendToServer(new BananaUseMessage(kart.getX(), kart.getY(), kart.getZ(), kart.isPressingKeyForward(), kart.getYRot(), kart.getSpeed()));
+    private static void banana(TestKart kart, boolean isForward) {
+        Network.CHANNEL.sendToServer(new BananaUseMessage(kart.getX(), kart.getY(), kart.getZ(), isForward, kart.getYRot(), kart.getSpeed()));
     }
 
-    private static void fakebox(TestKart kart) {
-        Network.CHANNEL.sendToServer(new FakeBoxUseMessage(kart.getX(), kart.getY(), kart.getZ(), kart.isPressingKeyForward(), kart.getYRot(), kart.getSpeed()));
+    private static void fakebox(TestKart kart, boolean isForward) {
+        Network.CHANNEL.sendToServer(new FakeBoxUseMessage(kart.getX(), kart.getY(), kart.getZ(), isForward, kart.getYRot(), kart.getSpeed()));
     }
 
-    private static void bobomb(TestKart kart) {
-        Network.CHANNEL.sendToServer(new BobOmbUseMessage(kart.getX(), kart.getY(), kart.getZ(), kart.isPressingKeyForward(), kart.getYRot(), kart.getSpeed()));
+    private static void bobomb(TestKart kart, boolean isForward) {
+        Network.CHANNEL.sendToServer(new BobOmbUseMessage(kart.getX(), kart.getY(), kart.getZ(), isForward, kart.getYRot(), kart.getSpeed()));
     }
 
-    private static void greenshell(TestKart kart) {
-        Network.CHANNEL.sendToServer(new GreenShellUseMessage(kart.getX(), kart.getY(), kart.getZ(), kart.isPressingKeyBackward(), kart.getYRot(), kart.getSpeed()));
+    private static void greenshell(TestKart kart, boolean isBackward) {
+        Network.CHANNEL.sendToServer(new GreenShellUseMessage(kart.getX(), kart.getY(), kart.getZ(), isBackward, kart.getYRot(), kart.getSpeed()));
     }
 
     private static void star(TestKart kart) {

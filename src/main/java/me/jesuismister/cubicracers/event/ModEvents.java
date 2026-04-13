@@ -129,7 +129,11 @@ public class ModEvents {
             // Détection du premier tick où la touche est pressée
             if (isItemKeyDown && !wasItemKeyDown) {
                 if (mc.player.getVehicle() != null && mc.player.getVehicle() instanceof TestKart kart) {
-                    KartItemUseMethods.useItem(kart);
+                    // Lecture directe de l'état des touches au moment de l'utilisation
+                    // (évite tout problème de timing avec l'entity data)
+                    boolean isForward = KeyBinds.KART_FORWARD_KEY.isDown();
+                    boolean isBackward = KeyBinds.KART_BACKWARD_KEY.isDown();
+                    KartItemUseMethods.useItem(kart, isForward, isBackward);
                 }
             }
 
