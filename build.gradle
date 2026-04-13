@@ -155,6 +155,7 @@ shadowJar {
     relocate 'de.maxhenkel.corelib', "de.maxhenkel.${mod_id}.corelib"
 }
 shadowJar.dependsOn('reobfJar')
+shadowJar.finalizedBy('reobfShadowJar')
 
 reobf {
     shadowJar {}

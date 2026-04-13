@@ -53,7 +53,7 @@ public class CubicRacers {
 
         ParticlesInit.PARTICLE_TYPES.register(bus);
 
-        ModCreativeModeTabs.CREATIVE_MODE_TABS.register(bus);
+        ModCreativeModeTabs.CREATIVE_MODE_TAB_REGISTAR.register(bus);
 
         MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
 
