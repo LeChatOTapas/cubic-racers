@@ -2,7 +2,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '6.0.52'
+    id 'net.minecraftforge.gradle' version '7.0.23'
     id 'org.spongepowered.mixin' version '0.7.38'
     id 'com.gradleup.shadow' version '9.4.1'
 }
